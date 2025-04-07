@@ -1,38 +1,185 @@
+/* General Layout */
 .App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent overflow */
 }
 
-.App-link {
-  color: #61dafb;
+/* AppBar Styling */
+.appBar {
+  z-index: 1201; /* Ensure AppBar is above the drawer */
+  position: fixed;
+  height: 60px;
+  background-color: #ede0fe !important;
+  color: #012970 !important;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Main Bar Layout */
+.mainbar {
+  display: flex;
+  gap: 40%;
+}
+
+/* Menu Button */
+.menuButton {
+  margin-right: 16px;
+  left: 16px; /* Align the menu button icon to the left */
+  font-size: 30px;
+}
+
+/* Drawer Styling */
+.drawer {
+  width: 300px;
+}
+
+.drawerContainer {
+  overflow: auto;
+  width: 300px;
+  height: 100%;
+  background-color: #4b1d77;
+  color: whitesmoke;
+
+  .icon {
+    color: whitesmoke;
+    font-size: 25px;
   }
-  to {
-    transform: rotate(360deg);
+
+  .menuItem {
+    color: whitesmoke;
+  }
+}
+
+/* Main Content Area */
+.mainContent {
+  flex-grow: 1;
+  padding: 16px;
+  overflow-y: auto;
+  transition: margin-left 0.3s ease; /* Smooth transition when opening/closing */
+  margin-top: 64px;
+}
+
+.mainContentOpen {
+  margin-left: 320px; /* Adjust this value based on the drawer width */
+}
+
+.mainContentClosed {
+  margin-left: 0; /* Full width when the drawer is closed */
+}
+
+.content-box {
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
+}
+
+/* Nested Items */
+.nestedItem {
+  padding-left: 32px !important;
+  font-size: 20px;
+  cursor: pointer;
+
+  .label {
+    color: white;
+    cursor: pointer;
+  }
+}
+
+/* Global Styles */
+body {
+  background-color: #f9f6ff;
+}
+
+/* List Item Styles */
+.listItem {
+  color: #333333;
+}
+
+.listItem:hover {
+  background-color: #e0e0e0;
+}
+
+.nestedItem {
+  color: #555555;
+}
+
+.nestedItem:hover {
+  background-color: #eeeeee;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 5px;
+  background-color: #9d67ea4a;
+  border: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8b4fc1;
+  border-radius: 50px;
+  border: none;
+}
+
+/* Typography Overrides */
+.MuiTypography-root:where(.css-dbslbf-MuiListItemText-root .MuiListItemText-primary) {
+  font-size: 18px !important;
+  font-weight: 500;
+}
+
+/* Mantine Table Styles */
+.mantine-ugfcki {
+  background-color: #ede0fe;
+  height: 45px;
+}
+
+.mantine-TableHeadCell-Content-Wrapper {
+  color: #173a7d;
+}
+
+.mantine-1te4qfz {
+  min-width: 280px !important;
+}
+
+.mantine-16fo3jc {
+  min-width: 200px !important;
+}
+
+.mantine-augnbd > thead > tr > th,
+.mantine-augnbd > tbody > tr > td {
+  padding: 10px 5px 5px 15px;
+}
+
+/* Top Toolbar */
+.top-toolbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #8b4fc1;
+  padding: 10px 20px;
+  height: 35px;
+
+  .title {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+/* Action Column */
+.action-column {
+  display: flex;
+  gap: 25px;
+
+  .action-icon {
+    font-size: 20px;
+    cursor: pointer;
+
+    &.delete {
+      color: red;
+    }
   }
 }

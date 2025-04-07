@@ -1,0 +1,10 @@
+.AppBar_main{
+    height: 90px;
+    background-color: #ede0fe;
+    box-shadow: 0 2px 4px -1px #0129701a, 0 4px 5px 0 #0129701a, 0 1px 10px 0 #0129701a;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100;
+}
