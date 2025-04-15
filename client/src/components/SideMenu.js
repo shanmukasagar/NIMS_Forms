@@ -58,6 +58,12 @@ const Sidebar = () => {
         { id: 'CheckList', label: 'CheckList', path: '/checklist' }
       ]
     },
+    {
+      id: 'Add Clinical Trials',
+      label: 'Add Clinical Trials',
+      hasSubMenu: false,
+      path: '/addclinicaltrails',
+    },
   ];
 
   const handleMenuClick = (item) => {
@@ -93,13 +99,8 @@ const Sidebar = () => {
                   <Collapse in={expandedMenu === item.id} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding sx = {{backgroundColor : "#ede0fe"}}>
                       {item.subItems.map((subItem) => (
-                        <ListItem
-                          key={subItem.id}
-                          button
-                          sx={{ pl: 4 }}
-                          onClick={() => handleNavigation(subItem.path)}
-                          selected={isActive(subItem.path)} className = "listitem_hover"
-                        >
+                        <ListItem key={subItem.id} button sx={{ pl: 4 }} onClick={() => handleNavigation(subItem.path)}
+                          selected={isActive(subItem.path)} className = "listitem_hover">
                           <ListItemText primary={subItem.label} />
                         </ListItem>
                       ))}

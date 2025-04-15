@@ -1,0 +1,23 @@
+.main_content_box{
+    display : flex;
+    flex-direction: column;
+    gap : 60px;
+}
+.content-box {
+    display: flex;
+    gap: 30px;
+    flex-direction: column;
+}
+.section_title{
+    font-size: 22px;
+    font-weight: 600;
+}
+.button_style{
+    color: white;
+    background-color: #4b1d77;
+    font-size: 18px;
+    font-weight: 500;
+    width: 200px;
+    border-radius: 10px;
+    cursor: pointer;
+}

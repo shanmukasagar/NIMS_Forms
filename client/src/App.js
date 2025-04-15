@@ -3,6 +3,7 @@ import { Box, Typography, CssBaseline } from '@mui/material';
 import { Routes, Route } from 'react-router-dom';
 import Sidebar from './components/SideMenu';
 import Header from "./components/AppBar";
+import "./App.css"
 
 import Administration from './Forms/Basic_Information/Administration';
 import Funding_Details from './Forms/Basic_Information/Funding_Details';
@@ -16,6 +17,8 @@ import Informed_Consent from './Forms/Participant_Information/Informed_Consent';
 import Research_Participants from './Forms/Participant_Information/Research_Participants';
 import Methodology from './Forms/Research_Information/Methodology';
 import Research_Overview from './Forms/Research_Information/Overview_Research';
+import AddClinicalTrails from './components/AddClinicalTrails';
+import Clinical_Preview from './Forms/Add_Clinical_Form/Clinical_Preview';
 
 
 const App = () => {
@@ -45,6 +48,8 @@ const App = () => {
             <Route path="/declaration" element={<Declaration />} />
             <Route path="/checklist" element={<CheckList />} />
             <Route path="/" element={<Administration />} />
+            <Route path="/addclinicaltrails" element = {<AddClinicalTrails/>} />
+            <Route path="/clinicalpreview" element = {<Clinical_Preview/>} />
           </Routes>
         </Box>
       </Box>

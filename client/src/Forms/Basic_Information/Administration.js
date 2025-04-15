@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box } from '@mui/material';
 
 const Administration = () => {
     return (
-        <Box>Administrative Details</Box>
+        <div>Hello
+            
+        </div>
     )
 }
 
-export default Administration;
+export default Administration
