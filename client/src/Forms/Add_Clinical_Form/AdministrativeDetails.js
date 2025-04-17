@@ -57,10 +57,10 @@ const AdministrativeDetails = ({setAdministration, administration}) => {
             <TextField fullWidth label="Short Title(If any)" variant="outlined" name='shortTitle' value={administration.shortTitle} onChange={handleChange} />
         </Grid>
         <Grid item size={4}>
-            <TextField fullWidth required label="Protocol Number" variant="outlined" name='protocol' value={administration.protocol} onChange={handleChange} />
+            <TextField fullWidth type = "number" required label="Protocol Number" variant="outlined" name='protocol' value={administration.protocol} onChange={handleChange} />
         </Grid>
         <Grid item size={4}>
-            <TextField fullWidth required label="Version Number" variant="outlined" name='version' value={administration.version} onChange={handleChange} />
+            <TextField fullWidth type = "number" required label="Version Number" variant="outlined" name='version' value={administration.version} onChange={handleChange} />
         </Grid>
         <Grid item size={4}>
             <TextField fullWidth label="Dated" type="date" required InputLabelProps={{ shrink: true }}

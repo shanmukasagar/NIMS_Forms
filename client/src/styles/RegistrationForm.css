@@ -1,0 +1,41 @@
+/* RegistrationForm.css */
+.registration_main{
+    height : 100vh;
+    display : flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5;
+}
+.registration-container {
+    width: 500px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+  
+.registration-title {
+    text-align: center;
+    font-size : 24px;
+    font-weight : 600;
+}
+  
+.registration-error {
+    color: red;
+    margin-bottom: 16px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.form_container{
+    display : flex;
+    flex-direction: column;
+    gap : 17px;
+}
+
+  
+
+  
