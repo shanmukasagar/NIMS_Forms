@@ -57,36 +57,40 @@ const App = () => {
           <Route path="/register" element={<RegistrationForm />} />
         </Routes>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <CssBaseline />
-          <Header/>
-          <Box sx={{ display: 'flex', marginTop: '90px' }}>
-            <Sidebar/>
-            <Box component="main"  sx={{ flexGrow: 1, marginLeft: '20px', padding: '20px', overflow: 'auto',
-                height: 'calc(100vh - 90px)'
-              }}
-            >
-              <Routes>
-                <Route path="/basic/administrative" element={<Administration />} />
-                <Route path="/basic/funding" element={<FundingDetails />} />
-                <Route path="/research/overview" element={<ResearchOverview />} />
-                <Route path="/research/methodology" element={<Methodology />} />
-                <Route path="/participant/recruitment" element={<ResearchParticipants />} />
-                <Route path="/participant/benefits" element={<Benefits />} />
-                <Route path="/participant/informed consent" element={<InformedConsent />} />
-                <Route path="/participant/compensation" element={<Compensation />} />
-                <Route path="/participant/confidentiality" element={<Confidentiality />} />
-                <Route path="/issues/additional" element={<AdditionalInformation />} />
-                <Route path="/declaration" element={<Declaration />} />
-                <Route path="/checklist" element={<CheckList />} />
-                <Route path="/" element={<Administration />} />
-                <Route path="/addclinicaltrails" element = {<AddClinicalTrails user = {user}/>} />
-                <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
-                <Route path="/register" element = {<RegistrationForm/>} />
-              </Routes>
+        <React.Fragment>
+          {user && (
+            <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+              <CssBaseline />
+              <Header/>
+              <Box sx={{ display: 'flex', marginTop: '90px' }}>
+                <Sidebar/>
+                <Box component="main"  sx={{ flexGrow: 1, marginLeft: '20px', padding: '20px', overflow: 'auto',
+                    height: 'calc(100vh - 90px)'
+                  }}
+                >
+                  <Routes>
+                    <Route path="/basic/administrative" element={<Administration />} />
+                    <Route path="/basic/funding" element={<FundingDetails />} />
+                    <Route path="/research/overview" element={<ResearchOverview />} />
+                    <Route path="/research/methodology" element={<Methodology />} />
+                    <Route path="/participant/recruitment" element={<ResearchParticipants />} />
+                    <Route path="/participant/benefits" element={<Benefits />} />
+                    <Route path="/participant/informed consent" element={<InformedConsent />} />
+                    <Route path="/participant/compensation" element={<Compensation />} />
+                    <Route path="/participant/confidentiality" element={<Confidentiality />} />
+                    <Route path="/issues/additional" element={<AdditionalInformation />} />
+                    <Route path="/declaration" element={<Declaration />} />
+                    <Route path="/checklist" element={<CheckList />} />
+                    <Route path="/" element={<Administration />} />
+                    <Route path="/addclinicaltrails" element = {<AddClinicalTrails user = {user}/>} />
+                    <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
+                    <Route path="/register" element = {<RegistrationForm/>} />
+                  </Routes>
+                </Box>
+              </Box>
             </Box>
-          </Box>
-        </Box>
+          )}
+        </React.Fragment>
       )}
     </React.Fragment>
   );
