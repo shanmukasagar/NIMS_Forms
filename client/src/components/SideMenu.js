@@ -16,7 +16,9 @@ const Sidebar = () => {
       label: 'Basic Information',
       hasSubMenu: true,
       subItems: [
+        { id: 'newFile', label: 'newFile', path: '/basic/newFile' },
         { id: 'Administrative Details', label: 'Administrative Details', path: '/basic/administrative' },
+        { id: 'Details Investigator', label: 'Details Investigator', path: '/basic/details' },
         { id: 'Funding Details', label: 'Funding Details', path: '/basic/funding' }
       ]
     },
@@ -26,7 +28,7 @@ const Sidebar = () => {
       hasSubMenu: true,
       subItems: [
         { id: 'Overview of Research', label: 'Overview of Research', path: '/research/overview' },
-        { id: 'Methodology', label: 'Methodology', path: '/research/methodology' }
+       
       ]
     },
     {
@@ -36,7 +38,7 @@ const Sidebar = () => {
       subItems: [
         { id: 'Research Participant', label: 'Research Participant', path: '/participant/recruitment' },
         { id: 'Benefits and Risks', label: 'Benefits and Risks', path: '/participant/benefits' },
-        { id: 'Informed Consent', label: 'Informed Consent', path: '/participant/informed consent' },
+        { id: 'Informed Consent', label: 'Informed Consent', path: '/participant/informedconsent' },
         { id: 'Compensation', label: 'Compensation', path: '/participant/compensation' },
         { id: 'Confidentiality', label: 'Storage and Confidentiality', path: '/participant/confidentiality' }
       ]
@@ -55,7 +57,9 @@ const Sidebar = () => {
       hasSubMenu: true,
       subItems: [
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
-        { id: 'CheckList', label: 'CheckList', path: '/checklist' }
+        { id: 'CheckList', label: 'CheckList', path: '/checklist' },
+        {id: 'ExpeditedReview', label: 'ExpeditedReview', path:'/expedited'},
+        {id:'WaiverOfConsent', label: 'WaiverOfConsent', path:'/waiver'}
       ]
     },
     {

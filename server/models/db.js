@@ -2,12 +2,30 @@ const { Pool } = require("pg");
 require('dotenv').config();
 const  {MongoClient} = require('mongodb');
 
+//  const pool = new Pool({
+//      user: "postgres",
+//      host: "172.23.1.43",
+//      database: "clinical_forms_db",
+//      password: "root",
+//      port: 5432
+// });
+
+
 const pool = new Pool({
+    user: "shanmukasagar",
+    host: "ep-red-grass-a1ch12cb-pooler.ap-southeast-1.aws.neon.tech" ,
+    database: "research_forms",
+    password: "NIMSforms@123",
+    port: 5432,
+    ssl: { rejectUnauthorized: false }
+});
+
+const naveenPool = new Pool({
     user: "postgres",
+    password: "naveen",
     host: "localhost",
-    database: "clinical_forms_db",
-    password: "root",
-    port: 5432
+    port: 5432,
+    database: "nims"
 });
 
 let client;
@@ -45,5 +63,6 @@ const getDB = () => {
 module.exports = { 
     connectToMongo, 
     getDB,
-    pool
+    pool,
+    naveenPool
 };

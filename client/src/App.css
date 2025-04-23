@@ -1,4 +1,42 @@
 /* General Layout */
+
+.table-container {
+  margin: 20px auto;
+  padding: 10px;
+  width: 90%;
+}
+
+.section-heading {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ccc;
+  font-family: Arial, sans-serif;
+}
+
+.custom-table th,
+.custom-table td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.custom-table thead {
+  background-color: #f2f2f2;
+}
+
+.custom-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+
+
 .App {
   display: flex;
   flex-direction: column;
@@ -15,12 +53,40 @@
   color: #012970 !important;
 }
 
+.user-email {
+  font-size: 1.25rem; /* equivalent to text-xl */
+  font-weight: 600;   /* equivalent to font-semibold */
+  margin-bottom: 0.5rem; /* equivalent to mb-2 */
+}
+
 /* Main Bar Layout */
 .mainbar {
   display: flex;
   gap: 40%;
 }
+.custom-text {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.hi {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+.h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.radio-group {
+  font-size: 1.5rem;
+  font-weight: bold;
+  
 
+}
+.checkbox-label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.3rem;
+}
 /* Menu Button */
 .menuButton {
   margin-right: 16px;
@@ -50,6 +116,63 @@
   }
 }
 
+/* Main Content Area */
+.mainContent {
+  flex-grow: 1;
+  padding: 16px;
+  overflow-y: auto;
+  transition: margin-left 0.3s ease; /* Smooth transition when opening/closing */
+  margin-top: 64px;
+}
+
+.mainContentOpen {
+  margin-left: 320px; /* Adjust this value based on the drawer width */
+}
+
+.mainContentClosed {
+  margin-left: 0; /* Full width when the drawer is closed */
+}
+
+.content-box {
+  display: flex;
+  gap: 20px; 
+  flex-direction: column;
+}
+
+/* Nested Items */
+.nestedItem {
+  padding-left: 32px !important;
+  font-size: 20px;
+  cursor: pointer;
+
+  .label {
+    color: white;
+    cursor: pointer;
+  }
+}
+
+/* Global Styles */
+body {
+  background-color: #f9f6ff;
+}
+
+/* List Item Styles */
+.listItem {
+  color: #333333;
+}
+
+.listItem:hover {
+  background-color: #e0e0e0;
+}
+
+.nestedItem {
+  color: #555555;
+}
+
+.nestedItem:hover {
+  background-color: #eeeeee;
+}
+
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 5px;
@@ -74,3 +197,123 @@
   font-weight: 500;
 }
 
+/* Mantine Table Styles */
+.mantine-ugfcki {
+  background-color: #ede0fe;
+  height: 45px;
+}
+
+.mantine-TableHeadCell-Content-Wrapper {
+  color: #173a7d;
+}
+
+.mantine-1te4qfz {
+  min-width: 280px !important;
+}
+
+.mantine-16fo3jc {
+  min-width: 200px !important;
+}
+
+.mantine-augnbd > thead > tr > th,
+.mantine-augnbd > tbody > tr > td {
+  padding: 10px 5px 5px 15px;
+}
+
+/* Top Toolbar */
+.top-toolbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #8b4fc1;
+  padding: 10px 20px;
+  height: 35px;
+
+  .title {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+/* Action Column */
+.action-column {
+  display: flex;
+  gap: 25px;
+
+  .action-icon {
+    font-size: 20px;
+    cursor: pointer;
+
+    &.delete {
+      color: red;
+    }
+  }
+}
+.h {
+  font-family: 'Lato', sans-serif; /* Modern, clean sans-serif */
+  font-size: 1.2em;
+  color: #020202;
+  font-weight: 400; /* Bold */
+  /* text-transform: uppercase; */ /* Removed to allow normal casing */
+  letter-spacing: 0.02em;
+  margin-bottom: 1.2em;
+}
+
+.name {
+  width: 350px; /* Adjust width as needed */
+  padding: 10px;
+  font-size: 1.0em;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* You can adjust the space here */
+  margin-bottom: 16px; 
+  
+}
+
+.custom-text {
+  font-family: 'Lato', sans-serif; /* Modern, clean sans-serif */
+  font-size: 1.2em;
+  color: #020202;
+  font-weight: 500; /* Bold */
+  /* text-transform: uppercase; */ /* Removed to allow normal casing */
+  letter-spacing: 0.02em;
+  margin-bottom: 1.2em;
+}
+
+.custom-textarea {
+  width: 100%;
+  height: 120px;
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  resize: vertical; /* Allows user to resize vertically */
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.custom-textarea:focus {
+  border-color: #1976d2; /* or any theme color */
+  box-shadow: 0 0 4px rgba(25, 118, 210, 0.4);
+}
+.file-upload {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 2px dashed #94a3b8;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  transition: border-color 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+}
+.file-upload:focus-within {
+  border-color: #2563eb; /* Tailwind's blue-600 */
+  background-color: #f0f9ff;
+}

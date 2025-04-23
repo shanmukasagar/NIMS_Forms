@@ -7,6 +7,8 @@ const cookieParser = require('cookie-parser');
 
 const clinicalRoute = require("./routes/ClinicalRoute");
 const userRoute = require("./routes/UserRoute");
+const researchRoute = require("./routes/ResearchRoute");
+const checkAdminRoute=require("./routes/CheckAdminRoute");
 
 const app = express();
 
@@ -18,6 +20,8 @@ app.use(express.json());
 //Clinical Routes
 app.use('/api/clinical', clinicalRoute);
 app.use('/api/user', userRoute);
+app.use("/api/research", researchRoute);
+app.use("/api/research/check", checkAdminRoute);
 
 app.use('/', (req, res) => { 
     res.send('API is working');
