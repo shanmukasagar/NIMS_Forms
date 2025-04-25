@@ -1,17 +1,16 @@
-import { useState } from "react";
-
+import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+
+import TableComponent10 from  "./components/TableComponent10.js";
 
 const Section9 = (adminId) => {
   const [support_type, setSupportType] = useState("");
   const [additional, setAdditional] = useState("");
   const [preview, setPreview] = useState(false); 
   const navigate = useNavigate();
-
-
-
-
+  const[existData,setExistData]=useState(null)
+  const [email,setEmail]=useState("");
   const handlePreview = (e) => {
     e.preventDefault();
     setPreview(true);
@@ -20,9 +19,6 @@ const Section9 = (adminId) => {
   const handleEdit = () => {
     setPreview(false);
   };
-
-
-    
   const handleSubmit = async () => {
     try {
       const userResponse = await axios.post(
@@ -31,6 +27,7 @@ const Section9 = (adminId) => {
           support_type,
           additional,
           administrativeDetailId: adminId?.adminId ?? adminId,
+          email,
         }
       );
       const id = userResponse.data.id;
@@ -43,12 +40,31 @@ const Section9 = (adminId) => {
       );
     }
   };
-
+useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+          params : {
+            form_type:"additional_information"// or hardcoded for now
+          }
+        });
+  
+        if (response.data.length > 0) {
+          setExistData(response.data); // You probably meant setExistData, not setExistData
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+  
+    fetchData();
+  }, [email]);
 
   if (preview) {
     return (
       <div className="h">
-        <h5 className="h2">SECTION D: OTHER ISSUES </h5>
+        <h5 className="h2">preview </h5>
       
         <p><strong>Do you have any additional information to add?</strong> {support_type}</p>
         {support_type === "Yes" && (
@@ -68,6 +84,7 @@ const Section9 = (adminId) => {
 
   return (
     <div className="form-container">
+        {existData ? (<TableComponent10 data={existData} />) :
       <form onSubmit={handlePreview}>
         <h2 className="h2">SECTION D: OTHER ISSUES </h2>
         <h2 className="h2">10.ADDITIONAL INFORMATION </h2>
@@ -120,6 +137,7 @@ const Section9 = (adminId) => {
           Preview
         </button>
       </form>
+}
     </div>
   );
 };

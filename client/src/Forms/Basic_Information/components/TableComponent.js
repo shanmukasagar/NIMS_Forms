@@ -1,13 +1,10 @@
-// TableComponent.js
+
 import React from "react";
-
-import "../../App.css";
-
 
 const TableComponent = ({ data }) => {
   return (
     <div className="table-container">
-      <h2 className="section-heading">Submitted Section Data</h2>
+      <h2 >Administration data</h2>
       <table className="custom-table">
         <thead>
           <tr>

@@ -2,12 +2,12 @@
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import axios from "axios";
-import TableComponent2 from "./TableComponent2.js"; 
+import TableComponent2 from "./components/TableComponent2.js"; 
 import "../../App.css";
 
 import { useNavigate } from "react-router-dom";
 
-const DetailsInvestigator =({adminId}) => { // Receive adminId as a prop using destructuring
+const DetailsInvestigator =({adminId}) => { 
   const [piName, setPiName] = useState("");
   const [piDesignation, setPiDesignation] = useState("");
   const [piQualification, setPiQualification] = useState("");
@@ -54,7 +54,7 @@ const DetailsInvestigator =({adminId}) => { // Receive adminId as a prop using d
           address: coiAddress,
           investigator_type: coiInvestigatorType,
           administrativeDetailId: adminId,
-          email // Now using the adminId prop
+           // Now using the adminId prop
         },
       ];
 
@@ -92,7 +92,6 @@ const DetailsInvestigator =({adminId}) => { // Receive adminId as a prop using d
     fetchData();
   }, [email]);
   
-
   const handlePreview = (e) => {
     e.preventDefault();
     setShowPreview(true);
@@ -135,9 +134,11 @@ const DetailsInvestigator =({adminId}) => { // Receive adminId as a prop using d
 
   return (
     <div className="form-container">
+       {existData ? (<TableComponent2 data={existData} />) :
+         <form>
       <h3 className="h2">G. Details of Investigators / Researcher(s): </h3>
-      {existData ? (<TableComponent2 data={existData} />) :
-      <form>
+     
+      
         <div className="form-row">
           <div className="h">
             <h3>Principal Investigator / Researcher:</h3>

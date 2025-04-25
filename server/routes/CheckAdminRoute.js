@@ -5,7 +5,7 @@ const { pool } = require("../models/db");
 
 router.get("/admin", async (req, res) => {
   const form_type = req.query.form_type;
-  const email = "abc@gmail.com"; // You can also get from req.query.email
+  const email = "lov@gmail.com"; // You can also get from req.query.email
 
   let tableName;
 

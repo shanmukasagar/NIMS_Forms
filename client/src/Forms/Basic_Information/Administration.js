@@ -3,7 +3,7 @@ import "../../App.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import TableComponent from "./TableComponent.js"; // adjust path as needed
+import TableComponent from "./components/TableComponent.js"; // adjust path as needed
 
 
 function Administration({ setAdminId }) {
@@ -23,15 +23,7 @@ function Administration({ setAdminId }) {
   const handleFinalSubmit = async () => {
     try {
       const userResponse = await axios.post("http://localhost:4000/api/research/administrativee_details", {
-        name_of_research_principal,
-        department,
-        title,
-        review_requested,
-        protocol_number,
-        version_number,
-        date,
-        email
-      });
+        name_of_research_principal,department,title,review_requested,protocol_number,version_number,date, email });
       const idd = userResponse.data.idd;
       console.log("User created:", userResponse.data);
       setAdminId(idd);
@@ -42,8 +34,6 @@ function Administration({ setAdminId }) {
         error.response ? error.response.data : error.message
       );    }
   }
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -79,7 +69,7 @@ function Administration({ setAdminId }) {
     return (
       <div className="form-container">
         <div className="h">
-          <h2 className="h">Preview</h2>
+          <h2 className="h2">Preview</h2>
           <p><strong>A.Name of Research principal:</strong> {name_of_research_principal}</p>
           <p><strong>B.Department:</strong> {department}</p>
           <p><strong>C.Date:</strong> {date}</p>
@@ -95,43 +85,26 @@ function Administration({ setAdminId }) {
       </div>
     );
   }
-
-
   return (
     <div className="form-container">
       <div className="h">
+      {existData ? (<TableComponent data={existData} />) :
+          (<form onSubmit={handlePreview}>
         <h2 className="h2">SECTION A - BASIC INFORMATION</h2>
         <h1 className="hi">ADMINISTRATIVE DETAILS</h1>
 
-        {existData ? (<TableComponent data={existData} />) :
-          (<form onSubmit={handlePreview}>
-
+      
             <h2 className="h2">A. Name of Researcher/Principal</h2>
-            <input type="text" placeholder="Enter Name"  value={name_of_research_principal} onChange={(e) => {
-              
-                setNameOfResearchPrincipal(e.target.value);
+            <input type="text" placeholder="Enter Name"  value={name_of_research_principal} onChange={(e) => {setNameOfResearchPrincipal(e.target.value);
               }}
               className="name"
               required
             />
-
             <div className="form-row">
               <div className="form-group">
                 <h2 className="h2">B.Department</h2>
-                <input
-                  type="text"
-                  value={department}
-                  placeholder="Enter Department"
-                  onChange={(e) => {
-              
-                    setDepartment(e.target.value);
-                  }}
-                  className="name"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
+                <input type="text" value={department}   placeholder="Enter Department"    onChange={(e) => {setDepartment(e.target.value);}}  className="name"    required />  </div>
+                 <div className="form-group">
                 <h2 className="h2">C. Date</h2>
                 <input
                   type="date"
@@ -144,40 +117,18 @@ function Administration({ setAdminId }) {
 
               <div >
                 <h2 className="h2">D.Title</h2>
-                <input
-                  type="text"
-                  value={title}
-                  placeholder="Enter title"
-                  onChange={(e) => {
-              
-                    setTitle(e.target.value);
-                  }}
-                  className="name"
-                  required
-                />
+                <input  type="text" value={title}placeholder="Enter title" onChange={(e) => { setTitle(e.target.value);}}className="name"required/>
               </div>
             </div>
 
             <div >
               <h2 className="h2">E.Type of review requested: </h2>
-              <label>
-                <input
-                  type="radio"
-                  name="review_requested"
-                  value="Expedited Review"
-                  checked={review_requested === "Expedited Review"}
-                  onChange={(e) => setReviewRequested(e.target.value)}
-                />
+              <label>  <input  type="radio"  name="review_requested"value="Expedited Review"checked={review_requested === "Expedited Review"} onChange={(e) => setReviewRequested(e.target.value)}/>
                 Expedited Review
               </label>
               <label>
-                <input
-                  type="radio"
-                  name="review_requested"
-                  value="Full Committee Review"
-                  checked={review_requested === "Full Committee Review"}
-                  onChange={(e) => setReviewRequested(e.target.value)}
-                />
+                <input type="radio" name="review_requested"
+                  value="Full Committee Review" checked={review_requested === "Full Committee Review"} onChange={(e) => setReviewRequested(e.target.value)}/>
                 Full Committee Review
               </label>
             </div>
@@ -185,46 +136,15 @@ function Administration({ setAdminId }) {
             <div className="form-row">
               <div className="form-group">
                 <h2 className="h2">F.Protocol number</h2>
-                <input
-                  type="number"
-                  value={protocol_number}
-                  onChange={(e) => {
-                
-                    setProtocolNumber(e.target.value);
-                  }}
-                  className="name"
-                  placeholder="Enter protocol"
-                  required
-                />
+                <input  type="number" value={protocol_number} onChange={(e) => {setProtocolNumber(e.target.value);}}  className="name"placeholder="Enter protocol"required/>
               </div>
-
               <div >
                 <h2 className="h2" >G. Version number</h2>
-                <input
-                  type="number"
-                  value={version_number}
-                  onChange={(e) => {
-                
-                    setVersionNumber(e.target.value);
-                  }}
-                  className="name"
-                  placeholder="Enter version "
-                  required
-                />
-              </div>
-              {/* <input
-          
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-      
-      
-          required
-        /> */}
-
-            </div>
-  <br></br>
-            <button type="submit" className="name">Preview</button>
-          </form>
+                <input type="number" value={version_number} onChange={(e) => {setVersionNumber(e.target.value);  }}className="name"placeholder="Enter version " required/></div>
+             </div>
+             <br></br>
+             <button type="submit" className="name">Preview</button>
+              </form>
           )
         }
       

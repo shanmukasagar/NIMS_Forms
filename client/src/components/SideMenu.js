@@ -16,7 +16,7 @@ const Sidebar = () => {
       label: 'Basic Information',
       hasSubMenu: true,
       subItems: [
-        { id: 'newFile', label: 'newFile', path: '/basic/newFile' },
+     
         { id: 'Administrative Details', label: 'Administrative Details', path: '/basic/administrative' },
         { id: 'Details Investigator', label: 'Details Investigator', path: '/basic/details' },
         { id: 'Funding Details', label: 'Funding Details', path: '/basic/funding' }

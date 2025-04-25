@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import TableComponent6 from  "./components/TableComponent6.js";
 
 
 const Section5 = (adminId) => {
@@ -13,7 +13,8 @@ const Section5 = (adminId) => {
   const [improvement_benefits, setImprovementBenefits] = useState("");
   const [society_benefits, setSocietyBenefits] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-
+  const[existData,setExistData]=useState(null)
+  const [email,setEmail]=useState("");
   const navigate = useNavigate();
 
   const handlePreview = (e) => {
@@ -38,6 +39,7 @@ const Section5 = (adminId) => {
           anticipated_type,
           society_benefits,
           administrativeDetailId:adminId,
+          email,
         }
       );
       const id = userResponse.data.id;
@@ -50,9 +52,32 @@ const Section5 = (adminId) => {
       );
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+          params : {
+            form_type:"benefits_and_risk"// or hardcoded for now
+          }
+        });
+  
+        if (response.data.length > 0) {
+          setExistData(response.data); // You probably meant setExistData, not setExistData
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+  
+    fetchData();
+  }, [email]);
 
   return (
     <div className="h">
+       {existData ? ( <TableComponent6 data={existData} />):!showPreview ? (
+        
+        <form onSubmit={handlePreview}>
       <h2 className="hi">6.BENIFITS AND RISKS</h2>
       <h3 className="h2">
         (a)(i).Are there any anticipated physical / social / psychological
@@ -60,8 +85,7 @@ const Section5 = (adminId) => {
       </h3>
 
 
-      {!showPreview ? (
-      <form onSubmit={handlePreview}>
+     
         <label>
           <input
             type="radio"
@@ -218,7 +242,7 @@ const Section5 = (adminId) => {
       </form>
       ): (
 <div className="preview-section">
-<h2 className="h">Preview Before Submit</h2>
+<h2 className="h2">Preview </h2>
 <p><strong>Anticipated Risk:</strong> {anticipated_type}</p>
 {anticipated_type === "Yes" && (
   <p><strong>Reimbursement Details:</strong> {reimbursement_details}</p>
@@ -230,6 +254,7 @@ const Section5 = (adminId) => {
 
 <button onClick={handleEdit} className="name">Edit</button>
 <button onClick={handleSubmit} className="name">Submit</button>
+      
 </div>
 )}
 

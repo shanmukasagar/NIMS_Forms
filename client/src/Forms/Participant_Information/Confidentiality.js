@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 
 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../App.css";
+import TableComponent9 from  "./components/TableComponent9.js";
 const Section8 = (adminId) => {
   const[sample_access_type,setSampleAccessType]=useState("");
   const[sample_details,setSampleDetails]=useState("");
@@ -13,6 +14,8 @@ const Section8 = (adminId) => {
   const [drugs_access_type, setDrugsAccessType] = useState("");
   const [document_access_type, setDocumentAccessType] = useState("");
   const [preview, setPreview] = useState(false); 
+  const[existData,setExistData]=useState(null)
+  const [email,setEmail]=useState("");
   const navigate = useNavigate();
  
   
@@ -39,6 +42,7 @@ const Section8 = (adminId) => {
           sample_access_type,
           sample_details,
           administrativeDetailId:adminId,
+          email,
 
         }
       );
@@ -52,11 +56,32 @@ const Section8 = (adminId) => {
       );
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+          params : {
+            form_type:"storage_and_confidentiality"// or hardcoded for now
+          }
+        });
+  
+        if (response.data.length > 0) {
+          setExistData(response.data); // You probably meant setExistData, not setExistData
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+  
+    fetchData();
+  }, [email]);
+
 
   if (preview) {
     return (
       <div className="h">
-        <h1 className="h1">Preview Form - Section 8</h1>
+        <h3 className="h1">Preview </h3>
         <p><strong>Sample Access Type:</strong> {sample_access_type}</p>
         {sample_access_type === "Yes" && (
           <>
@@ -81,54 +106,27 @@ const Section8 = (adminId) => {
       </div>
     );
   }
-
   return (
     <div className="form-container">
-
-
-
-
+      {existData ? (<TableComponent9 data={existData} />) :
+      <form onSubmit={handlePreview}>
 <h1 className="h1">9. STORAGE AND CONFIDENTIALITY </h1>
 
       <h1 className="h2">(a)Identifying Information: Study Involves samples / data.</h1>
-      
-
-      <form onSubmit={handlePreview}>
-
       <div className="h2">
           <h3 className="h2">
           
           </h3>
           <div className="radio-group">
             <label>
-              <input
-                type="radio"
-                name="sampleaccesstype"
-                value="Yes"
-                checked={sample_access_type === "Yes"}
-                onChange={(e) => setSampleAccessType(e.target.value)}
-              />{" "}
-              Yes
+              <input type="radio" name="sampleaccesstype" value="Yes" checked={sample_access_type === "Yes"} onChange={(e) => setSampleAccessType(e.target.value)}   />{" "} Yes
             </label>
             <label>
               <input
-                type="radio"
-                name="sampleaccesstype"
-                value="No"
-                checked={sample_access_type === "No"}
-                onChange={(e) => setSampleAccessType(e.target.value)}
-              />{" "}
-              No
+                type="radio" name="sampleaccesstype" value="No" checked={sample_access_type === "No"}  onChange={(e) => setSampleAccessType(e.target.value)}/>{" "}No
             </label>
             <label>
-              <input
-                type="radio"
-                name="sampleaccesstype"
-                value="NA"
-                checked={sample_access_type === "NA"}
-                onChange={(e) => setSampleAccessType(e.target.value)}
-              />{" "}
-              NA
+              <input type="radio"  name="sampleaccesstype" value="NA" checked={sample_access_type === "NA"} onChange={(e) => setSampleAccessType(e.target.value)}/>{" "}NA
             </label>
           </div>
         </div>
@@ -251,14 +249,7 @@ protected computer etc.) Kindly specify? </h3>
               No
             </label>
             <label>
-              <input
-                type="radio"
-                name="drugsControl"
-                value="NA"
-                checked={drugs_access_type === "NA"}
-                onChange={(e) => setDrugsAccessType(e.target.value)} //
-              />{" "}
-              NA
+              <input type="radio"  name="drugsControl" value="NA" checked={drugs_access_type === "NA"}onChange={(e) => setDrugsAccessType(e.target.value)}  />{" "}NA
             </label>
           </div>
         </div>
@@ -266,23 +257,15 @@ protected computer etc.) Kindly specify? </h3>
         {drugs_access_type === "Yes" && (
           <div className="h2">
             <h5>Specify Access Control Details:</h5>
-            <input
-              type="text"
-              name="drugsDetails"
-              placeholder="Enter details"
-              value={access_details}
-              onChange={(e) => setAccessDetails(e.target.value)} //
-              className="name"
-              required
+            <input type="text" name="drugsDetails"placeholder="Enter details"  value={access_details} onChange={(e) => setAccessDetails(e.target.value)}  className="name"   required
             />
-            <br />
-          </div>
-        )}
+            <br /></div>  )}
 <br></br>
         <button type="submit" className="name">
           Preview
         </button>
       </form>
+}
     </div>
   );
 };

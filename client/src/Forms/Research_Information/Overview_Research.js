@@ -1,24 +1,24 @@
 
-
-
-
-import { useState } from "react";
+import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../../App.css";
+import TableComponent4 from  "./TableComponent4.js";
+
 const OverviewResearch = ( adminId ) => {
   const [summary, setSummary] = useState("");
   const [type_of_study, setTypeOfStudy] = useState("");
   const [external_laboratory, setExternalLaboratory] = useState("");
   const [specify, setSpecify] = useState("");
   const [image, setImage] = useState(null);
+  const[existData,setExistData]=useState(null)
+  const [email,setEmail]=useState("")
   const [showPreview, setShowPreview] = useState(false); 
 
   const navigate = useNavigate();
 
   const Submit = async (e) => {
     e.preventDefault();
-
     try {
       const userResponse = await axios.post(
         "http://localhost:4000/api/research/overvieww_research",
@@ -28,6 +28,7 @@ const OverviewResearch = ( adminId ) => {
           external_laboratory,
           specify,
           administrativeDetailId: adminId,
+          email,
         }
       );
       const id = userResponse.data.id;
@@ -47,7 +48,6 @@ const OverviewResearch = ( adminId ) => {
             },
           }
         );
-
         console.log("Image uploaded:", uploadResponse.data);
       }
 
@@ -59,6 +59,27 @@ const OverviewResearch = ( adminId ) => {
       );
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+          params : {
+            form_type:"overvieww_research"// or hardcoded for now
+          }
+        });
+  
+        if (response.data.length > 0) {
+          setExistData(response.data); // You probably meant setExistData, not setExistData
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+  
+    fetchData();
+  }, [email]);
 
   const handlePreview = (e) => {
     e.preventDefault();
@@ -72,7 +93,7 @@ const OverviewResearch = ( adminId ) => {
   if (showPreview) {
     return (
       <div className="h">
-        <h3 className="h2">Preview - Research Related Information</h3>
+        <h3 className="h2">Preview</h3>
         <p><strong>Summary:</strong> {summary}</p>
         <p><strong>Type of Study:</strong> {type_of_study}</p>
         <p><strong>External Lab Involved:</strong> {external_laboratory}</p>
@@ -89,9 +110,11 @@ const OverviewResearch = ( adminId ) => {
 
   return (
     <div >
+           {existData ? (<TableComponent4 data={existData} />) :
+    (  <form>
       <h2 className="hi">SECTION B - RESEARCH RELATED INFORMATION</h2>
       <h2 className="h2">3. OVERVIEW OF RESEARCH</h2>
-      <form>
+ 
         <h2 className="h1">(a). Summary of Study (within 300 words)</h2>
         <textarea
           name="researchSummary"
@@ -141,12 +164,7 @@ const OverviewResearch = ( adminId ) => {
           <h3>Is there an external laboratory / outsourcing involved?</h3>
           <div className="radio-group">
             <label>
-              <input
-                type="radio"
-                name="laboratory"
-                value="Yes"
-                checked={external_laboratory === "Yes"}
-                onChange={(e) => setExternalLaboratory(e.target.value)}
+              <input   type="radio" name="laboratory" value="Yes" checked={external_laboratory === "Yes"}  onChange={(e) => setExternalLaboratory(e.target.value)}
               />{" "}
               Yes
             </label>
@@ -166,14 +184,7 @@ const OverviewResearch = ( adminId ) => {
         {external_laboratory === "Yes" && (
           <div className="h1">
             <h3>If yes, specify:</h3>
-            <input
-              type="text"
-              name="laboratoryDetails"
-              placeholder="Enter details"
-              value={specify}
-              onChange={(e) => setSpecify(e.target.value)}
-              className="name"
-              required
+            <input  type="text" name="laboratoryDetails"  placeholder="Enter details"   value={specify}   onChange={(e) => setSpecify(e.target.value)} className="name"        required
             />
           </div>
         )}
@@ -182,7 +193,10 @@ const OverviewResearch = ( adminId ) => {
           Preview
         </button>
       </form>
+    )
+  }
     </div>
+      
   );
 };
 

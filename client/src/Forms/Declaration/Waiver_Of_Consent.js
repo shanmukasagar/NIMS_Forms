@@ -1,8 +1,9 @@
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
+import TableComponent14 from  "./components/TableComponent14.js";
 function Section14(adminId) {
   const [principal_investigator_name, setPrincipalInvestigatorName] =
     useState("");
@@ -14,6 +15,8 @@ function Section14(adminId) {
   const [image, setImage] = useState(null); 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [showPreview, setShowPreview] = useState(false);
+  const[existData,setExistData]=useState(null);
+  const [email,setEmail]=useState("");
   const navigate = useNavigate();
 
   const elementsList = [
@@ -83,6 +86,24 @@ function Section14(adminId) {
     }
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+          params : {
+            form_type:"requesting_waiver"// or hardcoded for now
+          }
+        });
+        if (response.data.length > 0) {
+          setExistData(response.data); // You probably meant setExistData, not setExistData
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+    fetchData();
+  }, [email]);
   const handleEdit = () => {
     setShowPreview(false);
   };
@@ -110,16 +131,15 @@ function Section14(adminId) {
       </div>
     );
   }
-
-
   return (
     <div >
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+      {existData ? ( <TableComponent14 data={existData} />):
+        <form onSubmit={handlePreview}>
         <h1 className="hi">
           Application Form for Requesting Waiver of Consent
         </h1>
-
-        <form onSubmit={handlePreview}>
+ 
           <h3 className="h2">1. Principal Investigator’s name: </h3>
 
           <input
@@ -128,7 +148,6 @@ function Section14(adminId) {
             placeholder="Enter Name"
             value={principal_investigator_name}
             onChange={(e) => {
-            
               setPrincipalInvestigatorName(e.target.value);
             }}
             className="name"
@@ -261,6 +280,7 @@ function Section14(adminId) {
             Preview
           </button>
         </form>
+}
       </div>
     </div>
   );

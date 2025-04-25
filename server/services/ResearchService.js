@@ -235,7 +235,7 @@ const requestingWaiverDetails = async (formData) => {
 const insertInformedConsent = async (formData) => {
   try {
     const {
-      seeking_waiver_of_consent_type,  languages,   version_number,    date,version_1,   date_1, version_2,  date_2,version_3,   date_3,  specify,  certificates, subject,  selectedElements,administrativeDetailId,
+      seeking_waiver_of_consent_type,  languages,   version_number,  date,version_1,   date_1, version_2,  date_2,version_3,   date_3,  specify,  certificates, subject,  selectedElements,administrativeDetailId,
     } = formData;
     const adminId = typeof administrativeDetailId === "object"? administrativeDetailId?.adminId: administrativeDetailId;
     if (!adminId || isNaN(parseInt(adminId))) {
@@ -246,6 +246,7 @@ const insertInformedConsent = async (formData) => {
       seeking_waiver_of_consent_type, languages,    version_1,   date_1,version_2,  date_2,  version_3,   date_3,   specify,    certificates,     subject, selectedElements,
       adminId,
     ]);
+    
     const newUser = await pool.query(
       `INSERT INTO informedd_consent (seeking_waiver_of_consent_type,languages,version_1,date_1,version_2,date_2,version_3,date_3,specify,certificates,subject,selected_elements,administrativee_details_idd,email
       ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING id`,

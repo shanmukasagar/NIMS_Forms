@@ -1,8 +1,8 @@
-import { useState } from "react";
-import "../../App.css";
-
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useState ,useEffect} from "react";
+import "../../App.css";
+import TableComponent11 from  "./components/TableComponent11.js";
 
 const Section11 = (adminId) => {
   const [documents, setDocuments] = useState("");
@@ -49,7 +49,10 @@ const Section11 = (adminId) => {
   const [enclosure12, setEnclosure12] = useState("");
   const [remarks12, setRemarks12] = useState("");
   const [showPreview, setShowPreview] = useState(false);
-
+  const[existData,setExistData]=useState(null);
+  const [email,setEmail]=useState("");
+  
+  
   const navigate = useNavigate();
 
   const handlePreview = (e) => { 
@@ -62,35 +65,9 @@ const Section11 = (adminId) => {
       const userResponse = await axios.post(
         "http://localhost:4000/api/research/administrative_requirements",
         {
-          documents,
-          enclosure1,    remarks1,investigator,enclosure2,  remarks2,clinic,enclosure3,remarks3,clearance,enclosure4, remarks4,
-          partners,
-          enclosure5,
-          remarks5,
-          protocol,
-          enclosure6,
-          remarks6,
-          translate,
-          enclosure7,
-          remarks7,
-          minors,
-          enclosure8,
-          remarks8,
-          proforma,
-          enclosure10,
-          remarks10,
-          advertise,
-          enclosure11,
-          remarks11,
-          insurance,
-          enclosure12,
-          remarks12,
-          administrativeDetailId: adminId,
+          documents,enclosure1,remarks1,investigator,enclosure2,  remarks2,clinic,enclosure3,remarks3,clearance,enclosure4, remarks4, partners,enclosure5,remarks5, protocol,enclosure6, remarks6, translate,   enclosure7,   remarks7, minors,  enclosure8,  remarks8, proforma, enclosure10,remarks10, advertise,enclosure11,   remarks11,insurance,  enclosure12, remarks12,  administrativeDetailId: adminId,
         }
       );
-     
-
-      
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
       navigate("/expedited");
@@ -101,14 +78,32 @@ const Section11 = (adminId) => {
       );
     }
   };
-
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+          params : {
+            form_type:"administrative_requirements"// or hardcoded for now
+          }
+        });
+        if (response.data.length > 0) {
+          setExistData(response.data); // You probably meant setExistData, not setExistData
+        }
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+  
+    fetchData();
+  }, [email]);
   const handleEdit = () => {
     setShowPreview(false); 
   };
 
   if (showPreview) {
     return (
-      <div className="h">
+      <div >
         <h1 className="h2">Preview</h1>
         <p>Documents: {documents}, Enclosure: {enclosure1}, Remarks: {remarks1}</p>
         <p>Investigator: {investigator}, Enclosure: {enclosure2}, Remarks: {remarks2}</p>
@@ -133,75 +128,41 @@ const Section11 = (adminId) => {
 
   return (
     <div className="form-container">
+        {existData ? ( <TableComponent11 data={existData} />):
+      <form onSubmit={handlePreview}>
       <h1 className="hi">12.CHECKLIST</h1>
       <h1 className="h2">ADMINSTRATIVE REQUIREMENTS</h1>
-
-      <form onSubmit={handlePreview}>
+    
         <div className="h2">
           <h3 className="h2">
             1.Cover letter enlisting all documents enclosed{" "}
           </h3>
           <div className="radio-group">
             <label>
-              <input
-                type="radio"
-                name="documents"
-                value="Yes"
-                checked={documents === "Yes"}
-                onChange={(e) => setDocuments(e.target.value)}
-              />{" "}
-              Yes
-            </label>
+              <input   type="radio"  name="documents" value="Yes"checked={documents === "Yes"}
+              onChange={(e) => setDocuments(e.target.value)}    />{" "}Yes    </label>
+             <label>
+              <input type="radio"  name="documents" value="No" checked={documents === "No"}
+              onChange={(e) => setDocuments(e.target.value)}   />{" "}  No </label>
             <label>
-              <input
-                type="radio"
-                name="documents"
-                value="No"
-                checked={documents === "No"}
-                onChange={(e) => setDocuments(e.target.value)}
-              />{" "}
-              No
-            </label>
-
-            <label>
-              <input
-                type="radio"
-                name="documents"
-                value="NA"
-                checked={documents === "NA"}
-                onChange={(e) => setDocuments(e.target.value)}
-              />{" "}
-              NA
+              <input type="radio"   name="documents" value="NA" checked={documents === "NA"}
+              onChange={(e) => setDocuments(e.target.value)}  />{" "}NA
             </label>
             <div>
               <div>
                 <h5 className="h2">Enclosure no:</h5>
                 <label>
-                  <input
-                    type="number"
-                    name="Enclosure1"
-                    placeholder="Enclosure1"
-                    value={enclosure1}
-                    onChange={(e) => setEnclosure1(e.target.value)}
-                    className="name"
-                    required
-                  />
+                  <input type="number"  name="Enclosure1"   placeholder="Enclosure1"value={enclosure1} 
+                  onChange={(e) => setEnclosure1(e.target.value)}  className="name" required />
                 </label>
               </div>
             </div>
             <br></br>
-
             <div >
               <h5 className="h2">EC Remarks(Ifapplicable)</h5>
               <label>
-                <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks1}
-                  onChange={(e) => setRemarks1(e.target.value)}
-                  className="name"
-                  required
-                />
+                <input  type="text"  placeholder="Remarks" value={remarks1}
+                 onChange={(e) => setRemarks1(e.target.value)} className="name"required />
               </label>
             </div>
           </div>
@@ -213,34 +174,18 @@ const Section11 = (adminId) => {
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"
-                name="updated"
-                value="Yes"
-                checked={investigator === "Yes"}
-                onChange={(e) => setInvestigator(e.target.value)}
-              />{" "}
-              Yes
+              <input type="radio"  name="updated"  value="Yes"checked={investigator === "Yes"} 
+              onChange={(e) => setInvestigator(e.target.value)}  />{" "}   Yes
             </label>
             <label>
-              <input
-                type="radio"
-                name="updated"
-                value="No"
-                checked={investigator === "No"}
-                onChange={(e) => setInvestigator(e.target.value)}
-              />{" "}
-              No
+              <input type="radio"   name="updated"    value="No" checked={investigator === "No"} 
+              onChange={(e) => setInvestigator(e.target.value)} />{" "}   No
             </label>
 
             <label>
               <input
-                type="radio"
-                name="updated"
-                value="NA"
-                checked={investigator === "NA"}
-                onChange={(e) => setInvestigator(e.target.value)}
-              />{" "}
+                type="radio" name="updated" value="NA" checked={investigator === "NA"}
+                onChange={(e) => setInvestigator(e.target.value)} />{" "}
               NA
             </label>
             <div>
@@ -248,13 +193,8 @@ const Section11 = (adminId) => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure2}
-                    onChange={(e) => setEnclosure2(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                    type="number" placeholder="number" value={enclosure2}
+                    onChange={(e) => setEnclosure2(Number(e.target.value))}  className="name"  required />
                 </label>
               </div>
             </div>
@@ -263,19 +203,13 @@ const Section11 = (adminId) => {
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
                 <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks2}
-                  onChange={(e) => setRemarks2(e.target.value)}
-                  className="name"
-                  required
-                />
+                  type="text"  placeholder="Remarks"
+                  value={remarks2} onChange={(e) => setRemarks2(e.target.value)}  className="name"  required/>
               </label>
             </div>
           </div>
 
           {/* 3 */}
-
           <h3 className="h2">
             3.Good Clinical Practice (GCP) training of investigators in last 3
             years{" "}
@@ -283,33 +217,20 @@ const Section11 = (adminId) => {
           <div className="h2">
             <label>
               <input
-                type="radio"
-                name="clinic"
-                value="Yes"
-                checked={clinic === "Yes"}
-                onChange={(e) => setClinic(e.target.value)}
-              />{" "}
-              Yes
-            </label>
+                type="radio"  name="clinic"  value="Yes"
+                checked={clinic === "Yes"}   onChange={(e) => setClinic(e.target.value)} />{" "} Yes </label>
             <label>
               <input
-                type="radio"
-                name="clinic"
-                value="No"
-                checked={clinic === "No"}
-                onChange={(e) => setClinic(e.target.value)}
+                type="radio" name="clinic" value="No"
+                checked={clinic === "No"} onChange={(e) => setClinic(e.target.value)}
               />{" "}
               No
             </label>
 
             <label>
               <input
-                type="radio"
-                name="clinic"
-                value="NA"
-                checked={clinic === "NA"}
-                onChange={(e) => setClinic(e.target.value)}
-              />{" "}
+                type="radio" name="clinic" value="NA"
+                checked={clinic === "NA"}  onChange={(e) => setClinic(e.target.value)} />{" "}
               NA
             </label>
             <div>
@@ -317,13 +238,9 @@ const Section11 = (adminId) => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure3}
-                    onChange={(e) => setEnclosure3(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                    type="number" placeholder="number"
+                    value={enclosure3}  onChange={(e) => setEnclosure3(Number(e.target.value))}
+                    className="name" required />
                   {""}
                 </label>
               </div>
@@ -334,12 +251,8 @@ const Section11 = (adminId) => {
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
                 <input
-                  type="text"
-                  placeholder="Remarks3"
-                  value={remarks3}
-                  onChange={(e) => setRemarks3(e.target.value)}
-                  className="name"
-                  required
+                  type="text" placeholder="Remarks3" value={remarks3}
+                  onChange={(e) => setRemarks3(e.target.value)} className="name" required
                 />
                 {""}
               </label>
@@ -351,31 +264,18 @@ const Section11 = (adminId) => {
           <div className="radio-group">
             <label>
               <input
-                type="radio"
-                name="clearance"
-                value="Yes"
-                checked={clearance === "Yes"}
-                onChange={(e) => setClearance(e.target.value)}
-              />{" "}
+                type="radio"  name="clearance"   value="Yes"
+                checked={clearance === "Yes"} onChange={(e) => setClearance(e.target.value)} />{" "}
               Yes
             </label>
             <label>
               <input
-                type="radio"
-                name="clearance"
-                value="No"
-                checked={clearance === "No"}
-                onChange={(e) => setClearance(e.target.value)}
-              />{" "}
-              No
+                type="radio"   name="clearance" value="No" checked={clearance === "No"}
+                onChange={(e) => setClearance(e.target.value)} />{" "} No
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="clearance"
-                value="NA"
-                checked={clearance === "NA"}
+              <input type="radio"  name="clearance" value="NA" checked={clearance === "NA"}
                 onChange={(e) => setClearance(e.target.value)}
               />{" "}
               NA
@@ -384,14 +284,8 @@ const Section11 = (adminId) => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure4}
-                    onChange={(e) => setEnclosure4(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                  <input type="number" placeholder="number"   value={enclosure4}
+                    onChange={(e) => setEnclosure4(Number(e.target.value))} className="name"    required  />
                 </label>
               </div>
             </div>
@@ -400,14 +294,8 @@ const Section11 = (adminId) => {
             <div >
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
-                <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks4}
-                  onChange={(e) => setRemarks4(e.target.value)}
-                  className="name"
-                  required
-                />
+                <input type="text"  placeholder="Remarks" value={remarks4}
+                  onChange={(e) => setRemarks4(e.target.value)} className="name"  required />
               </label>
             </div>
           </div>
@@ -416,34 +304,20 @@ const Section11 = (adminId) => {
           <h3 className="h2">5.MOU between collaborating partners</h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"
-                name="partners"
-                value="Yes"
-                checked={partners === "Yes"}
-                onChange={(e) => setPartners(e.target.value)}
-              />{" "}
+              <input type="radio"  name="partners"  value="Yes" checked={partners === "Yes"}
+                onChange={(e) => setPartners(e.target.value)} />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio"
-                name="partners"
-                value="No"
-                checked={partners === "No"}
-                onChange={(e) => setPartners(e.target.value)}
-              />{" "}
-              No
+              <input  type="radio"  name="partners"
+                value="No"  checked={partners === "No"} onChange={(e) => setPartners(e.target.value)}  />{" "}No
             </label>
 
             <label>
               <input
                 type="radio"
                 name="partner"
-                value="NA"
-                checked={partners === "NA"}
-                onChange={(e) => setPartners(e.target.value)}
-              />{" "}
+                value="NA" checked={partners === "NA"}  onChange={(e) => setPartners(e.target.value)} />{" "}
               NA
             </label>
             <div>
@@ -451,13 +325,8 @@ const Section11 = (adminId) => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure5}
-                    onChange={(e) => setEnclosure5(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                    type="number"  placeholder="number" value={enclosure5}
+                    onChange={(e) => setEnclosure5(Number(e.target.value))}    className="name"  required  />
                 </label>
               </div>
             </div>
@@ -466,14 +335,8 @@ const Section11 = (adminId) => {
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
-                <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks5}
-                  onChange={(e) => setRemarks5(e.target.value)}
-                  className="name"
-                  required
-                />
+                <input type="text" placeholder="Remarks"   value={remarks5}
+                  onChange={(e) => setRemarks5(e.target.value)}   className="name"  required />
               </label>
             </div>
           </div>
@@ -488,32 +351,20 @@ const Section11 = (adminId) => {
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"
-                name="protocol"
-                value="Yes"
-                checked={protocol === "Yes"}
-                onChange={(e) => setProtocol(e.target.value)}
+              <input   type="radio" name="protocol"
+                value="Yes" checked={protocol === "Yes"} onChange={(e) => setProtocol(e.target.value)}
               />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio"
-                name="protocol"
-                value="No"
-                checked={protocol === "No"}
+              <input   type="radio" name="protocol"  value="No"  checked={protocol === "No"}
                 onChange={(e) => setProtocol(e.target.value)}
               />{" "}
               No
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="partner"
-                value="NA"
-                checked={protocol === "NA"}
+              <input type="radio" name="partner"  value="NA" checked={protocol === "NA"}
                 onChange={(e) => setProtocol(e.target.value)}
               />{" "}
               NA
@@ -522,14 +373,8 @@ const Section11 = (adminId) => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure6}
-                    onChange={(e) => setEnclosure6(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                  <input type="number" placeholder="number"  value={enclosure6}
+                    onChange={(e) => setEnclosure6(Number(e.target.value))} className="name" required/>
                 </label>
               </div>
             </div>
@@ -538,68 +383,41 @@ const Section11 = (adminId) => {
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
-                <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks6}
-                  onChange={(e) => setRemarks6(e.target.value)}
-                  className="name"
-                  required
-                />
+                <input type="text"    placeholder="Remarks"
+                  value={remarks6} onChange={(e) => setRemarks6(e.target.value)}   className="name" required />
               </label>
             </div>
           </div>
-
           {/* 7 */}
-
           <h3 className="h2">
             7.Participant Information Sheet (PIS) and Informed Consent Form
             (ICF) (English and translated) with version number and dated
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"
-                name="translate"
-                value="Yes"
-                checked={translate === "Yes"}
+              <input type="radio"  name="translate"value="Yes"  checked={translate === "Yes"}
                 onChange={(e) => setTranslate(e.target.value)}
               />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio"
-                name="translate"
-                value="No"
-                checked={translate === "No"}
-                onChange={(e) => setTranslate(e.target.value)}
+              <input  type="radio" name="translate" value="No"
+                checked={translate === "No"} onChange={(e) => setTranslate(e.target.value)}
               />{" "}
               No
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="translate"
-                value="NA"
-                checked={translate === "NA"}
-                onChange={(e) => setTranslate(e.target.value)}
-              />{" "}
+              <input type="radio"  name="translate"  value="NA"
+                checked={translate === "NA"} onChange={(e) => setTranslate(e.target.value)} />{" "}
               NA
             </label>
             <div>
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure7}
-                    onChange={(e) => setEnclosure7(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                  <input  type="number" placeholder="number" value={enclosure7}
+                    onChange={(e) => setEnclosure7(Number(e.target.value))} className="name"   required />
                 </label>
               </div>
             </div>
@@ -609,51 +427,30 @@ const Section11 = (adminId) => {
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
                 <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks7}
-                  onChange={(e) => setRemarks7(e.target.value)}
-                  className="name"
-                  required
-                />
+                  type="text"  placeholder="Remarks"   value={remarks7}
+                  onChange={(e) => setRemarks7(e.target.value)}   className="name" required  />
               </label>
             </div>
           </div>
 
           {/* 8 */}
-
           <h3 className="h2">
             8.Assent form for minors (12-18 years) (English and Translated)
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"
-                name="minor"
-                value="Yes"
-                checked={minors === "Yes"}
-                onChange={(e) => setMinors(e.target.value)}
-              />{" "}
+              <input type="radio" name="minor"     value="Yes"
+                checked={minors === "Yes"}  onChange={(e) => setMinors(e.target.value)} />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio"
-                name="minor"
-                value="No"
-                checked={minors === "No"}
-                onChange={(e) => setMinors(e.target.value)}
-              />{" "}
-              No
+              <input type="radio"    name="minor"   value="No"
+                checked={minors === "No"} onChange={(e) => setMinors(e.target.value)}  />{" "}   No
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="minor"
-                value="NA"
-                checked={minors === "NA"}
-                onChange={(e) => setMinors(e.target.value)}
+              <input type="radio" name="minor" value="NA"
+                checked={minors === "NA"} onChange={(e) => setMinors(e.target.value)}
               />{" "}
               NA
             </label>
@@ -662,12 +459,8 @@ const Section11 = (adminId) => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure8}
-                    onChange={(e) => setEnclosure8(Number(e.target.value))}
-                    className="name"
-                    required
+                    type="number"    placeholder="number"  value={enclosure8}
+                    onChange={(e) => setEnclosure8(Number(e.target.value))}  className="name"  required
                   />
                 </label>
               </div>
@@ -678,13 +471,8 @@ const Section11 = (adminId) => {
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
                 <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks8}
-                  onChange={(e) => setRemarks8(e.target.value)}
-                  className="name"
-                  required
-                />
+                  type="text" placeholder="Remarks"  value={remarks8}
+                  onChange={(e) => setRemarks8(e.target.value)}   className="name"  required />
               </label>
             </div>
           </div>
@@ -692,9 +480,7 @@ const Section11 = (adminId) => {
           <h3 className="h2">
             9.Application for waiver of consent if applicable
           </h3>
-
           {/* 10 */}
-
           <h3 className="h2">
             10.Proforma / Questionnaire / Case Report Forms (CRF) / Interview
             guides / Guides for Focused Group Discussions (FGDs) (English and
@@ -703,32 +489,21 @@ const Section11 = (adminId) => {
           <div className="h2">
             <label>
               <input
-                type="radio"
-                name="proforma"
-                value="Yes"
-                checked={proforma === "Yes"}
-                onChange={(e) => setProforma(e.target.value)}
-              />{" "}
+                type="radio"   name="proforma"  value="Yes"   checked={proforma === "Yes"}
+                onChange={(e) => setProforma(e.target.value)} />{" "}
               Yes
             </label>
             <label>
               <input
-                type="radio"
-                name="proforma"
-                value="No"
-                checked={proforma === "No"}
-                onChange={(e) => setProforma(e.target.value)}
-              />{" "}
+                type="radio" name="proforma"value="No"
+                checked={proforma === "No"}     onChange={(e) => setProforma(e.target.value)} />{" "}
               No
             </label>
 
             <label>
               <input
-                type="radio"
-                name="proforma"
-                value="NA"
-                checked={proforma === "NA"}
-                onChange={(e) => setProforma(e.target.value)}
+                type="radio" name="proforma"  value="NA"
+                checked={proforma === "NA"}  onChange={(e) => setProforma(e.target.value)}
               />{" "}
               NA
             </label>
@@ -737,13 +512,8 @@ const Section11 = (adminId) => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure10}
-                    onChange={(e) => setEnclosure10(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                    type="number"  placeholder="number"  value={enclosure10}
+                    onChange={(e) => setEnclosure10(Number(e.target.value))} className="name"  required />
                 </label>
               </div>
             </div>
@@ -753,13 +523,8 @@ const Section11 = (adminId) => {
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
                 <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks10}
-                  onChange={(e) => setRemarks10(e.target.value)}
-                  className="name"
-                  required
-                />
+                  type="text" placeholder="Remarks"  value={remarks10}
+                  onChange={(e) => setRemarks10(e.target.value)} className="name" required />
               </label>
             </div>
           </div>
@@ -771,67 +536,36 @@ const Section11 = (adminId) => {
           <div className="h2">
             <label>
               <input
-                type="radio"
-                name="advertise"
-                value="Yes"
-                checked={advertise === "Yes"}
-                onChange={(e) => setAdvertise(e.target.value)}
+                type="radio" name="advertise"  value="Yes"
+                checked={advertise === "Yes"} onChange={(e) => setAdvertise(e.target.value)}
               />{" "}
               Yes
             </label>
             <label>
               <input
-                type="radio"
-                name="advertise"
-                value="No"
-                checked={advertise === "No"}
-                onChange={(e) => setAdvertise(e.target.value)}
+                type="radio"  name="advertise"   value="No"
+                checked={advertise === "No"} onChange={(e) => setAdvertise(e.target.value)}
               />{" "}
               No
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="advertise"
-                value="NA"
-                checked={advertise === "NA"}
-                onChange={(e) => setAdvertise(e.target.value)}
-              />{" "}
-              NA
+              <input type="radio"name="advertise"value="NA" checked={advertise === "NA"} onChange={(e) => setAdvertise(e.target.value)} />{" "}   NA
             </label>
             <div>
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure11}
-                    onChange={(e) => setEnclosure11(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
-                </label>
-              </div>
+                  <input type="number"placeholder="number" value={enclosure11}onChange={(e) => setEnclosure11(Number(e.target.value))}   className="name" required  />
+                </label>  </div>
             </div>
             <br></br>
 
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
-              <label>
-                <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks11}
-                  onChange={(e) => setRemarks11(e.target.value)}
-                  className="name"
-                  required
-                />
-              </label>
+              <label>   <input   type="text"placeholder="Remarks"value={remarks11}  onChange={(e) => setRemarks11(e.target.value)}  className="name"required  />     </label>
             </div>
           </div>
-
           <h3 className="h2">
             12.Insurance policy / A description of arrangement for insurance
             coverage for research participants, if applicable
@@ -840,31 +574,23 @@ const Section11 = (adminId) => {
             <label>
               <input
                 type="radio"
-                name="insurance"
-                value="Yes"
-                checked={insurance === "Yes"}
+                name="insurance" value="Yes" checked={insurance === "Yes"}  
                 onChange={(e) => setInsurance(e.target.value)}
               />{" "}
               Yes
             </label>
             <label>
               <input
-                type="radio"
-                name="insurance"
-                value="No"
-                checked={insurance === "No"}
-                onChange={(e) => setInsurance(e.target.value)}
+                type="radio" name="insurance"  value="No"
+                checked={insurance === "No"} onChange={(e) => setInsurance(e.target.value)}
               />{" "}
               No
             </label>
 
             <label>
               <input
-                type="radio"
-                name="insurance"
-                value="NA"
-                checked={insurance === "NA"}
-                onChange={(e) => setInsurance(e.target.value)}
+                type="radio" name="insurance"   value="NA"
+                checked={insurance === "NA"} onChange={(e) => setInsurance(e.target.value)}
               />{" "}
               NA
             </label>
@@ -872,30 +598,14 @@ const Section11 = (adminId) => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"
-                    placeholder="number"
-                    value={enclosure12}
-                    onChange={(e) => setEnclosure12(Number(e.target.value))}
-                    className="name"
-                    required
-                  />
+                  <input type="number" placeholder="number" value={enclosure12} onChange={(e) => setEnclosure12(Number(e.target.value))} className="name" required/>
                 </label>
-              </div>
-            </div>
+              </div> </div>
             <br></br>
-
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
-                <input
-                  type="text"
-                  placeholder="Remarks"
-                  value={remarks12}
-                  onChange={(e) => setRemarks12(e.target.value)}
-                  className="name"
-                  required
-                />
+                <input type="text"   placeholder="Remarks"    value={remarks12} onChange={(e) => setRemarks12(e.target.value)}   className="name"required/>
               </label>
             </div>
           </div>
@@ -904,7 +614,9 @@ const Section11 = (adminId) => {
           Preview
         </button>
       </form>
+}
     </div>
+            
   );
 };
 
