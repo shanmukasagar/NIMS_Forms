@@ -113,13 +113,13 @@ function Section14(adminId) {
       <div className="form-container">
         <div className="h">
           <h5 className="h2">Preview</h5>
-          <p>Principal Investigator Name: {principal_investigator_name}</p>
-          <p>Department: {department}</p>
-          <p>Title: {title}</p>
-          <p>Selected Elements: {selectedElements.join(", ")}</p>
-          <p>Summary: {summary}</p>
-          <p>Name of PI/Researcher: {name_of_co_investigator_1}</p>
-          <p>Date: {date}</p>
+          <p><strong>Principal Investigator Name: </strong>{principal_investigator_name}</p>
+          <p><strong>Department:</strong> {department}</p>
+          <p><strong>Title:</strong> {title}</p>
+          <p><strong>Selected Elements:</strong> {selectedElements.join(", ")}</p>
+          <p><strong>Summary: </strong>{summary}</p>
+          <p><strong>Name of PI/Researcher:</strong> {name_of_co_investigator_1}</p>
+          <p><strong>Date:</strong>{date}</p>
           {image && <p>Image: {image.name}</p>}
           <button onClick={handleSubmit} className="name">
              Submit

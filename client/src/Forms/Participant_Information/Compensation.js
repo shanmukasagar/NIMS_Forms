@@ -67,10 +67,10 @@ const Section7 = (adminId) => {
   }, [email]);
   return (
     <div className="form-container">
-      <h1 className="h1">8.PAYMENT / COMPENSATION</h1>
+     
       {showPreview ? (
         <div className="h">
-          <h3 className="h">Preview </h3>
+          <h3 className="h2">Preview </h3>
           <p><strong>Waiver of Consent:</strong> {waiver_consent_type}</p>
           <p><strong>Waiver Details:</strong> {specify}</p>
           <p><strong>Compensation for SAE:</strong> {compensation_research_of_type}</p>
@@ -82,7 +82,9 @@ const Section7 = (adminId) => {
 
         existData ? ( <TableComponent8 data={existData} /> )
 :(
+ 
         <form onSubmit={handlePreview}>
+           <h1 className="h1">8.PAYMENT / COMPENSATION</h1>
       <h3 className="h2">
         (a)Is there a provision for treatment free of cost for research related
         injuries?{" "}

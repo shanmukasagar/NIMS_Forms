@@ -105,17 +105,19 @@ const Section11 = (adminId) => {
     return (
       <div >
         <h1 className="h2">Preview</h1>
-        <p>Documents: {documents}, Enclosure: {enclosure1}, Remarks: {remarks1}</p>
-        <p>Investigator: {investigator}, Enclosure: {enclosure2}, Remarks: {remarks2}</p>
-        <p>Clinic: {clinic}, Enclosure: {enclosure3}, Remarks: {remarks3}</p>
-        <p>Clearance: {clearance}, Enclosure: {enclosure4}, Remarks: {remarks4}</p>
-        <p>Partners: {partners}, Enclosure: {enclosure5}, Remarks: {remarks5}</p>
-        <p>Protocol: {protocol}, Enclosure: {enclosure6}, Remarks: {remarks6}</p>
-        <p>Translate: {translate}, Enclosure: {enclosure7}, Remarks: {remarks7}</p>
-        <p>Minors: {minors}, Enclosure: {enclosure8}, Remarks: {remarks8}</p>
-        <p>Proforma: {proforma}, Enclosure: {enclosure10}, Remarks: {remarks10}</p>
-        <p>Advertise: {advertise}, Enclosure: {enclosure11}, Remarks: {remarks11}</p>
-        <p>Insurance: {insurance}, Enclosure: {enclosure12}, Remarks: {remarks12}</p>
+        <div className="h">
+       
+        <p> <strong>Documents</strong> : {documents}, Enclosure: {enclosure1}, Remarks: {remarks1}</p>
+        <p> <strong>Investigator</strong>: {investigator}, Enclosure: {enclosure2}, Remarks: {remarks2}</p>
+        <p> <strong>Clinic</strong> : {clinic}, Enclosure: {enclosure3}, Remarks: {remarks3}</p>
+        <p><strong>Clearance</strong> : {clearance}, Enclosure: {enclosure4}, Remarks: {remarks4}</p>
+        <p> <strong>Partners</strong> : {partners}, Enclosure: {enclosure5}, Remarks: {remarks5}</p>
+        <p> <strong>Protocol</strong> : {protocol}, Enclosure: {enclosure6}, Remarks: {remarks6}</p>
+        <p><strong>Translate</strong> : {translate}, Enclosure: {enclosure7}, Remarks: {remarks7}</p>
+        <p> <strong>Minors</strong> : {minors}, Enclosure: {enclosure8}, Remarks: {remarks8}</p>
+        <p><strong>Proforma</strong> : {proforma}, Enclosure: {enclosure10}, Remarks: {remarks10}</p>
+        <p><strong>Advertise</strong> : {advertise}, Enclosure: {enclosure11}, Remarks: {remarks11}</p>
+        <p><strong>Insurance</strong> : {insurance}, Enclosure: {enclosure12}, Remarks: {remarks12}</p></div>
         <button onClick={confirmSubmit} className="name">
          Submit
         </button>

@@ -96,16 +96,16 @@ function Section13(adminId) {
       <div className="h">
         <div className="bg-white p-6 rounded-lg shadow-lg w-80">
           <h5 className="h2">Preview</h5>
-          <p>Protocol Number: {protocol_number}</p>
-          <p>Version Number: {version_number}</p>
-          <p>Date: {date_1}</p>
-          <p>Principal Investigator Name: {principal_investigator_name}</p>
-          <p>Department: {department}</p>
-          <p>Title: {title}</p>
-          <p>Summary: {summary}</p>
-          <p>Selected Elements: {selectedElements.join(", ")}</p>
-          <p>Name of PI/Researcher: {name_of_co_investigator_1}</p>
-          <p>Date: {date_2}</p>
+          <p><strong>Protocol Number:</strong> {protocol_number}</p>
+          <p><strong>Version Number: </strong>{version_number}</p>
+          <p><strong>Date:</strong> {date_1}</p>
+          <p><strong>Principal Investigator Name: </strong>{principal_investigator_name}</p>
+          <p><strong>Department:</strong> {department}</p>
+          <p><strong>Title</strong> {title}</p>
+          <p> <strong>Summary:</strong> {summary}</p>
+          <p><strong>Selected Elements: </strong>{selectedElements.join(", ")}</p>
+          <p><strong>Name of PI/Researcher:</strong> {name_of_co_investigator_1}</p>
+          <p><strong>Date: </strong>{date_2}</p>
           {image && <p>Image: {image.name}</p>}
           <button onClick={handleSubmit} className="name">
              Submit

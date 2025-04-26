@@ -101,7 +101,7 @@ function Section6(adminId) {
      
       <div className="h">
         <h3>Preview </h3>
-        <ul className="preview-list">
+        <ul className="preview-section">
           <li>Waiver of Consent: {seeking_waiver_of_consent_type}</li>
           <li>Languages: {languages}</li>
           {languages === "Anyotherspecify" && (
