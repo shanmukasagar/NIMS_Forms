@@ -11,14 +11,21 @@ const formatKey = (key) => {
 
 const renderFields = (data) => (
     <Grid container spacing={1} sx = {{display : "flex", flexDirection : "column", gap : "15px"}}>
-        {Object.entries(data).map(([key, value]) => (
-            <Grid item xs={12} key={key}>
-                <Box sx = {{display : "flex"}}>
-                    <Typography sx={{ color: 'gray', fontWeight: 600, width : "200px"}}>{formatKey(key)}:</Typography>{' '}
+        {Object.entries(data).map(([key, value]) => {
+            if (key !== "id" && key !== "form_id") {
+                return (
+                <Grid item xs={12} key={key}>
+                    <Box sx={{ display: "flex" }}>
+                    <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
+                        {formatKey(key)}:
+                    </Typography>
                     <Typography>{value || '-'}</Typography>
-                </Box>
-            </Grid>
-        ))}
+                    </Box>
+                </Grid>
+                );
+            }
+            return null;
+        })}
     </Grid>
 );
 

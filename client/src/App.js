@@ -24,6 +24,7 @@ import Research_Overview from './Forms/Research_Information/Overview_Research';
 import AddClinicalTrails from './components/AddClinicalTrails';
 import ClinicalPreview from './Forms/Add_Clinical_Form/Clinical_Preview';
 import RegistrationForm from './components/RegistrationForm';
+import ClinicalTrailList from "./components/ClinicalTrailsList";
 
 
 const App = () => {
@@ -95,6 +96,7 @@ const App = () => {
                     <Route path="/addclinicaltrails" element = {<AddClinicalTrails user = {user}/>} />
                     <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
                     <Route path="/register" element = {<RegistrationForm/>} />
+                    <Route path="/clinicaltrail" element = {<ClinicalTrailList/>} />
                   </Routes>
                 </Box>
               </Box>

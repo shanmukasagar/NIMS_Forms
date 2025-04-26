@@ -1,4 +1,4 @@
-const {addClinicalService} = require("../services/AddClinicalService");
+const {addClinicalService, getClinicalService} = require("../services/AddClinicalService");
 
 const addClinical = async(req, res) => {
     const formData = req.body;
@@ -15,4 +15,17 @@ const addClinical = async(req, res) => {
     }
 }
 
-module.exports = {addClinical};
+const clinicalList = async(req, res) => {
+    const email = req.user.email;
+    try{
+        const result = await getClinicalService(email);
+        return res.status(200).json(result);
+    }
+    catch(error) {
+        console.log("Error occured while fetching clinical trails", error.message);
+        res.status(500).json("Internal Server Error");
+    }
+}
+
+
+module.exports = {addClinical, clinicalList};

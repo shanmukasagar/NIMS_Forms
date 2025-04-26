@@ -68,6 +68,12 @@ const Sidebar = () => {
       hasSubMenu: false,
       path: '/addclinicaltrails',
     },
+    {
+      id: 'Clinical Trials List',
+      label: 'Clinical Trials List',
+      hasSubMenu: false,
+      path: '/clinicaltrail',
+    },
   ];
 
   const handleMenuClick = (item) => {
