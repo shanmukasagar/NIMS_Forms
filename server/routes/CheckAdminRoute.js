@@ -2,10 +2,11 @@
 const express = require("express");
 const router = express.Router();
 const { pool } = require("../models/db");
+const {verifyToken} = require("../config/VerifyToken");
 
-router.get("/admin", async (req, res) => {
+router.get("/admin", verifyToken, async (req, res) => {
   const form_type = req.query.form_type;
-  const email = "lov@gmail.com"; // You can also get from req.query.email
+  const email = req.user.email; // You can also get from req.query.email
 
   let tableName;
 

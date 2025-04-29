@@ -14,6 +14,7 @@ const TableComponent9 = ({ data }) => {
             <th>Control Details</th>
             <th>Drugs Access</th>
             <th>Access Details</th>
+            <th>email</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +26,7 @@ const TableComponent9 = ({ data }) => {
               <td>{row.control_details}</td>
               <td>{row.drugs_access_type}</td>
               <td>{row.access_details}</td>
+              <td>{row.email}</td>
             </tr>
           ))}
         </tbody>

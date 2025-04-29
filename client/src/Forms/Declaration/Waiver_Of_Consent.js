@@ -1,12 +1,12 @@
-
 import { useState,useEffect } from "react";
-import axios from "axios";
+
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import TableComponent14 from  "./components/TableComponent14.js";
-function Section14(adminId) {
-  const [principal_investigator_name, setPrincipalInvestigatorName] =
-    useState("");
+import axiosInstance from "../../components/AxiosInstance.js";
+
+function Section14() {
+  const [principal_investigator_name, setPrincipalInvestigatorName] =useState("");
   const [department, setDepartment] = useState("");
   const [title, setTitle] = useState("");
   const [selectedElements, setSelectedElements] = useState([]);
@@ -16,7 +16,7 @@ function Section14(adminId) {
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
-  const [email,setEmail]=useState("");
+  const [email]=useState("");
   const navigate = useNavigate();
 
   const elementsList = [
@@ -45,29 +45,19 @@ function Section14(adminId) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/requesting_waiver",
+      const userResponse = await axiosInstance.post("/api/research/requesting_waiver",
         {
-          selectedElements: selectedElements,
-          principal_investigator_name,
-          department,
-          title,
-          summary,
-          name_of_co_investigator_1,
-          date,
-          administrativeDetailId: adminId,
+          selectedElements: selectedElements,  principal_investigator_name,
+          department,title,summary,name_of_co_investigator_1,date,
         }
       );
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
-
       if (image) {
         const formData = new FormData();
         formData.append("image", image);
         formData.append("id", id);
-
-        const uploadResponse = await axios.post(
-          "http://localhost:4000/api/research/upload2",
+        const uploadResponse = await axiosInstance.post("/api/research/upload2",
           formData,
           {
             headers: {
@@ -82,14 +72,12 @@ function Section14(adminId) {
       navigate("/");
     } catch (error) {
       console.error("Submission error:", error);
- 
     }
   };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"requesting_waiver"// or hardcoded for now
           }
@@ -139,56 +127,23 @@ function Section14(adminId) {
         <h1 className="hi">
           Application Form for Requesting Waiver of Consent
         </h1>
- 
           <h3 className="h2">1. Principal Investigator’s name: </h3>
-
           <input
-            type="text"
-            name="name"
-            placeholder="Enter Name"
-            value={principal_investigator_name}
-            onChange={(e) => {
-              setPrincipalInvestigatorName(e.target.value);
-            }}
-            className="name"
-            required
-          />
-
+            type="text" name="name" placeholder="Enter Name" value={principal_investigator_name}
+            onChange={(e) => {setPrincipalInvestigatorName(e.target.value); }}
+            className="name" required/>
           <br />
-
           <div >
             <div>
               <h2 className="h2">2. Department</h2>
-              <input
-                type="text"
-                name="department"
-                placeholder="Enter Department"
-                value={department}
-                onChange={(e) => {
-                 
-                  setDepartment(e.target.value);
-                }}
-                className="name"
-                required
-              />
+              <input type="text"  name="department" placeholder="Enter Department" value={department}
+                onChange={(e) => {setDepartment(e.target.value);}} className="name" required/>
             </div>
-
             <br />
-
             <div >
               <h3 className="h2">3. Title </h3>
-              <input
-                type="text"
-                name="title"
-                placeholder="Enter Title"
-                value={title}
-                onChange={(e) => {
-                  
-                  setTitle(e.target.value);
-                }}
-                className="name"
-                required
-              />
+              <input type="text" name="title"  placeholder="Enter Title"value={title}
+                onChange={(e) => {setTitle(e.target.value); }} className="name" required/>
             </div>
           </div>
           <br></br>
@@ -202,14 +157,8 @@ function Section14(adminId) {
               {elementsList.map((item, index) => (
                 <label key={index} className="h2">
                   <br></br>
-
-                  <input
-                    type="checkbox"
-                    value={item}
-                    checked={selectedElements.includes(item)}
-                    onChange={handleCheckboxChange}
-                  />
-                  {""}
+                  <input type="checkbox"
+                    value={item} checked={selectedElements.includes(item)}   onChange={handleCheckboxChange} />{""}
                   <br></br>
                   {item}
                 </label>
@@ -218,30 +167,14 @@ function Section14(adminId) {
           </div>
 
           <h3 className="h2">Any other reason (please specify)</h3>
-          <textarea
-            name="researchSummary"
-            placeholder="Enter research summary"
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
-            className="custom-textarea"
-            maxLength={600}
-            required
-          />
-
+          <textarea name="researchSummary" placeholder="Enter research summary"  value={summary}
+            onChange={(e) => setSummary(e.target.value)} className="custom-textarea"  maxLength={600}  required />
           <br />
-
           <div className="form-group">
             <h3 className="h2">Name of PI / Researcher</h3>
             <label>
-              <input
-                type="text"
-                name="researcher"
-                placeholder="Enter researcher"
-                value={name_of_co_investigator_1}
-                onChange={(e) => setNameOfCoInvestigator1(e.target.value)}
-                className="name"
-                required
-              />
+              <input type="text" name="researcher" placeholder="Enter researcher"value={name_of_co_investigator_1}
+                onChange={(e) => setNameOfCoInvestigator1(e.target.value)}  className="name" required/>
             </label>
           </div>
           <br></br>
@@ -250,32 +183,18 @@ function Section14(adminId) {
             <div>
               <h3 className="h2">signature</h3>
               <label>
-                <input
-                  type="file"
-                  name="image"
-                  onChange={(e) => setImage(e.target.files[0])}
-                  className="name"
-                  required
-                />
+            <input type="file" name="image" onChange={(e) => setImage(e.target.files[0])} className="name" required />
               </label>
             </div>
             <div >
               <h3 className="h2">Date</h3>
               <label>
-                <input
-                  type="date"
-                  name="date"
-                  value={date}
-                  placeholder="YYYY/MM/DD"
-                  onChange={(e) => setDate(e.target.value)}
-                  className="name"
-                  required
-                />
+                <input type="date" name="date" value={date}
+                  placeholder="YYYY/MM/DD"  onChange={(e) => setDate(e.target.value)} className="name"required />
               </label>
               <br />
             </div>
           </div>
-
           <button type="submit" className="name">
             Preview
           </button>

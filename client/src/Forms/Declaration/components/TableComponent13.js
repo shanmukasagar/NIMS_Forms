@@ -7,7 +7,7 @@ const TableComponent13 = ({ data }) => {
       <table className="custom-table">
         <thead>
           <tr>
-            <th>Selected Elements</th>
+         
             <th>Protocol No.</th>
             <th>Version No.</th>
             <th>PI Name</th>
@@ -17,13 +17,14 @@ const TableComponent13 = ({ data }) => {
             <th>Co-Investigator 1</th>
             <th>Date 1</th>
             <th>Date 2</th>
+            <th>email</th>
          
           </tr>
         </thead>
         <tbody>
           {data.map((row, i) => (
             <tr key={i}>
-              <td>{row.selectedElements?.join(", ")}</td>
+          
               <td>{row.protocol_number}</td>
               <td>{row.version_number}</td>
               <td>{row.principal_investigator_name}</td>
@@ -33,6 +34,7 @@ const TableComponent13 = ({ data }) => {
               <td>{row.name_of_co_investigator_1}</td>
               <td>{row.date_1}</td>
               <td>{row.date_2}</td>
+              <td>{row.email}</td>
           
             </tr>
           ))}

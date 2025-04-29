@@ -1,57 +1,46 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import TableComponent11 from  "./components/TableComponent11.js";
-
-const Section11 = (adminId) => {
+import axiosInstance from "../../components/AxiosInstance.js";
+const Section11 = () => {
   const [documents, setDocuments] = useState("");
   const [enclosure1, setEnclosure1] = useState("");
   const [remarks1, setRemarks1] = useState("");
-
   const [investigator, setInvestigator] = useState("");
   const [enclosure2, setEnclosure2] = useState("");
   const [remarks2, setRemarks2] = useState("");
-
   const [clinic, setClinic] = useState("");
   const [enclosure3, setEnclosure3] = useState("");
   const [remarks3, setRemarks3] = useState("");
-
   const [clearance, setClearance] = useState("");
   const [enclosure4, setEnclosure4] = useState("");
   const [remarks4, setRemarks4] = useState("");
-
   const [partners, setPartners] = useState("");
   const [enclosure5, setEnclosure5] = useState("");
   const [remarks5, setRemarks5] = useState("");
-
   const [protocol, setProtocol] = useState("");
   const [enclosure6, setEnclosure6] = useState("");
   const [remarks6, setRemarks6] = useState("");
-
   const [translate, setTranslate] = useState("");
   const [enclosure7, setEnclosure7] = useState("");
   const [remarks7, setRemarks7] = useState("");
-
   const [minors, setMinors] = useState("");
   const [enclosure8, setEnclosure8] = useState("");
   const [remarks8, setRemarks8] = useState("");
-
   const [proforma, setProforma] = useState("");
   const [enclosure10, setEnclosure10] = useState("");
   const [remarks10, setRemarks10] = useState("");
-
   const [advertise, setAdvertise] = useState("");
   const [enclosure11, setEnclosure11] = useState("");
   const [remarks11, setRemarks11] = useState("");
-
   const [insurance, setInsurance] = useState("");
   const [enclosure12, setEnclosure12] = useState("");
   const [remarks12, setRemarks12] = useState("");
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
-  const [email,setEmail]=useState("");
-  
+  const [email]=useState("");
   
   const navigate = useNavigate();
 
@@ -62,13 +51,16 @@ const Section11 = (adminId) => {
 
   const confirmSubmit = async () => { 
     try {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/administrative_requirements",
+      const userResponse = await axiosInstance.post(
+        "/api/research/administrative_requirements",
         {
-          documents,enclosure1,remarks1,investigator,enclosure2,  remarks2,clinic,enclosure3,remarks3,clearance,enclosure4, remarks4, partners,enclosure5,remarks5, protocol,enclosure6, remarks6, translate,   enclosure7,   remarks7, minors,  enclosure8,  remarks8, proforma, enclosure10,remarks10, advertise,enclosure11,   remarks11,insurance,  enclosure12, remarks12,  administrativeDetailId: adminId,
+          documents,enclosure1,remarks1,investigator,enclosure2,  remarks2,clinic,enclosure3,remarks3,clearance,
+          enclosure4, remarks4, partners,enclosure5,remarks5, protocol,enclosure6, remarks6, translate, 
+            enclosure7,   remarks7, minors,  enclosure8,  remarks8, proforma, enclosure10,remarks10, 
+            advertise,enclosure11,   remarks11,insurance,  enclosure12, remarks12,
         }
       );
-      const id = userResponse.data.id;
+    
       console.log("User created:", userResponse.data);
       navigate("/expedited");
     } catch (error) {
@@ -81,7 +73,7 @@ const Section11 = (adminId) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"administrative_requirements"// or hardcoded for now
           }
@@ -100,7 +92,6 @@ const Section11 = (adminId) => {
   const handleEdit = () => {
     setShowPreview(false); 
   };
-
   if (showPreview) {
     return (
       <div >
@@ -134,7 +125,6 @@ const Section11 = (adminId) => {
       <form onSubmit={handlePreview}>
       <h1 className="hi">12.CHECKLIST</h1>
       <h1 className="h2">ADMINSTRATIVE REQUIREMENTS</h1>
-    
         <div className="h2">
           <h3 className="h2">
             1.Cover letter enlisting all documents enclosed{" "}
@@ -142,13 +132,13 @@ const Section11 = (adminId) => {
           <div className="radio-group">
             <label>
               <input   type="radio"  name="documents" value="Yes"checked={documents === "Yes"}
-              onChange={(e) => setDocuments(e.target.value)}    />{" "}Yes    </label>
+              onChange={(e) => setDocuments(e.target.value)}/>{" "}Yes </label>
              <label>
               <input type="radio"  name="documents" value="No" checked={documents === "No"}
-              onChange={(e) => setDocuments(e.target.value)}   />{" "}  No </label>
+              onChange={(e) => setDocuments(e.target.value)}/>{" "}  No </label>
             <label>
               <input type="radio"   name="documents" value="NA" checked={documents === "NA"}
-              onChange={(e) => setDocuments(e.target.value)}  />{" "}NA
+              onChange={(e) => setDocuments(e.target.value)}/>{" "}NA
             </label>
             <div>
               <div>
@@ -168,9 +158,7 @@ const Section11 = (adminId) => {
               </label>
             </div>
           </div>
-
           {/* 2 */}
-
           <h3 className="h2">
             2.Brief CV of all Investigators (updated, signed and dated){" "}
           </h3>
@@ -210,7 +198,6 @@ const Section11 = (adminId) => {
               </label>
             </div>
           </div>
-
           {/* 3 */}
           <h3 className="h2">
             3.Good Clinical Practice (GCP) training of investigators in last 3
@@ -218,20 +205,17 @@ const Section11 = (adminId) => {
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"  name="clinic"  value="Yes"
+              <input type="radio"  name="clinic"  value="Yes"
                 checked={clinic === "Yes"}   onChange={(e) => setClinic(e.target.value)} />{" "} Yes </label>
             <label>
-              <input
-                type="radio" name="clinic" value="No"
+              <input type="radio" name="clinic" value="No"
                 checked={clinic === "No"} onChange={(e) => setClinic(e.target.value)}
               />{" "}
               No
             </label>
 
             <label>
-              <input
-                type="radio" name="clinic" value="NA"
+              <input type="radio" name="clinic" value="NA"
                 checked={clinic === "NA"}  onChange={(e) => setClinic(e.target.value)} />{" "}
               NA
             </label>
@@ -239,11 +223,9 @@ const Section11 = (adminId) => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number" placeholder="number"
+                  <input type="number" placeholder="number"
                     value={enclosure3}  onChange={(e) => setEnclosure3(Number(e.target.value))}
-                    className="name" required />
-                  {""}
+                    className="name" required /> {""}
                 </label>
               </div>
             </div>
@@ -252,8 +234,7 @@ const Section11 = (adminId) => {
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
-                <input
-                  type="text" placeholder="Remarks3" value={remarks3}
+                <input type="text" placeholder="Remarks3" value={remarks3}
                   onChange={(e) => setRemarks3(e.target.value)} className="name" required
                 />
                 {""}
@@ -265,14 +246,12 @@ const Section11 = (adminId) => {
           <h3 className="h2">4.EC clearance of other centers</h3>
           <div className="radio-group">
             <label>
-              <input
-                type="radio"  name="clearance"   value="Yes"
+              <input type="radio"  name="clearance"   value="Yes"
                 checked={clearance === "Yes"} onChange={(e) => setClearance(e.target.value)} />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio"   name="clearance" value="No" checked={clearance === "No"}
+              <input type="radio"   name="clearance" value="No" checked={clearance === "No"}
                 onChange={(e) => setClearance(e.target.value)} />{" "} No
             </label>
 
@@ -316,9 +295,7 @@ const Section11 = (adminId) => {
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="partner"
+              <input type="radio"  name="partner"
                 value="NA" checked={partners === "NA"}  onChange={(e) => setPartners(e.target.value)} />{" "}
               NA
             </label>
@@ -342,7 +319,6 @@ const Section11 = (adminId) => {
               </label>
             </div>
           </div>
-
           {/* 6 */}
           <h1 className="h2">PROPOSAL RELATED </h1>
 
@@ -353,7 +329,7 @@ const Section11 = (adminId) => {
           </h3>
           <div className="h2">
             <label>
-              <input   type="radio" name="protocol"
+              <input type="radio" name="protocol"
                 value="Yes" checked={protocol === "Yes"} onChange={(e) => setProtocol(e.target.value)}
               />{" "}
               Yes
@@ -366,7 +342,7 @@ const Section11 = (adminId) => {
             </label>
 
             <label>
-              <input type="radio" name="partner"  value="NA" checked={protocol === "NA"}
+              <input type="radio" name="protocol"  value="NA" checked={protocol === "NA"}
                 onChange={(e) => setProtocol(e.target.value)}
               />{" "}
               NA
@@ -404,8 +380,7 @@ const Section11 = (adminId) => {
             </label>
             <label>
               <input  type="radio" name="translate" value="No"
-                checked={translate === "No"} onChange={(e) => setTranslate(e.target.value)}
-              />{" "}
+                checked={translate === "No"} onChange={(e) => setTranslate(e.target.value)} />{" "}
               No
             </label>
 
@@ -419,7 +394,7 @@ const Section11 = (adminId) => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input  type="number" placeholder="number" value={enclosure7}
-                    onChange={(e) => setEnclosure7(Number(e.target.value))} className="name"   required />
+                    onChange={(e) => setEnclosure7(Number(e.target.value))} className="name" required/>
                 </label>
               </div>
             </div>
@@ -430,7 +405,7 @@ const Section11 = (adminId) => {
               <label>
                 <input
                   type="text"  placeholder="Remarks"   value={remarks7}
-                  onChange={(e) => setRemarks7(e.target.value)}   className="name" required  />
+                  onChange={(e) => setRemarks7(e.target.value)}   className="name" required />
               </label>
             </div>
           </div>
@@ -460,8 +435,7 @@ const Section11 = (adminId) => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"    placeholder="number"  value={enclosure8}
+                  <input type="number"    placeholder="number"  value={enclosure8}
                     onChange={(e) => setEnclosure8(Number(e.target.value))}  className="name"  required
                   />
                 </label>
@@ -490,21 +464,18 @@ const Section11 = (adminId) => {
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio"   name="proforma"  value="Yes"   checked={proforma === "Yes"}
+              <input type="radio"   name="proforma"  value="Yes"   checked={proforma === "Yes"}
                 onChange={(e) => setProforma(e.target.value)} />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio" name="proforma"value="No"
+              <input type="radio" name="proforma"value="No"
                 checked={proforma === "No"}     onChange={(e) => setProforma(e.target.value)} />{" "}
               No
             </label>
 
             <label>
-              <input
-                type="radio" name="proforma"  value="NA"
+              <input type="radio" name="proforma"  value="NA"
                 checked={proforma === "NA"}  onChange={(e) => setProforma(e.target.value)}
               />{" "}
               NA
@@ -513,8 +484,7 @@ const Section11 = (adminId) => {
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input
-                    type="number"  placeholder="number"  value={enclosure10}
+                  <input type="number"  placeholder="number"  value={enclosure10}
                     onChange={(e) => setEnclosure10(Number(e.target.value))} className="name"  required />
                 </label>
               </div>
@@ -552,20 +522,24 @@ const Section11 = (adminId) => {
             </label>
 
             <label>
-              <input type="radio"name="advertise"value="NA" checked={advertise === "NA"} onChange={(e) => setAdvertise(e.target.value)} />{" "}   NA
+              <input type="radio"name="advertise"value="NA" checked={advertise === "NA"}
+               onChange={(e) => setAdvertise(e.target.value)} />{" "}   NA
             </label>
             <div>
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number"placeholder="number" value={enclosure11}onChange={(e) => setEnclosure11(Number(e.target.value))}   className="name" required  />
-                </label>  </div>
+                  <input type="number"placeholder="number" value={enclosure11}
+                  onChange={(e) => setEnclosure11(Number(e.target.value))}   className="name" required  />
+                </label> </div>
             </div>
             <br></br>
 
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
-              <label>   <input   type="text"placeholder="Remarks"value={remarks11}  onChange={(e) => setRemarks11(e.target.value)}  className="name"required  />     </label>
+              <label>   
+                <input   type="text"placeholder="Remarks"value={remarks11}
+                onChange={(e) => setRemarks11(e.target.value)}  className="name"required  />     </label>
             </div>
           </div>
           <h3 className="h2">
@@ -600,14 +574,17 @@ const Section11 = (adminId) => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number" placeholder="number" value={enclosure12} onChange={(e) => setEnclosure12(Number(e.target.value))} className="name" required/>
+                  <input type="number" placeholder="number" value={enclosure12} 
+                  onChange={(e) => setEnclosure12(Number(e.target.value))} className="name" required/>
                 </label>
-              </div> </div>
+              </div>
+               </div>
             <br></br>
             <div>
               <h2 className="h2">EC Remarks(Ifapplicable)</h2>
               <label>
-                <input type="text"   placeholder="Remarks"    value={remarks12} onChange={(e) => setRemarks12(e.target.value)}   className="name"required/>
+                <input type="text"   placeholder="Remarks"    value={remarks12} 
+                onChange={(e) => setRemarks12(e.target.value)}   className="name"required/>
               </label>
             </div>
           </div>
@@ -617,8 +594,7 @@ const Section11 = (adminId) => {
         </button>
       </form>
 }
-    </div>
-            
+    </div>       
   );
 };
 

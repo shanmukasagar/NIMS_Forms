@@ -1,41 +1,33 @@
 import { useState,useEffect } from "react";
-
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import "../../App.css";
 import TableComponent8 from  "./components/TableComponent8.js";
-const Section7 = (adminId) => {
-  const [waiver_consent_type, setWaiverConsentType] = useState("");
-  const [specify, setSpecify] = useState("");
-  const [specific, setSpecific] = useState("");
-  const [compensation_research_of_type, setCompensationResearchOfType] =
-    useState("");
-    const [showPreview, setShowPreview] = useState(false);
+import axiosInstance from "../../components/AxiosInstance.js";
+const Section7 = () => {
+ const [waiver_consent_type, setWaiverConsentType] = useState("");
+ const [specify, setSpecify] = useState("");
+ const [specific, setSpecific] = useState("");
+ const [compensation_research_of_type, setCompensationResearchOfType] =useState("");
+ const [showPreview, setShowPreview] = useState(false);
+ const[existData,setExistData]=useState(null)
+ const [email,]=useState("");
+ const navigate = useNavigate();
  
-  const[existData,setExistData]=useState(null)
-  const [email,setEmail]=useState("");
-  const navigate = useNavigate();
- 
-  const handlePreview = (e) => {
+ const handlePreview = (e) => {
     e.preventDefault();
     setShowPreview(true);
   };
-
   const handleEdit = () => {
     setShowPreview(false);
   };
-
   const handleSubmit = async () => {
-   
-
-    try {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/payment_compensation",
+   try {
+      const userResponse = await axiosInstance.post("/api/research/payment_compensation",
         {
-          waiver_consent_type, specify,compensation_research_of_type,  specific, administrativeDetailId:adminId,email,
+          waiver_consent_type, specify,compensation_research_of_type,  specific,email,
         }
       );
-      const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
       navigate("/participant/confidentiality");
     } catch (error) {
@@ -49,12 +41,11 @@ const Section7 = (adminId) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"payment_compensation"// or hardcoded for now
           }
         });
-  
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
         }
@@ -65,9 +56,9 @@ const Section7 = (adminId) => {
     };
     fetchData();
   }, [email]);
+  
   return (
-    <div className="form-container">
-     
+    <div className="form-container">    
       {showPreview ? (
         <div className="h">
           <h3 className="h2">Preview </h3>
@@ -81,16 +72,13 @@ const Section7 = (adminId) => {
       ):
 
         existData ? ( <TableComponent8 data={existData} /> )
-:(
- 
-        <form onSubmit={handlePreview}>
-           <h1 className="h1">8.PAYMENT / COMPENSATION</h1>
-      <h3 className="h2">
-        (a)Is there a provision for treatment free of cost for research related
-        injuries?{" "}
-      </h3>
-
-     
+     :(
+         <form onSubmit={handlePreview}>
+          <h1 className="h1">8.PAYMENT / COMPENSATION</h1>
+         <h3 className="h2">
+         (a)Is there a provision for treatment free of cost for research related
+         injuries?{" "}
+        </h3>
         <div className="h2">
           (a)Are you seeking waiver of consent?
           <div className="h">
@@ -137,11 +125,8 @@ const Section7 = (adminId) => {
           Preview{" "}
         </button>
       </form>
-)}
-        
-        
-</div>
-        
+    )}    
+</div>  
   );
 };
 

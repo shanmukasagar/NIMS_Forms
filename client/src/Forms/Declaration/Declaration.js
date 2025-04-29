@@ -1,9 +1,10 @@
 import { useState,useEffect } from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import TableComponent12 from  "./components/TableComponent12.js";
-const Section10 = (adminId) => {
+import axiosInstance from "../../components/AxiosInstance.js";
+const Section10 = () => {
   const [name_of_pi_research, setNameOfPiResearch] = useState("");
   const [image1, setImage1] = useState("null");
   const [date_pi, setDatePi] = useState(new Date().toISOString().split("T")[0]);
@@ -11,18 +12,18 @@ const Section10 = (adminId) => {
   const [name_of_co_pi_guide, setNameOfCoPiGuide] = useState("");
   const [image2, setImage2] = useState("null");
   const [date_co_pi, setDateCoPi] = useState(
-    new Date().toISOString().split("T")[0]);
+  new Date().toISOString().split("T")[0]);
   const [showPreview, setShowPreview] = useState(false);
   const [name_of_co_investigator_1, setNameOfCoInvestigator1] = useState("");
   const [image3, setImage3] = useState("null");
   const [date_co_inv_1, setDateCoInv1] = useState(
-    new Date().toISOString().split("T")[0]);
+  new Date().toISOString().split("T")[0]);
   const [name_of_co_investigator_2, setNameOfCoInvestigator2] = useState("");
   const [image4, setImage4] = useState("null");
   const [date_co_inv_2, setDateCoInv2] = useState(
-    new Date().toISOString().split("T")[0]);
+  new Date().toISOString().split("T")[0]);
   const[existData,setExistData]=useState(null);
-  const [email,setEmail]=useState("");
+  const [email]=useState("");
   const navigate = useNavigate();
 
   const elementsList = [
@@ -50,13 +51,13 @@ const Section10 = (adminId) => {
     setShowPreview(true);
   };
   const confirmSubmit = async () => {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/declaration",
+      const userResponse = await axiosInstance.post( "/api/research/declaration",
         {
-          selectedElements: selectedElements,name_of_pi_research, date_pi,name_of_co_pi_guide,date_co_pi,  name_of_co_investigator_1,  date_co_inv_1,name_of_co_investigator_2,  date_co_inv_2,administrativeDetailId: adminId,
+          selectedElements: selectedElements,name_of_pi_research, date_pi,name_of_co_pi_guide,date_co_pi, 
+           name_of_co_investigator_1,  date_co_inv_1,name_of_co_investigator_2,date_co_inv_2,email
         }
       );
-      const id = userResponse.data.id;
+     
       console.log("User created:", userResponse.data); 
       const formData = new FormData();
       if (image1) formData.append("images", image1);
@@ -64,7 +65,7 @@ const Section10 = (adminId) => {
       if (image3) formData.append("images", image3);
       if (image4) formData.append("images", image4);  
     try {
-      const response = await axios.post("http://localhost:4000/api/research/upload-declaration", formData, {
+      const response = await axiosInstance.post("/api/research/upload-declaration", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       console.log("declarationmodelUpload successful:", response.data);
@@ -80,7 +81,7 @@ const Section10 = (adminId) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"declaration"// or hardcoded for now
           }
@@ -130,8 +131,6 @@ const Section10 = (adminId) => {
     );
   }
   return (
-
-
     <div className="form-container">
          {existData ? ( <TableComponent12 data={existData} />):
       <form onSubmit={handlePreview}>
@@ -147,7 +146,7 @@ const Section10 = (adminId) => {
                    onChange={handleCheckboxChange} /> {""}
                  <br></br>
                   {item}
-</label>
+              </label>
               ))}
             </div>
             <div >
@@ -164,7 +163,8 @@ const Section10 = (adminId) => {
                 <h3 className="h2">signature</h3>
                 <label>
                   <input
-                    type="file" name="images" onChange={(e) => setImage1(e.target.files[0])} className="name"required/>
+                    type="file" name="images" onChange={(e) => setImage1(e.target.files[0])} 
+                    className="name"required/>
                 </label>
               </div>
               <div className="form-group">
@@ -172,7 +172,8 @@ const Section10 = (adminId) => {
                 <label>
                   <input
                     type="date" name="date" value={date_pi}
-                    placeholder="YYYY/MM/DD"   onChange={(e) => setDatePi(e.target.value)} className="name" required />
+                    placeholder="YYYY/MM/DD"   onChange={(e) => setDatePi(e.target.value)} 
+                    className="name" required />
                 </label>
                 <br />
               </div>
@@ -264,7 +265,7 @@ const Section10 = (adminId) => {
           Preview
         </button>
       </form>
-}
+  }
     </div>
   );
 };

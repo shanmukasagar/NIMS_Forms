@@ -5,27 +5,24 @@ import Sidebar from './components/SideMenu';
 import Header from "./components/AppBar";
 import "./App.css";
 import axios from "axios";
-
 import Administration from './Forms/Basic_Information/Administration';
-import Details_Investigator from './Forms/Basic_Information/Details_Investigator';
-import Funding_Details from './Forms/Basic_Information/Funding_Details';
+import DetailsInvestigator from './Forms/Basic_Information/Details_Investigator';
+import FundingDetails from './Forms/Basic_Information/Funding_Details';
 import CheckList from './Forms/Declaration/CheckList';
 import Declaration from './Forms/Declaration/Declaration';
-import Additional_Information from './Forms/Other_Issues/Additional_Information';
+import AdditionalInformation from './Forms/Other_Issues/Additional_Information';
 import Benefits from './Forms/Participant_Information/Benifits';
 import Compensation from './Forms/Participant_Information/Compensation';
 import Confidentiality from './Forms/Participant_Information/Confidentiality';
-import Informed_Consent from './Forms/Participant_Information/Informed_Consent';
-import Expedited_Review from './Forms/Declaration/Expedited_Review';
-import Waiver_Of_Consent from './Forms/Declaration/Waiver_Of_Consent';
-import Research_Participants from './Forms/Participant_Information/Research_Participants';
-
-import Research_Overview from './Forms/Research_Information/Overview_Research';
+import InformedConsent from './Forms/Participant_Information/Informed_Consent';
+import ExpeditedReview from './Forms/Declaration/Expedited_Review';
+import WaiverOfConsent from './Forms/Declaration/Waiver_Of_Consent';
+import ResearchParticipants from './Forms/Participant_Information/Research_Participants';
+import ResearchOverview from './Forms/Research_Information/Overview_Research';
 import AddClinicalTrails from './components/AddClinicalTrails';
 import ClinicalPreview from './Forms/Add_Clinical_Form/Clinical_Preview';
 import RegistrationForm from './components/RegistrationForm';
 import ClinicalTrailList from "./components/ClinicalTrailsList";
-
 
 const App = () => {
   const[adminId,setAdminId]=useState(null);
@@ -72,35 +69,30 @@ const App = () => {
                     height: 'calc(100vh - 90px)'
                   }}
                 >
-                  <Routes>
-                  <Route path="/basic/administrative" element={<Administration setAdminId={setAdminId} /> }/>
-                
-      
-<Route path= "/basic/details" element={< Details_Investigator adminId={adminId} />} />
-<Route path="/basic/funding" element={<Funding_Details adminId={adminId} />} />
-<Route path="/research/overview" element={<Research_Overview  adminId={adminId} />} />
-
-<Route path="/participant/recruitment" element={<Research_Participants  adminId={adminId}  />} />
-<Route path="/participant/benefits" element={<Benefits adminId={adminId} />} />
-<Route path="/participant/informedconsent" element={<Informed_Consent adminId={adminId}  />} />
-<Route path="/participant/compensation" element={<Compensation adminId={adminId} />} />
-<Route path="/participant/confidentiality" element={<Confidentiality adminId={adminId} />} />
-<Route path="/issues/additional" element={<Additional_Information  adminId={adminId} />} />
-<Route path="/declaration" element={<Declaration adminId={adminId} />} />
-<Route path="/checklist" element={<CheckList adminId={adminId} />} />
-<Route path="/expedited" element={<Expedited_Review adminId={adminId} />} />
-<Route path="/waiver" element={<Waiver_Of_Consent adminId={adminId}  />} />
-<Route path="/" element={<Administration  setAdminId={setAdminId}/>} />
-
-                    
-                    <Route path="/addclinicaltrails" element = {<AddClinicalTrails user = {user}/>} />
-                    <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
-                    <Route path="/register" element = {<RegistrationForm/>} />
-                    <Route path="/clinicaltrail" element = {<ClinicalTrailList/>} />
-                  </Routes>
-                </Box>
-              </Box>
-            </Box>
+            <Routes>
+                <Route path="/basic/administrative" element={<Administration setAdminId={setAdminId} /> }/>
+                <Route path= "/basic/details" element={< DetailsInvestigator adminId={adminId} />} />
+                <Route path="/basic/funding" element={<FundingDetails  />} />
+                <Route path="/research/overview" element={<ResearchOverview  />} />
+                <Route path="/participant/recruitment" element={<ResearchParticipants    />} />
+                <Route path="/participant/benefits" element={<Benefits  />} />
+                <Route path="/participant/informedconsent" element={<InformedConsent   />} />
+                <Route path="/participant/compensation" element={<Compensation  />} />
+                <Route path="/participant/confidentiality" element={<Confidentiality  />} />
+                <Route path="/issues/additional" element={<AdditionalInformation   />} />
+                <Route path="/declaration" element={<Declaration />} />
+                <Route path="/checklist" element={<CheckList  />} />
+                <Route path="/expedited" element={<ExpeditedReview  />} />
+                <Route path="/waiver" element={<WaiverOfConsent />} />
+                <Route path="/" element={<Administration  setAdminId={setAdminId}/>} />          
+                <Route path="/addclinicaltrails" element = {<AddClinicalTrails user = {user}/>} />
+                <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
+                <Route path="/register" element = {<RegistrationForm/>} />
+                <Route path="/clinicaltrail" element = {<ClinicalTrailList/>} />
+          </Routes>
+          </Box>
+          </Box>
+          </Box>
           )}
         </React.Fragment>
       )}

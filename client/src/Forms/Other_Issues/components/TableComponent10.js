@@ -9,8 +9,9 @@ const TableComponent10 = ({ data }) => {
         <thead className="bg-gray-100">
           <tr>
            
-            <th className="border border-gray-300 px-4 py-2">Support Type</th>
-            <th className="border border-gray-300 px-4 py-2">Details</th>
+            <th>Support Type</th>
+            <th >Details</th>
+            <th>email</th>
         
           </tr>
         </thead>
@@ -18,8 +19,9 @@ const TableComponent10 = ({ data }) => {
           {data.map((item, index) => (
             <tr key={item.id || index}>
             
-              <td className="border border-gray-300 px-4 py-2">{item.support_type}</td>
-              <td className="border border-gray-300 px-4 py-2">{item.additional}</td>
+              <td >{item.support_type}</td>
+              <td >{item.additional}</td>
+              <td>{item.email}</td>
          
               
             </tr>

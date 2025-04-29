@@ -1,4 +1,4 @@
-const e = require("express");
+const express = require("express");
 const { administrationDetails } = require("../services/ResearchService");
 const { fundingBudgetDetails } = require("../services/ResearchService");
 const { overviewResearchDetails } = require("../services/ResearchService");
@@ -17,6 +17,7 @@ const {saveInvestigatorDetails}=require("../services/ResearchService")
 const administartion = async (req, res) => {
   try {
     const formData = req.body;
+    formData.email = req.user.email;
     const result = await administrationDetails(formData);
     if (result) {
       return res.status(200).json({ idd: result.rows[0].idd });
@@ -28,10 +29,36 @@ const administartion = async (req, res) => {
   }
 };
 
+
+
+const submitInvestigators = async (req, res) => {
+  try {
+    const investigators = req.body;
+    const email = req.user.email;
+
+ 
+    const investigatorsWithEmail = investigators.map(inv => ({
+      ...inv,
+      email,
+    }));
+    const result = await saveInvestigatorDetails(investigatorsWithEmail);
+    return res.status(200).json({
+      message: "Investigators saved successfully",
+      ids: result.map(r => r.id)
+    });
+  } catch (err) {
+    console.error("Error saving investigators:", err.message);
+    return res.status(500).json({ message: "Server Error" });
+  }
+
+};
+
+
+
 const fundingBudget = async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await fundingBudgetDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -47,7 +74,7 @@ const overviewResearch = async (req, res) => {
   try {
    
     const formData = req.body;
-
+  formData.email = req.user.email;
     const result = await overviewResearchDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -62,7 +89,7 @@ const overviewResearch = async (req, res) => {
 const participantRelatedInformation = async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await participantRelatedInformationDetails(formData);
     if (result) {
       return res.status(200).json({ idd: result.rows[0].idd });
@@ -77,7 +104,7 @@ const participantRelatedInformation = async (req, res) => {
 const benefitsAndRisk = async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await benefitsAndRiskDetails(formData);
     if (result) {
       return res.status(200).json({ idd: result.rows[0].idd });
@@ -93,7 +120,7 @@ const benefitsAndRisk = async (req, res) => {
 const paymentCompensation = async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await paymentCompensationDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -108,7 +135,7 @@ const paymentCompensation = async (req, res) => {
 const storageAndConfidentiality= async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await storageAndConfidentialityDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -124,7 +151,7 @@ const storageAndConfidentiality= async (req, res) => {
 const additionalInformation= async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await additionalInformationDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -139,6 +166,7 @@ const additionalInformation= async (req, res) => {
 const administrativeRequirements= async (req, res) => {
   try {
     const formData = req.body;
+    formData.email = req.user.email;
     const result = await administrativeRequirementsDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -154,7 +182,7 @@ const administrativeRequirements= async (req, res) => {
 const declaration= async (req, res) => {
   try {
     const formData = req.body;
-
+    formData.email = req.user.email;
     const result = await declarationDetails(formData);
     if (result) {
       return res.status(200).json({ id: result.rows[0].id });
@@ -170,6 +198,7 @@ const declaration= async (req, res) => {
 const expeditedReview = async (req, res) => {
   try {
     const formData = req.body;
+    formData.email = req.user.email;
     const result = await expeditedReviewDetails(formData);
     return res.status(200).json({ id: result.rows[0].id });
   } catch (err) {
@@ -180,7 +209,9 @@ const expeditedReview = async (req, res) => {
  
 const requestingWaiver = async (req, res) => {
   try {
-    const result = await requestingWaiverDetails(req.body);
+  const formData =req.body;
+   formData.email =req.user.email;
+    const result = await requestingWaiverDetails(formData);
     return res.status(200).json({ id: result.rows[0].id });
   } catch (error) {
     console.error("Error inserting requesting waiver:", error.message);
@@ -191,27 +222,13 @@ const requestingWaiver = async (req, res) => {
 const informedConsent = async (req, res) => {
   try {
     const formData = req.body;
+    formData.email = req.user.email;
     const result = await insertInformedConsent(formData);
     return res.status(200).json({ id: result.rows[0].id });
   } catch (error) {
     console.error("Error inserting informed consent:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
   }
-};
-
-const submitInvestigators = async (req, res) => {
-  try {
-    const investigators = req.body;
-    const result = await saveInvestigatorDetails(investigators);
-    return res.status(200).json({
-      message: "Investigators saved successfully",
-      ids: result.map(r => r.id)
-    });
-  } catch (err) {
-    console.error("Error saving investigators:", err.message);
-    return res.status(500).json({ message: "Server Error" });
-  }
-
 };
 
 

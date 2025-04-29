@@ -10,6 +10,7 @@ const TableComponent3 = ({ data }) => {
           <tr>
             <th>Total Estimated Budget (₹)</th>
             <th>Funding Source</th>
+            <th>email</th>
           </tr>
         </thead>
         <tbody>
@@ -17,6 +18,7 @@ const TableComponent3 = ({ data }) => {
             <tr key={index}>
               <td>{entry.total_estimated_budget}</td>
               <td>{entry.funding_source}</td>
+              <td>{entry.email}</td>
             </tr>
           ))}
         </tbody>

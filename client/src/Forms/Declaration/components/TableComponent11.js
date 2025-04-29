@@ -71,7 +71,17 @@ const TableComponent11 = ({ data }) => {
                 <td>Insurance</td>
                 <td>{entry.enclosure12}</td>
                 <td>{entry.remarks12}</td>
+               
               </tr>
+<tr>
+                <td>email</td>
+               
+                 <td>{entry.email}</td></tr>
+              {/* <tr key={`${index}-doc11`}>
+                <td>email</td>
+                <td>{entry.email}</td>
+               
+              </tr> */}
             </>
           ))}
         </tbody>

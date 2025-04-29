@@ -1,10 +1,10 @@
 
 import { useState ,useEffect} from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../../App.css"; 
 import TableComponent13 from  "./components/TableComponent13.js";
-function Section13(adminId) {
+import axiosInstance from "../../components/AxiosInstance.js";
+function Section13() {
   const [protocol_number, setProtocolNumber] = useState("");
   const [version_number, setVersionNumber] = useState("");
   const [principal_investigator_name, setPrincipalInvestigatorName] = useState("");
@@ -18,7 +18,7 @@ function Section13(adminId) {
   const [date_2, setDate2] = useState(new Date().toISOString().split("T")[0]);
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
-  const [email,setEmail]=useState("");
+  const [email]=useState("");
   const navigate = useNavigate();
 
   const elementsList = [
@@ -42,9 +42,9 @@ function Section13(adminId) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userResponse = await axios.post("http://localhost:4000/api/research/expedited_review", {
+      const userResponse = await axiosInstance.post("/api/research/expedited_review", {
         selectedElements: selectedElements, protocol_number,version_number,principal_investigator_name, department,
-        title,   summary,name_of_co_investigator_1, date_1, date_2, administrativeDetailId: adminId,
+        title,   summary,name_of_co_investigator_1, date_1, date_2,email
       });
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
@@ -53,8 +53,8 @@ function Section13(adminId) {
         const formData = new FormData();
         formData.append("image", image);
         formData.append("id", id);
-        const uploadResponse = await axios.post(
-          "http://localhost:4000/api/research/upload1",
+        const uploadResponse = await axiosInstance.post(
+          "/api/research/upload1",
           formData,
           {
             headers: {
@@ -72,7 +72,7 @@ function Section13(adminId) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"expedited_review"// or hardcoded for now
           }
@@ -87,6 +87,7 @@ function Section13(adminId) {
     };
     fetchData();
   }, [email]);
+
   const handleEdit = () => {
     setShowPreview(false);
   };
@@ -123,21 +124,20 @@ function Section13(adminId) {
       {existData ? ( <TableComponent13 data={existData} />):
         <form onSubmit={handlePreview}>
         <h1 className="hi">Application for Expedited Review</h1>
-       
           <div >
             <div>
               <h2 className="h2">Study Protocol No:</h2>
               <input
                 type="number" name="protocolnumber"
                 placeholder="Enter Protocol Number" value={protocol_number} onChange={(e) => 
-                { setProtocolNumber(e.target.value)}}   className="name"  required  />
+                {setProtocolNumber(e.target.value)}}   className="name"  required />
             </div>
             <br></br>
             <div>
               <h2 className="h2">Version number</h2>
-              <input type="number"maxLength={10} pattern="\g{10}"   name="versionnumber"
-                placeholder="versionnumber" value={version_number}  onChange={(e) =>{ setVersionNumber(e.target.value);
-                }}className="name"required />
+              <input type="number"maxLength={10} pattern="\g{10}" name="versionnumber"
+                placeholder="versionnumber" value={version_number} 
+                onChange={(e) =>{ setVersionNumber(e.target.value);}} className="name"required />
             </div>
           </div>
 
@@ -159,13 +159,15 @@ function Section13(adminId) {
             <div className="h2">
               <h2 className="h2">2. Department</h2>
               <input type="text"name="department"
-                placeholder="Enter Department"   value={department} onChange={(e) => {  setDepartment(e.target.value);}}
+                placeholder="Enter Department"   value={department} onChange={(e) => { 
+                setDepartment(e.target.value);}}
                 className="name"required/>
             </div><br />
             <div>
               <h2 className="h2">3. Title Of Project</h2>
               <input
-                type="text" name="title" placeholder="Enter Title" value={title}  onChange={(e) => {setTitle(e.target.value);
+                type="text" name="title" placeholder="Enter Title" value={title}  
+                onChange={(e) => {setTitle(e.target.value);
                 }}className="name"required/>
             </div>
           </div>
@@ -179,7 +181,8 @@ function Section13(adminId) {
           </h3>
           <textarea
             name="researchSummary" placeholder="Enter research summary" value={summary}
-            onChange={(e) => setSummary(e.target.value)} className="custom-textarea" maxLength={600}required />
+            onChange={(e) => setSummary(e.target.value)} className="custom-textarea"
+             maxLength={600}required />
           <br />
           <h3 className="h2">
             5. State reasons why expedited review from NIEC is requested? (Tick
@@ -227,9 +230,8 @@ function Section13(adminId) {
           </button>
         </form>
 }
-      </div>
-    </div>
-  );
+</div>
+</div>
+);
 }
-
 export default Section13;

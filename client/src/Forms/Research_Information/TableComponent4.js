@@ -12,6 +12,7 @@ const TableComponent4 = ({ data }) => {
             <th>Type of Study</th>
             <th>External Lab</th>
             <th>Lab Details</th>
+            <th>email</th>
         
           </tr>
         </thead>
@@ -22,6 +23,7 @@ const TableComponent4 = ({ data }) => {
               <td>{entry.type_of_study}</td>
               <td>{entry.external_laboratory}</td>
               <td>{entry.specify || "N/A"}</td>
+              <td>{entry.email}</td>
             
             </tr>
           ))}

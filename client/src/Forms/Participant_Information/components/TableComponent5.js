@@ -5,29 +5,32 @@ const TableComponent5 = ({ data }) => {
     <div className="table-container">
       <h3 className>Participant Information data</h3>
       <table className="custom-table">
-        <thead className>
+        <thead >
           <tr>
-            <th className>Type of Participant</th>
-            <th className>Specify (if Others)</th>
-            <th className>Justification</th>
-            <th className>Additional Safeguards</th>
-            <th className>Payment</th>
-            <th className>Reimbursement Details</th>
-            <th className>Advertisement Used</th>
-            <th className>Advertisement Details</th>
+            <th >Type of Participant</th>
+            <th >Specify (if Others)</th>
+            <th >Justification</th>
+            <th >Additional Safeguards</th>
+            <th>Payment</th>
+            <th >Reimbursement Details</th>
+            <th >Advertisement Used</th>
+            <th >Advertisement Details</th>
+            <th>email</th>
+
           </tr>
         </thead>
         <tbody>
           {data.map((entry, index) => (
             <tr key={index} className="hover:bg-gray-50">
-              <td className>{entry.type_of_participants}</td>
-              <td className>{entry.specifiy || "_"}</td>
-              <td className>{entry.justification}</td>
-              <td className>{entry.additional_safeguards}</td>
-              <td className>{entry.payment_type}</td>
-              <td className>{entry.reimbursement_details }</td>
-              <td className>{entry.advertisement_type}</td>
-              <td className>{entry.advertisement_details || "—"}</td>
+              <td >{entry.type_of_participants}</td>
+              <td >{entry.specifiy || "_"}</td>
+              <td >{entry.justification}</td>
+              <td >{entry.additional_safeguards}</td>
+              <td >{entry.payment_type}</td>
+              <td >{entry.reimbursement_details }</td>
+              <td >{entry.advertisement_type}</td>
+              <td >{entry.advertisement_details || "—"}</td>
+              <td>{entry.email}</td>
             </tr>
           ))}
         </tbody>

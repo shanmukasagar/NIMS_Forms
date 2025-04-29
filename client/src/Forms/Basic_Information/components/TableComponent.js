@@ -8,7 +8,6 @@ const TableComponent = ({ data }) => {
       <table className="custom-table">
         <thead>
           <tr>
-           
             <th>Name</th>
             <th>Department</th>
             <th>Date</th>
@@ -16,6 +15,7 @@ const TableComponent = ({ data }) => {
             <th>Review</th>
             <th>Protocol No</th>
             <th>Version No</th>
+            <th>email</th>
           </tr>
         </thead>
         <tbody>
@@ -29,6 +29,7 @@ const TableComponent = ({ data }) => {
               <td>{entry.review_requested}</td>
               <td>{entry.protocol_number}</td>
               <td>{entry.version_number}</td>
+              <td>{entry.email}</td>
             </tr>
           ))}
         </tbody>

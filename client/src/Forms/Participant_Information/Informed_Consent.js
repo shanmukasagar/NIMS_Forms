@@ -1,11 +1,11 @@
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import TableComponent7 from  "./components/TableComponent7.js";
-function Section6(adminId) {
-  const [seeking_waiver_of_consent_type, setSeekingWaiverOfConsentType] =
-    useState("");
+import axiosInstance from "../../components/AxiosInstance.js";
+function Section6() {
+  const [seeking_waiver_of_consent_type, setSeekingWaiverOfConsentType] = useState("");
   const [languages, setLanguages] = useState("");
   const [version_number, setVersionNumber] = useState("");
   const [date, setDate] = useState("");
@@ -20,7 +20,7 @@ function Section6(adminId) {
   const [subject, setSubject] = useState("");
   const [specify, setSpecify] = useState("");
   const[existData,setExistData]=useState(null);
-  const [email,setEmail]=useState("");
+  const [email]=useState("");
   const [selectedElements, setSelectedElements] = useState([]);
   const navigate = useNavigate();
 
@@ -57,15 +57,13 @@ function Section6(adminId) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/informedd_consent",
+      const userResponse = await axiosInstance.post("/api/research/informedd_consent",
         {
-          seeking_waiver_of_consent_type,
-          languages, version_number, date,   version_1, date_1,version_2, date_2,version_3, date_3, certificates,   
-          subject,    specify, selectedElements: selectedElements,  administrativeDetailId: adminId
+        seeking_waiver_of_consent_type,
+        languages,version_number, date,version_1, date_1,version_2, date_2,version_3, date_3, certificates,   
+        subject,specify, selectedElements: selectedElements, email
         }
       );
-      const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
       navigate("/participant/compensation");
     } catch (error) {
@@ -78,7 +76,7 @@ function Section6(adminId) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"informedd_consent"// or hardcoded for now
           }
@@ -91,14 +89,11 @@ function Section6(adminId) {
         setExistData(null);
       }
     };
-  
     fetchData();
   }, [email]);
 
-
   if (showPreview) {
     return (
-     
       <div className="h">
         <h3>Preview </h3>
         <ul className="preview-section">
@@ -201,10 +196,8 @@ function Section6(adminId) {
             <h3 className="h2">
               Version number of Informed Consent Form (ICF)
             </h3>
-
             <label>
               <h3 className="h2">Enter version number</h3>
-
               <input
                 type="number" name="versionnumber" placeholder="Enter version number" value={version_2}
                 onChange={(e) => setVersion2(e.target.value)} className="name" required/>
@@ -213,9 +206,7 @@ function Section6(adminId) {
 
           <div className="form-group">
             <h3 className="h2">Date</h3>
-
-            <input
-              type="date" placeholder="YYYY/MM/DD"
+            <input type="date" placeholder="YYYY/MM/DD"
               value={date_2} onChange={(e) => setDate2(e.target.value)} className="name"   required/>
             <br></br>
           </div>
@@ -229,32 +220,28 @@ function Section6(adminId) {
           </h3>
           <div className="h2">
             <label>
-              <input
-                type="radio" name="languagess" value="Telugu"
+              <input type="radio" name="languagess" value="Telugu"
                 checked={languages === "Telugu"}  onChange={(e) => setLanguages(e.target.value)} />{" "}
               Telugu
             </label>
 
             <label>
-              <input
-                type="radio"  name="languagess"  value="Hindi"  checked={languages === "Hindi"}
+              <input type="radio"  name="languagess"  value="Hindi"  checked={languages === "Hindi"}
                 onChange={(e) => setLanguages(e.target.value)}/>
               {""}
               Hindi
             </label>
 
             <label>
-              <input
-                type="radio"  name="languagess"
+              <input type="radio"  name="languagess"
                 value="Urdu" checked={languages === "Urdu"}  onChange={(e) => setLanguages(e.target.value)} />
               {""}
               Urdu
             </label>
 
             <label>
-              <input
-                type="radio"   name="languagess" value="AnyOtherSpecify"
-                checked={languages === "AnyOtherSpecify"} onChange={(e) => setLanguages(e.target.value)}
+              <input type="radio"   name="languagess" value="Anyotherspecify"
+                checked={languages === "Anyotherspecify"} onChange={(e) => setLanguages(e.target.value)}
               />{" "}
               Anyotherspecify
             </label>
@@ -262,18 +249,18 @@ function Section6(adminId) {
         </div>
 
         {/* Show input if "Yes" is selected */}
-        {languages === "AnyOtherSpecify" && (
+        {languages === "Anyotherspecify" && (
           <>
             <h3 className="h1">Enter version number</h3>
             <input
               type="number"  name="versionnumber"  placeholder="Enter version number"
-              value={version_number}    onChange={(e) => setVersionNumber(e.target.value)}
-              className="name" required={languages === "AnyOtherSpecify"}/>
+              value={version_number}    onChange={(e) =>setVersionNumber(e.target.value)}
+              className="name" required={languages === "Anyotherspecify"}/>
             <h2 className="h">Date</h2>
-            <input
-              type="date"    name="studyDate" id="studyDate"
+
+            <input type="date"    name="studyDate" id="studyDate"
               placeholder="DD/MM/YYYY"  value={date} onChange={(e) => setDate(e.target.value)}   className="name"
-              required={languages === "AnyOtherSpecify"} />
+              required={languages === "Anyotherspecify"} />
             <br />
             <br />
           </>
@@ -282,19 +269,15 @@ function Section6(adminId) {
           <h3  className="h2">Are Are certificate(s) of translations provided: </h3>
           <div className="radio-group">
             <label>
-              <input
-                type="radio" name="entercertificates" value="Yes"  checked={certificates === "Yes"}
-                onChange={(e) => setCertificates(e.target.value)}
-              />{" "}
+              <input type="radio" name="entercertificates" value="Yes"  checked={certificates === "Yes"}
+                onChange={(e) => setCertificates(e.target.value)} />{" "}
               Yes
             </label>
 
             <label>
-              <input
-                type="radio"
-                name="entercertificates"    value="No"  checked={certificates === "No"}
-                onChange={(e) => setCertificates(e.target.value)}
-              />{" "}
+              <input type="radio"
+                name="entercertificates" value="No"  checked={certificates === "No"}
+                onChange={(e) => setCertificates(e.target.value)}  />{" "}
               No
             </label>
           </div>
@@ -305,16 +288,13 @@ function Section6(adminId) {
           the study
           <div className="h">
             <label>
-              <input
-                type="radio" name="enter subject" value="Yes"  checked={subject === "Yes"}
-                onChange={(e) => setSubject(e.target.value)}
-              />{" "}
+              <input type="radio" name="enter subject" value="Yes"  checked={subject === "Yes"}
+                onChange={(e) => setSubject(e.target.value)} />{" "}
               {""}
               Yes
             </label>
             <label>
-              <input
-                type="radio" name="entersubject" value="No" checked={subject === "No"}
+              <input type="radio" name="entersubject" value="No" checked={subject === "No"}
                 onChange={(e) => setSubject(e.target.value)}
               />{" "}
               {""}
@@ -335,8 +315,7 @@ function Section6(adminId) {
               By Questionaire
             </label>
             <label>
-              <input
-                type="radio" name="specify" value="Feedback"
+              <input type="radio" name="specify" value="Feedback"
                 checked={specify === "Feedback"} onChange={(e) => setSpecify(e.target.value)}
               />{" "}
               Feedback
@@ -356,22 +335,21 @@ function Section6(adminId) {
           <div className="h2">  {elementsList.map((item, index) => (<label key={index} className="checkbox-label">
                 <br></br>
                 <input    type="checkbox" value={item} checked={selectedElements.includes(item)}  
-                onChange={handleCheckboxChange}
-                />
+                onChange={handleCheckboxChange} />
                 {""}
                 <br></br>
                 {item}
               </label>
             ))}
-          </div>
-        </div>
-        <br></br>
-        <button type="submit" className="name">
-          Preview
-        </button>
-      </form>
-}
+       </div>
     </div>
-  );
+    <br></br>
+    <button type="submit" className="name">
+    Preview
+    </button>
+    </form>
+}
+</div>
+);
 };
 export default Section6;

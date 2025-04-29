@@ -1,36 +1,32 @@
 import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 import TableComponent10 from  "./components/TableComponent10.js";
-
-const Section9 = (adminId) => {
-  const [support_type, setSupportType] = useState("");
-  const [additional, setAdditional] = useState("");
-  const [preview, setPreview] = useState(false); 
-  const navigate = useNavigate();
-  const[existData,setExistData]=useState(null)
-  const [email,setEmail]=useState("");
-  const handlePreview = (e) => {
+import axiosInstance from "../../components/AxiosInstance.js";
+const Section9 = () => {
+const [support_type, setSupportType] = useState("");
+const [additional, setAdditional] = useState("");
+const [preview, setPreview] = useState(false); 
+const navigate = useNavigate();
+const[existData,setExistData]=useState(null)
+const [email]=useState("");
+const handlePreview = (e) => {
     e.preventDefault();
     setPreview(true);
   };
-
   const handleEdit = () => {
     setPreview(false);
   };
   const handleSubmit = async () => {
     try {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/additional_information",
+      const userResponse = await axiosInstance.post(
+        "/api/research/additional_information",
         {
           support_type,
-          additional,
-          administrativeDetailId: adminId?.adminId ?? adminId,
+          additional, 
           email,
         }
       );
-      const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
       navigate("/declaration");
     } catch (error) {
@@ -43,7 +39,7 @@ const Section9 = (adminId) => {
 useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"additional_information"// or hardcoded for now
           }
@@ -57,7 +53,6 @@ useEffect(() => {
         setExistData(null);
       }
     };
-  
     fetchData();
   }, [email]);
 
@@ -65,12 +60,9 @@ useEffect(() => {
     return (
       <div className="h">
         <h5 className="h2">preview </h5>
-      
         <p><strong>Do you have any additional information to add?</strong> {support_type}</p>
         {support_type === "Yes" && (
-          <p><strong>Details:</strong> {additional}</p>
-        )}
-
+          <p><strong>Details:</strong> {additional}</p>)}
         <button className="name" onClick={handleSubmit}>
           Submit
         </button>
@@ -80,8 +72,6 @@ useEffect(() => {
       </div>
     );
   }
-
-
   return (
     <div className="form-container">
         {existData ? (<TableComponent10 data={existData} />) :
@@ -97,22 +87,13 @@ useEffect(() => {
           <div className="radio-group">
             <label>
               <input
-                type="radio"
-                name="additional"
-                value="Yes"
-                checked={support_type === "Yes"}
-                onChange={(e) => setSupportType(e.target.value)}
-              />{" "}
+                type="radio" name="additional" value="Yes"  checked={support_type === "Yes"}
+                onChange={(e) => setSupportType(e.target.value)} />{" "}
               Yes
             </label>
             <label>
-              <input
-                type="radio"
-                name="additional"
-                value="No"
-                checked={support_type === "No"}
-                onChange={(e) => setSupportType(e.target.value)}
-              />{" "}
+              <input type="radio"  name="additional" value="No" checked={support_type === "No"}
+                onChange={(e) => setSupportType(e.target.value)}  />{" "}
               No
             </label>
           </div>
@@ -122,14 +103,8 @@ useEffect(() => {
           <div className="h">
             <h3>specify:</h3>
             <input
-              type="text"
-              name="additionalInformation"
-              placeholder="Enter details"
-              checked={additional === "Yes"}
-              onChange={(e) => setAdditional(e.target.value)}
-              className="name"
-              required
-            />
+            type="text" name="additionalInformation"  placeholder="Enter details"  checked={additional === "Yes"}
+            onChange={(e) => setAdditional(e.target.value)} className="name" required/>
             <br />
           </div>
         )}
@@ -137,7 +112,7 @@ useEffect(() => {
           Preview
         </button>
       </form>
-}
+  }
     </div>
   );
 };

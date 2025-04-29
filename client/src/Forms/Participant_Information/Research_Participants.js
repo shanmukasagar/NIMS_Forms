@@ -1,9 +1,10 @@
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+
 import TableComponent5 from  "./components/TableComponent5.js";
-const Section4 = ({ adminId }) => {
+import axiosInstance from "../../components/AxiosInstance.js";
+const Section4 = () => {
   const [type_of_participants, setTypeOfParticipant] = useState("");
   const [justification, setJustification] = useState("");
   const [specifiy, setSpecifiy] = useState("");
@@ -14,20 +15,19 @@ const Section4 = ({ adminId }) => {
   const [payment_type, setPaymentType] = useState("");
   const [isPreview, setIsPreview] = useState(false);
   const[existData,setExistData]=useState(null)
-  const [email,setEmail]=useState("")
+  const [email]=useState("")
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const userResponse = await axios.post(
-        "http://localhost:4000/api/research/participantt_related_information",
+      const userResponse = await axiosInstance.post("/api/research/participantt_related_information",
         {
-          type_of_participants, justification, specifiy, additional_safeguards,  reimbursement_details,   advertisement_type,advertisement_details, payment_type, administrativeDetailId: adminId,email
+          type_of_participants, justification, specifiy, additional_safeguards,  reimbursement_details,   
+          advertisement_type,advertisement_details, payment_type,email
         }
       );
-      const idd = userResponse.data.idd;
       console.log("User created:", userResponse.data);
       navigate("/participant/benefits");
     } catch (error) {
@@ -35,16 +35,14 @@ const Section4 = ({ adminId }) => {
     }
   };
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:" participantt_related_information "// or hardcoded for now
           }
-        });
-  
+        });  
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
         }
@@ -58,20 +56,18 @@ const Section4 = ({ adminId }) => {
   }, [email]);
   return (
 
-    <div className>
-    <div className="h">
-    {existData ? ( <TableComponent5 data={existData} />):   !isPreview ? (
-        <form onSubmit ={(e) => { e.preventDefault(); setIsPreview(true); }}>
+      <div >
+      <div className="h">
+      {existData ? ( <TableComponent5 data={existData} />):   !isPreview ? (
+      <form onSubmit ={(e) => { e.preventDefault(); setIsPreview(true); }}>
       <h3 className="hi">SECTION C - PARTICIPANT RELATED INFORMATION</h3>
       <h3>5. Recruitment of Research Participants</h3>
-   
           <h3>(a) Type of Participants in the Study:</h3>
           <select
             value={type_of_participants}
             onChange={(e) => setTypeOfParticipant(e.target.value)}
             className="name"
-            required
-          >
+            required >
             <option value="">Select Participant Type</option>
             <option value="healthy">Healthy Volunteer</option>
             <option value="patient">Patient</option>
@@ -79,22 +75,22 @@ const Section4 = ({ adminId }) => {
             <option value="others">Others (Specify)</option>
           </select>
 
-          {type_of_participants === "others" && (
+        {type_of_participants === "others" && (
             <>
               <h3>Specify Other Participant Type:</h3>
               <input type="text" value={specifiy}onChange={(e) => setSpecifiy(e.target.value)}
-               className="name"  required  />  </>)}
+               className="name"  required />  </>)}
 
             <h3>(b)Justification for inclusion (if vulnerable):</h3>
-           <textarea  value={justification}   onChange={(e) => setJustification(e.target.value)} 
-            className="custom-textarea"   required />
+            <textarea  value={justification}   onChange={(e) => setJustification(e.target.value)} 
+              className="custom-textarea"   required />
             <h3>Additional Safeguards:</h3>
 
-          <textarea value={additional_safeguards} onChange={(e) => setAdditionalSafeguards(e.target.value)}
-          className="custom-textarea"required/>
+            <textarea value={additional_safeguards} onChange={(e) => setAdditionalSafeguards(e.target.value)}
+            className="custom-textarea"required/>
 
-          <h3>(c) Reimbursement/Payment to the Subject:</h3>
-          <label>
+            <h3>(c) Reimbursement/Payment to the Subject:</h3>
+            <label>
             <input
               type="radio"value="Yes" checked={payment_type === "Yes"}
                onChange={(e) => setPaymentType(e.target.value)}
@@ -141,19 +137,16 @@ const Section4 = ({ adminId }) => {
           <h3>Preview </h3>
           <p><strong>Type of Participant:</strong> {type_of_participants}</p>
           {type_of_participants === "others" && (
-            <p><strong>Specify:</strong> {specifiy}</p>
-          )}
+            <p><strong>Specify:</strong> {specifiy}</p> )}
           <p><strong>Justification:</strong> {justification}</p>
           <p><strong>Additional Safeguards:</strong> {additional_safeguards}</p>
           <p><strong>Payment Type:</strong> {payment_type}</p>
           {payment_type === "Yes" && (
-            <p><strong>Reimbursement Details:</strong> {reimbursement_details}</p>
-          )}
+            <p><strong>Reimbursement Details:</strong> {reimbursement_details}</p> )}
           <p><strong>Advertisement Used:</strong> {advertisement_type}</p>
           {advertisement_type === "Yes" && (
-            <p><strong>Advertisement Details:</strong> {advertisement_details}</p>
-          )}
-
+            <p><strong>Advertisement Details:</strong> {advertisement_details}</p>)}
+        
           <button onClick={() => setIsPreview(false)} className="name">Edit</button>
           <button onClick={handleSubmit} className="name">Submit</button>
         </div>

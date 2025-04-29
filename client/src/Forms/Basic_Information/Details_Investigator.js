@@ -1,13 +1,12 @@
-
 import { useState ,useEffect} from "react";
 import "../../App.css";
-import axios from "axios";
+
 import TableComponent2 from "./components/TableComponent2.js"; 
 import "../../App.css";
-
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../components/AxiosInstance.js";
 
-const DetailsInvestigator =({adminId}) => { 
+const DetailsInvestigator =() => { 
   const [piName, setPiName] = useState("");
   const [piDesignation, setPiDesignation] = useState("");
   const [piQualification, setPiQualification] = useState("");
@@ -15,7 +14,6 @@ const DetailsInvestigator =({adminId}) => {
   const [piInstitution, setPiInstitution] = useState("");
   const [piAddress, setPiAddress] = useState("");
   const [piInvestigatorType] = useState("Principal_Investigator");
-
   const [coiName, setCoiName] = useState("");
   const [coiDesignation, setCoiDesignation] = useState("");
   const [coiQualification, setCoiQualification] = useState("");
@@ -23,8 +21,7 @@ const DetailsInvestigator =({adminId}) => {
   const [coiInstitution, setCoiInstitution] = useState("");
   const [coiAddress, setCoiAddress] = useState("");
   const [coiInvestigatorType] = useState("Co-investigator");
- 
-  const [email,setEmail]=useState("")
+  const [email]=useState("")
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null)
   const navigate = useNavigate();
@@ -35,33 +32,17 @@ const DetailsInvestigator =({adminId}) => {
     try {
       const investigatorss = [
         {
-          name: piName,
-          designation: piDesignation,
-          qualification: piQualification,
-          department: piDepartment,
-          institution: piInstitution,
-          address: piAddress,
-          investigator_type: piInvestigatorType,
-          administrativeDetailId: adminId ,
-          email// Now using the adminId prop
+          name: piName,designation: piDesignation, qualification: piQualification, department: piDepartment,
+          institution: piInstitution,  address: piAddress, investigator_type: piInvestigatorType,email,
         },
         {
-          name: coiName,
-          designation: coiDesignation,
-          qualification: coiQualification,
-          department: coiDepartment,
-          institution: coiInstitution,
-          address: coiAddress,
-          investigator_type: coiInvestigatorType,
-          administrativeDetailId: adminId,
-           // Now using the adminId prop
+          name: coiName, designation: coiDesignation, qualification: coiQualification,   department: coiDepartment,
+          institution: coiInstitution,  address: coiAddress, investigator_type: coiInvestigatorType,email
         },
       ];
-
-      await axios.post("http://localhost:4000/api/research/investigatorss", investigatorss);
-
+      await axiosInstance.post("/api/research/investigatorss", investigatorss);
       console.log("Investigators created");
-      navigate("/basic/funding", { state: { adminId } }); // Passing adminId in navigate state as well
+      navigate("/basic/funding") 
     } catch (error) {
       console.error(
         "Error:",
@@ -74,9 +55,9 @@ const DetailsInvestigator =({adminId}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/research/check/admin", { 
+        const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"investigatorss"// or hardcoded for now
+            form_type:"investigatorss"
           }
         });
   
@@ -134,10 +115,9 @@ const DetailsInvestigator =({adminId}) => {
 
   return (
     <div className="form-container">
-       {existData ? (<TableComponent2 data={existData} />) :
-         <form>
+      {existData ? (<TableComponent2 data={existData} />) :
+      <form>
       <h3 className="h2">G. Details of Investigators / Researcher(s): </h3>
-     
       
         <div className="form-row">
           <div className="h">
@@ -166,8 +146,7 @@ const DetailsInvestigator =({adminId}) => {
         </button>
       </form>
 }
-    </div>
-  );
+</div>
+);
 };
-
 export default DetailsInvestigator;

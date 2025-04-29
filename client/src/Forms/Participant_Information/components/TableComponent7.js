@@ -17,9 +17,11 @@ const TableComponent7 = ({ data }) => {
             <th>Date 2</th>
             <th>Version 3</th>
             <th>Date 3</th>
-            <th>Certificates</th>
-            <th>Subject</th>
+           
+            {/* <th>Certificates</th>
+            <th>Subject</th> */}
             <th>Specify</th>
+            <th>email</th>
           </tr>
         </thead>
         <tbody>  
@@ -37,9 +39,10 @@ const TableComponent7 = ({ data }) => {
               <td>{row.date_2}</td>
               <td>{row.version_3}</td>
               <td>{row.date_3}</td>
-              <td>{row.certificates}</td>
-              <td>{row.subject}</td>
+              {/* <td>{row.certificates}</td>
+              <td>{row.subject}</td> */}
               <td>{row.specify}</td>
+              <td>{row.email}</td>
             </tr>
           ))}
         </tbody>

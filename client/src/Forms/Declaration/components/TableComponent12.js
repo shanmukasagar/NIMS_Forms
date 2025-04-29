@@ -16,6 +16,7 @@ const TableComponent12 = ({ data }) => {
             <th>Date 1</th>
             <th>Co-Investigator 2</th>
             <th>Date 2</th>
+            <th>email</th>
         
           </tr>
         </thead>
@@ -31,6 +32,7 @@ const TableComponent12 = ({ data }) => {
               <td>{row.date_co_inv_1}</td>
               <td>{row.name_of_co_investigator_2}</td>
               <td>{row.date_co_inv_2}</td>
+              <td>{row.email}</td>
            
             </tr>
           ))}

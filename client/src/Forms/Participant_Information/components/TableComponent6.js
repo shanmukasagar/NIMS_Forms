@@ -14,6 +14,7 @@ const TableComponent6 = ({ data }) => {
             <th>Participant Benefits</th>
             <th>Society Benefits</th>
             <th>Scientific Benefits</th>
+            <th>email</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +26,7 @@ const TableComponent6 = ({ data }) => {
               <td>{entry.participant_benefits}</td>
               <td>{entry.society_benefits}</td>
               <td>{entry.improvement_benefits}</td>
+              <td>{entry.email}</td>
             </tr>
           ))}
         </tbody>
