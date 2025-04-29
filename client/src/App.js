@@ -23,6 +23,7 @@ import AddClinicalTrails from './components/AddClinicalTrails';
 import ClinicalPreview from './Forms/Add_Clinical_Form/Clinical_Preview';
 import RegistrationForm from './components/RegistrationForm';
 import ClinicalTrailList from "./components/ClinicalTrailsList";
+import axiosInstance from "./components/AxiosInstance";
 
 const App = () => {
   const[adminId,setAdminId]=useState(null);
@@ -34,7 +35,7 @@ const App = () => {
 
   const verifyUser = async() => {
     try{
-      const res = await axios.get('http://localhost:4000/api/user/verify', { withCredentials: true });
+      const res = await axiosInstance.get('/api/user/verify');
       setUser(res.data.email);
       return ;
     }

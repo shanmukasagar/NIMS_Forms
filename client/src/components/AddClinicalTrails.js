@@ -11,10 +11,10 @@ import AdditionalInformation from "../Forms/Add_Clinical_Form/AdditionalDetails"
 import Checklist from '../Forms/Add_Clinical_Form/Checklist';
 import PreviewPopup from "../Forms/Add_Clinical_Form/Clinical_Preview";
 
-import axios from 'axios';
 import "../styles/Forms/Add_Clinical.css";
 import {checklist, InvestigatorsInformation} from "../data/Clinical_CheckList";
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from "../components/AxiosInstance";
 
 const MainContent = ({user}) => {
 
@@ -57,7 +57,7 @@ const MainContent = ({user}) => {
     try{
       const formData = {administration, researchers, participants, benefits, paymentState, storage,
         additional, checkListData, email : user };
-      const response = await axios.post("http://localhost:4000/api/clinical/add", formData, { withCredentials: true });
+      const response = await axiosInstance.post("/api/clinical/add", formData);
       if(response.status === 200) {
         alert("Form submitted successfully");
         return;

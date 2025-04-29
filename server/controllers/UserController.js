@@ -9,7 +9,7 @@ const userRegister = async(req, res) => { //User Registration
         if(result.success) {
             const token = await createToken(userData.email);
             // Set the token in a cookie
-            res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 3600000 });  // 1 hour expiration time
+            res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 3600000 });  // 1 hour expiration time
             res.status(200).json(result.message);
             return;
         }
@@ -28,7 +28,7 @@ const userLogin = async(req, res) => { //User Login
         if(result.success) {
             const token = await createToken(userData.email);
             // Set the token in a cookie
-            res.cookie('token', token, { httpOnly: true, secure: true, maxAge: 3600000 });  // 1 hour expiration time
+            res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 3600000 });  // 1 hour expiration time
             res.status(200).json(result.message);
             return ;
         }

@@ -42,4 +42,12 @@ export const InvestigatorsInformation = {
         ]
     }
 }
+
+export function formatDateTime(isoString) {
+    const date = new Date(isoString);
+    const datePart = date.toLocaleDateString(); // e.g., "10/3/2025"
+    const timePart = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // e.g., "6:30 PM"
+    return `${datePart} ${timePart}`;
+  }
+  
   

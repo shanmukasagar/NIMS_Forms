@@ -3,6 +3,8 @@ import { Grid, Typography, IconButton, Paper, Box } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import axios from "axios";
 import PreviewPopup from "../Forms/Add_Clinical_Form/Clinical_Preview";
+import axiosInstance from "../components/AxiosInstance";
+import {formatDateTime} from "../data/Clinical_CheckList";
 
 const ClinicalFormGrid = () => {
     const [data, setData] = useState([]);
@@ -20,7 +22,8 @@ const ClinicalFormGrid = () => {
             if (!fetchOnce.current) {
                 try {
                     fetchOnce.current = true;
-                    const response = await axios.get("http://localhost:4000/api/clinical/list", { withCredentials: true });
+                    const response = await axiosInstance.get("/api/clinical/list"
+                    );
                     if (response.status === 200) {
                         setData(response.data);
                     }
@@ -62,7 +65,7 @@ const ClinicalFormGrid = () => {
                                 <Typography sx={{ fontSize: "18px" }}>{item.administration.department}</Typography>
                                 </Grid>
                                 <Grid item size={2}>
-                                <Typography sx={{ fontSize: "18px" }}>{item.administration.submission_date}</Typography>
+                                <Typography sx={{ fontSize: "18px" }}>{formatDateTime(item.administration.submission_date)}</Typography>
                                 </Grid>
                                 <Grid item size={3}>
                                 <Typography sx={{ fontSize: "18px" }}>{item.administration.email}</Typography>

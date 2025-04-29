@@ -10,20 +10,23 @@ const createToken = async (email) => {
 // Middleware to verify the token
 const verifyToken = (req, res, next) => {
     const token = req.cookies ? req.cookies.token : undefined;  // Get the token from cookies
-
-    if (!token) {
-        return res.status(403).json({ error: 'Token Error' });
-    }
-
-    // Verify the token
-    jwt.verify(token, secretKey, (err, decoded) => {
-        if (err) {
-            console.log("Invalid Token");
+    try{
+        if (!token) {
             return res.status(403).json({ error: 'Token Error' });
         }
-        req.user = decoded;  // Attach decoded data to the request object
-        next();  // Move to the next middleware or route handler
-    });
+        jwt.verify(token, secretKey, (err, decoded) => {  // Verify the token
+            if (err) {
+                console.log("Invalid Token");
+                return res.status(403).json({ error: 'Token Error' });
+            }
+            req.user = decoded;  // Attach decoded data to the request object
+            next();  // Move to the next middleware or route handler
+        });
+    }
+    catch(error) {
+        console.log("Error occured", error.message);
+        return res.status(500).json("Internal server error");
+    }
 };
 
 

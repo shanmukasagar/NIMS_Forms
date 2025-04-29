@@ -4,6 +4,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "../styles/RegistrationForm.css";
+import axiosInstance from "../components/AxiosInstance";
 
 const AuthForm = () => {
     const [isRegistering, setIsRegistering] = useState(true);
@@ -30,7 +31,7 @@ const AuthForm = () => {
             if (!/^\d{10}$/.test(mobile)) return setError('Valid 10-digit mobile required');
 
             try {
-                const res = await axios.post('http://localhost:4000/api/user/register', formData, { withCredentials: true });
+                const res = await axiosInstance.post('/api/user/register', formData,);
                 alert(res.data);
                 navigate('/');
                 return ;
@@ -39,7 +40,7 @@ const AuthForm = () => {
             }
         } else {
             try {
-                const res = await axios.post('http://localhost:4000/api/user/login', { email, password }, { withCredentials: true });
+                const res = await axiosInstance.post('/api/user/login', { email, password });
                 navigate('/');
             } catch (err) {
                 setError(err.response?.data || 'Login failed');
