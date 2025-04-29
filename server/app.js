@@ -14,6 +14,7 @@ const app = express();
 // Middleware
 app.use(cookieParser());
 const allowedOrigins = ['http://localhost:3000', 'http://172.26.0.50:3000'];
+const allowedHost = "172.26.0.50";
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -37,6 +38,6 @@ app.use('/', (req, res) => {
     res.send('API is working');
 });
 
-app.listen(process.env.PORT, async () => {
+app.listen(process.env.PORT, allowedHost, async () => {
     console.log(`Server is Running Successfully on Port ${process.env.PORT}`);
 });
