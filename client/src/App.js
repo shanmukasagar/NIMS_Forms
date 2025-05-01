@@ -24,6 +24,13 @@ import ClinicalPreview from './Forms/Add_Clinical_Form/Clinical_Preview';
 import RegistrationForm from './components/RegistrationForm';
 import ClinicalTrailList from "./components/ClinicalTrailsList";
 import axiosInstance from "./components/AxiosInstance";
+import AmendmentForm from "./Forms/NIEC_Forms/Amendment";
+import AmendmentTemplate from './Forms/NIEC_Forms/AmendmentTemplate';
+import SAEReporting from './Forms/NIEC_Forms/SAE_Reporting';
+import CompletionReport from './Forms/NIEC_Forms/CompletionReport';
+import ProgressReport from './Forms/NIEC_Forms/ProgressReport';
+import ProtocolDeviation from './Forms/NIEC_Forms/Protocol_Deviation';
+import TerminationReport from './Forms/NIEC_Forms/TerminationReport';
 
 const App = () => {
   const[adminId,setAdminId]=useState(null);
@@ -90,6 +97,13 @@ const App = () => {
                 <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
                 <Route path="/register" element = {<RegistrationForm/>} />
                 <Route path="/clinicaltrail" element = {<ClinicalTrailList/>} />
+                <Route path="/amendment" element = {<AmendmentForm/>} />
+                <Route path="/amendment/template" element = {<AmendmentTemplate/>} />
+                <Route path="/sae/reporting" element = {<SAEReporting/>} />
+                <Route path="/study/progress" element = {<ProgressReport/>} />
+                <Route path="/study/completion" element = {<CompletionReport/>} />
+                <Route path="/termination" element = {<TerminationReport/>} />
+                <Route path="/protocol/deviation" element = {<ProtocolDeviation/>} />
           </Routes>
           </Box>
           </Box>

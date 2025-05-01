@@ -74,6 +74,20 @@ const Sidebar = () => {
       hasSubMenu: false,
       path: '/clinicaltrail',
     },
+    {
+      id: 'NIEC',
+      label: 'NIEC',
+      hasSubMenu: true,
+      subItems: [
+        { id: 'Amendment', label: 'Amendment', path: '/amendment' },
+        { id: 'Amendment Template', label: 'Amendment Template', path: '/amendment/template' },
+        { id: 'SAE Reporting', label: 'SAE Reporting Form', path: '/sae/reporting' },
+        { id: 'Study Progress Report', label: 'Study Progress Report', path: '/study/progress' },
+        { id: 'Study Completion Report', label: 'Study Completion Report', path: '/study/completion' },
+        { id: 'Premature Termination/Suspension', label: 'Premature Termination/Suspension', path: '/termination' },
+        { id: 'Protocol Deviation and Compilance', label: 'Protocol Deviation and Compilance', path: '/protocol/deviation' },
+      ]
+    },
   ];
 
   const handleMenuClick = (item) => {
