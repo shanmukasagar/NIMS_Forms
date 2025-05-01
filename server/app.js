@@ -34,6 +34,7 @@ app.use('/api/user', userRoute);
 app.use("/api/research", researchRoute);
 app.use("/api/research/check", checkAdminRoute);
 
+
 app.use('/', (req, res) => { 
     res.send('API is working');
 });
