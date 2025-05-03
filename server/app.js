@@ -8,6 +8,7 @@ const clinicalRoute = require("./routes/ClinicalRoute");
 const userRoute = require("./routes/UserRoute");
 const researchRoute = require("./routes/ResearchRoute");
 const checkAdminRoute=require("./routes/CheckAdminRoute");
+const NIECRoute = require("./routes/NIECRoute");
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/clinical', clinicalRoute);
 app.use('/api/user', userRoute);
 app.use("/api/research", researchRoute);
 app.use("/api/research/check", checkAdminRoute);
+app.use("/api/niec", NIECRoute);
 
 
 app.use('/', (req, res) => { 
