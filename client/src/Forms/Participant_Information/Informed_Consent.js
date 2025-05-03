@@ -1,9 +1,9 @@
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-
 import TableComponent7 from  "./components/TableComponent7.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+
 function Section6() {
   const [seeking_waiver_of_consent_type, setSeekingWaiverOfConsentType] = useState("");
   const [languages, setLanguages] = useState("");
@@ -35,6 +35,7 @@ function Section6() {
     "Expected duration of participation",
     "Maintenance of Confidentiality ",
     "Description of procedures to be followed, treatment schedule and probability of random assignment ",
+    
   ];
 
   const handleCheckboxChange = (event) => {
@@ -131,7 +132,7 @@ function Section6() {
     <div className="form-container">
          {existData ? (<TableComponent7 data={existData} />) :
       <form onSubmit={handlePreview}>
-      <h1 className="h1">7.INFORMED CONSENT </h1>
+      <h1 className="h1">7. INFORMED CONSENT </h1>
    
         <h2 className="h2">  (a)Are you seeking waiver of consent?</h2>
           <div className="h2">
@@ -172,7 +173,7 @@ function Section6() {
             <br></br>
           </div>
           <div className="h1">
-            <h3 className="h1">partcipantInformation</h3>
+            <h3 className="h1">Participant Information</h3>
             <label>
               <h3 className="h2">Enter version number</h3>
               <input
@@ -214,7 +215,7 @@ function Section6() {
 
         <div className="h2">
           <h3 className="h2">
-            (c)List the languages (apart from English) in which translations of
+            (c) List the languages (apart from English) in which translations of
             Participant Information Sheet (PIS) and Informed Consent Form (ICF)
             were provided:{" "}
           </h3>
@@ -266,7 +267,7 @@ function Section6() {
           </>
         )}
         <div className="h1">
-          <h3  className="h2">Are Are certificate(s) of translations provided: </h3>
+          <h3  className="h2"> Are certificate(s) of translations provided: </h3>
           <div className="radio-group">
             <label>
               <input type="radio" name="entercertificates" value="Yes"  checked={certificates === "Yes"}
@@ -284,7 +285,7 @@ function Section6() {
         </div>
 
         <div className="h2">
-          (d)Will Any tools be used to determine whether the subject understood
+          (d) Will Any tools be used to determine whether the subject understood
           the study
           <div className="h">
             <label>
@@ -301,7 +302,7 @@ function Section6() {
               No
             </label>
           </div>
-          <br></br>
+          
         </div>
 
         <h2 className="h2">if yes specify:</h2>
@@ -329,7 +330,7 @@ function Section6() {
         )}
         <div>
           <h3 className="h2">
-            (e)Tick the elements contained in the Participant Information Sheet
+            (e) Tick the elements contained in the Participant Information Sheet
             (PIS) and Informed Consent Form{" "}
           </h3>
           <div className="h2">  {elementsList.map((item, index) => (<label key={index} className="checkbox-label">

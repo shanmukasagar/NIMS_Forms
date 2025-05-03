@@ -80,7 +80,7 @@ const Section7 = () => {
          injuries?{" "}
         </h3>
         <div className="h2">
-          (a)Are you seeking waiver of consent?
+      
           <div className="h">
             <label>
               <input type="radio"  name="waiver" value="Yes"checked={waiver_consent_type === "Yes"}  

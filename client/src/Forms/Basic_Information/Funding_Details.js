@@ -78,13 +78,13 @@ const FundingDetails = () => {
         {existData ? (<TableComponent3 data={existData} />) :
         (<form>
         <h1 className="hi">2. FUNDING DETAILS AND BUDGET</h1>
-        <h2 className="h2">a. Total Estimated Study Budget:</h2>
+        <h2 className="h2">a. Total estimated study budget:</h2>
         <input
           type="number"  name="budget" value={total_estimated_budget} 
           onChange={(e) => setTotalEstimatedBudget(e.target.value)} placeholder="Enter Budget Amount" className="name"
           required />
         <br />
-        <h2 className="h2">b. Funding Source:</h2>
+        <h2 className="h2">b. Funding source:</h2>
         <select
           name="fundingSource" value={funding_source} onChange={(e) => setFundingSource(e.target.value)}  
           className="name" required >

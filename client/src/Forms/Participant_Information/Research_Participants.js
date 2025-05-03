@@ -61,7 +61,7 @@ const Section4 = () => {
       {existData ? ( <TableComponent5 data={existData} />):   !isPreview ? (
       <form onSubmit ={(e) => { e.preventDefault(); setIsPreview(true); }}>
       <h3 className="hi">SECTION C - PARTICIPANT RELATED INFORMATION</h3>
-      <h3>5. Recruitment of Research Participants</h3>
+      <h2 className="h2">5. RECRUITMENT OF RESEARCH PARTICIPANTS</h2>
           <h3>(a) Type of Participants in the Study:</h3>
           <select
             value={type_of_participants}
@@ -81,15 +81,15 @@ const Section4 = () => {
               <input type="text" value={specifiy}onChange={(e) => setSpecifiy(e.target.value)}
                className="name"  required />  </>)}
 
-            <h3>(b)Justification for inclusion (if vulnerable):</h3>
+            <h3>(b) Justification for inclusion (if vulnerable):</h3>
             <textarea  value={justification}   onChange={(e) => setJustification(e.target.value)} 
               className="custom-textarea"   required />
-            <h3>Additional Safeguards:</h3>
+            <h3> Are there any additional safeguards to protect research participants?</h3>
 
             <textarea value={additional_safeguards} onChange={(e) => setAdditionalSafeguards(e.target.value)}
             className="custom-textarea"required/>
 
-            <h3>(c) Reimbursement/Payment to the Subject:</h3>
+            <h3>(c) Is there any Reimbursement/Payment to the subject for participation?</h3>
             <label>
             <input
               type="radio"value="Yes" checked={payment_type === "Yes"}

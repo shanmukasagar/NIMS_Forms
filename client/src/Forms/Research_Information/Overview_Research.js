@@ -100,7 +100,7 @@ const Submit = async (e) => {
     (  <form>
       <h2 className="hi">SECTION B - RESEARCH RELATED INFORMATION</h2>
       <h2 className="h2">3. OVERVIEW OF RESEARCH</h2>
-        <h2 className="h1">(a). Summary of Study (within 300 words)</h2>
+        <h2 className="h1">(a). Summary of study (within 300 words)</h2>
         <textarea
           name="researchSummary" placeholder="Enter research summary" value={summary}
           onChange={(e) => setSummary(e.target.value)} className="custom-textarea"   maxLength={600}
@@ -112,12 +112,13 @@ const Submit = async (e) => {
             onChange={(e) => setTypeOfStudy(e.target.value)}
             className="name"  required >
             <option value="">Select study type</option>
-            <option value="interventional">Interventional</option>
+            <option value="interventional">Interventional studies</option>
             <option value="case-control">Case Control / Cohort</option>
             <option value="retrospective">Retrospective</option>
-            <option value="epidomological">Epidemiological</option>
-            <option value="cross-section">Cross-section</option>
-            <option value="sociobehaviour">Sociobehaviour</option>
+            <option value="epidomological">Epidemiological/Public Health</option>
+            <option value="cross-section">Cross-sectional</option>
+            <option value="sociobehaviour">Socio-behaviour</option>
+            <option value="anyothers">Any others</option>
           </select>
         </div>
 
@@ -132,7 +133,7 @@ const Submit = async (e) => {
         </div>
 
         <div className="h">
-          <h3>Is there an external laboratory / outsourcing involved?</h3>
+          <h3>Is there an external laboratory / outsourcing involved for inveestigations?</h3>
           <div className="radio-group">
             <label>
               <input type="radio" name="laboratory" value="Yes" checked={external_laboratory === "Yes"}  

@@ -123,15 +123,15 @@ const Section11 = () => {
     <div className="form-container">
         {existData ? ( <TableComponent11 data={existData} />):
       <form onSubmit={handlePreview}>
-      <h1 className="hi">12.CHECKLIST</h1>
-      <h1 className="h2">ADMINSTRATIVE REQUIREMENTS</h1>
+      <h1 className="hi">12. CHECKLIST</h1>
+      <h1 className="h2">ADMINISTRATIVE REQUIREMENTS</h1>
         <div className="h2">
           <h3 className="h2">
             1.Cover letter enlisting all documents enclosed{" "}
           </h3>
           <div className="radio-group">
             <label>
-              <input   type="radio"  name="documents" value="Yes"checked={documents === "Yes"}
+              <input type="radio"  name="documents" value="Yes"checked={documents === "Yes"}
               onChange={(e) => setDocuments(e.target.value)}/>{" "}Yes </label>
              <label>
               <input type="radio"  name="documents" value="No" checked={documents === "No"}
@@ -144,7 +144,7 @@ const Section11 = () => {
               <div>
                 <h5 className="h2">Enclosure no:</h5>
                 <label>
-                  <input type="number"  name="Enclosure1"   placeholder="Enclosure1"value={enclosure1} 
+                  <input type="number"  name="Enclosure1"   placeholder="Number"value={enclosure1} 
                   onChange={(e) => setEnclosure1(e.target.value)}  className="name" required />
                 </label>
               </div>
@@ -183,7 +183,7 @@ const Section11 = () => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number" placeholder="number" value={enclosure2}
+                    type="number" placeholder="Number" value={enclosure2}
                     onChange={(e) => setEnclosure2(Number(e.target.value))}  className="name"  required />
                 </label>
               </div>
@@ -223,7 +223,7 @@ const Section11 = () => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number" placeholder="number"
+                  <input type="number" placeholder="Number"
                     value={enclosure3}  onChange={(e) => setEnclosure3(Number(e.target.value))}
                     className="name" required /> {""}
                 </label>
@@ -232,7 +232,7 @@ const Section11 = () => {
             <br></br>
 
             <div>
-              <h2 className="h2">EC Remarks(Ifapplicable)</h2>
+              <h2 className="h2">EC Remarks(If applicable)</h2>
               <label>
                 <input type="text" placeholder="Remarks3" value={remarks3}
                   onChange={(e) => setRemarks3(e.target.value)} className="name" required
@@ -265,7 +265,7 @@ const Section11 = () => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number" placeholder="number"   value={enclosure4}
+                  <input type="number" placeholder="Number"   value={enclosure4}
                     onChange={(e) => setEnclosure4(Number(e.target.value))} className="name"    required  />
                 </label>
               </div>
@@ -304,7 +304,7 @@ const Section11 = () => {
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
                   <input
-                    type="number"  placeholder="number" value={enclosure5}
+                    type="number"  placeholder="Number" value={enclosure5}
                     onChange={(e) => setEnclosure5(Number(e.target.value))}    className="name"  required  />
                 </label>
               </div>
@@ -351,7 +351,7 @@ const Section11 = () => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number" placeholder="number"  value={enclosure6}
+                  <input type="number" placeholder="Number"  value={enclosure6}
                     onChange={(e) => setEnclosure6(Number(e.target.value))} className="name" required/>
                 </label>
               </div>
@@ -393,7 +393,7 @@ const Section11 = () => {
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input  type="number" placeholder="number" value={enclosure7}
+                  <input  type="number" placeholder="Number" value={enclosure7}
                     onChange={(e) => setEnclosure7(Number(e.target.value))} className="name" required/>
                 </label>
               </div>
@@ -435,7 +435,7 @@ const Section11 = () => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number"    placeholder="number"  value={enclosure8}
+                  <input type="number"    placeholder="Number"  value={enclosure8}
                     onChange={(e) => setEnclosure8(Number(e.target.value))}  className="name"  required
                   />
                 </label>
@@ -484,7 +484,7 @@ const Section11 = () => {
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number"  placeholder="number"  value={enclosure10}
+                  <input type="number"  placeholder="Number"  value={enclosure10}
                     onChange={(e) => setEnclosure10(Number(e.target.value))} className="name"  required />
                 </label>
               </div>
@@ -529,7 +529,7 @@ const Section11 = () => {
               <div className="h2">
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number"placeholder="number" value={enclosure11}
+                  <input type="number"placeholder="Number" value={enclosure11}
                   onChange={(e) => setEnclosure11(Number(e.target.value))}   className="name" required  />
                 </label> </div>
             </div>
@@ -574,7 +574,7 @@ const Section11 = () => {
               <div >
                 <h2 className="h2">Enclosure no:</h2>
                 <label>
-                  <input type="number" placeholder="number" value={enclosure12} 
+                  <input type="number" placeholder="Number" value={enclosure12} 
                   onChange={(e) => setEnclosure12(Number(e.target.value))} className="name" required/>
                 </label>
               </div>

@@ -74,11 +74,11 @@ function Section13() {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"expedited_review"// or hardcoded for now
+            form_type:"expedited_review"
           }
         });
         if (response.data.length > 0) {
-          setExistData(response.data); // You probably meant setExistData, not setExistData
+          setExistData(response.data); 
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -123,7 +123,7 @@ function Section13() {
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
       {existData ? ( <TableComponent13 data={existData} />):
         <form onSubmit={handlePreview}>
-        <h1 className="hi">Application for Expedited Review</h1>
+        <h1 className="hi">13. Application for Expedited Review</h1>
           <div >
             <div>
               <h2 className="h2">Study Protocol No:</h2>

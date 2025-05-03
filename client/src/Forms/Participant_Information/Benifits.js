@@ -64,10 +64,10 @@ const Section5 = () => {
     <div className="h">
        {existData ? ( <TableComponent6 data={existData} />):!showPreview ? (  
       <form onSubmit={handlePreview}>
-      <h2 className="hi">6.BENIFITS AND RISKS</h2>
+      <h2 className="hi">6.BENEFITS AND RISKS</h2>
       <h3 className="h2">
         (a)(i).Are there any anticipated physical / social / psychological
-        discomforts / risk{" "}
+        discomforts / risk to participants?{" "}
       </h3>
         <label>
           <input  type="radio"  name="enter anticipatedtype" value="Yes"

@@ -61,7 +61,7 @@ const FormComponent = ({ formTitle, fields }) => {
                         )
                     ) : field.type === 'radio' ? (
                         <div style={inlineStyles.radioGroup}>
-                        {['Yes', 'No'].map((opt) => (
+                        {['Yes', 'No', 'N/A'].map((opt) => (
                             <label key={opt}>
                               <input type="radio" name={field.name}  value={opt} checked={formData[field.name] === opt} onChange={handleChange} />{opt}
                             </label>

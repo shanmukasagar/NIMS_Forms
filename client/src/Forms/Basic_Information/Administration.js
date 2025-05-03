@@ -89,9 +89,9 @@ const handleFinalSubmit = async () => {
       <div className="h">
       {existData ? (<TableComponent data={existData} />) :
           (<form onSubmit={handlePreview}>
-        <h2 className="h2">SECTION A - BASIC INFORMATION</h2>
-        <h1 className="hi">ADMINISTRATIVE DETAILS</h1>
-            <h2 className="h2">A. Name of Researcher/Principal</h2>
+        <h1 className="hi">SECTION A - BASIC INFORMATION</h1>
+        <h2 className="h2">1. ADMINISTRATIVE DETAILS</h2>
+            <h2 className="h2">A. Name of Researcher/ Principal</h2>
             <input type="text" placeholder="Enter Name"  value={name_of_research_principal} 
             onChange={(e) => {setNameOfResearchPrincipal(e.target.value);
               }}
@@ -100,7 +100,7 @@ const handleFinalSubmit = async () => {
             />
             <div className="form-row">
               <div className="form-group">
-                <h2 className="h2">B.Department</h2>
+                <h2 className="h2">B. Department</h2>
                 <input type="text" value={department}   placeholder="Enter Department"    
                 onChange={(e) => {setDepartment(e.target.value);}}  className="name" required/>  </div>
                  <div className="form-group">
@@ -111,14 +111,14 @@ const handleFinalSubmit = async () => {
               </div>
 
               <div >
-                <h2 className="h2">D.Title</h2>
+                <h2 className="h2">D. Title</h2>
                 <input  type="text" value={title}placeholder="Enter title" 
                 onChange={(e) => { setTitle(e.target.value);}}className="name"required/>
               </div>
             </div>
 
             <div >
-              <h2 className="h2">E.Type of review requested: </h2>
+              <h2 className="h2">E. Type of review requested: </h2>
               <label>  <input  type="radio"  name="review_requested"value="Expedited Review"
               checked={review_requested === "Expedited Review"} onChange={(e) => setReviewRequested(e.target.value)}/>
                 Expedited Review
@@ -133,7 +133,7 @@ const handleFinalSubmit = async () => {
 
             <div className="form-row">
               <div className="form-group">
-                <h2 className="h2">F.Protocol number</h2>
+                <h2 className="h2">F. Protocol number</h2>
                 <input  type="number" value={protocol_number} onChange={(e) => {setProtocolNumber(e.target.value);}}
                   className="name"placeholder="Enter protocol"required/>
               </div>

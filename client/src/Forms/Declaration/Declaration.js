@@ -150,7 +150,7 @@ const Section10 = () => {
               ))}
             </div>
             <div >
-              <h3 className="h2">Name of PI/Researcher</h3>
+              <h3 className="h2">Name of PI / Researcher</h3>
               <label>
                 <input type="text"  name="researcher" placeholder="Enter researcher"  value={name_of_pi_research}
                   onChange={(e) => setNameOfPiResearch(e.target.value)}  className="name" required />
@@ -160,7 +160,7 @@ const Section10 = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <h3 className="h2">signature</h3>
+                <h3 className="h2">Signature</h3>
                 <label>
                   <input
                     type="file" name="images" onChange={(e) => setImage1(e.target.files[0])} 
@@ -190,7 +190,7 @@ const Section10 = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <h3 className="h2">signature</h3>
+                <h3 className="h2">Signature</h3>
                 <label>
                   <input  type="file"name="images"
                     onChange={(e) => setImage2(e.target.files[0])} className="name" required />
@@ -208,7 +208,7 @@ const Section10 = () => {
 
             <div className="form-group">
               <h3 className="h2">
-                Name of Co- investigator / Co-Guide:{" "}
+                Name of Co-investigator / Co-Guide:{" "}
               </h3>
               <label>
                 <input  type="text" name="coguide" placeholder="Enter guide"  value={name_of_co_investigator_1}
@@ -219,7 +219,7 @@ const Section10 = () => {
 
             <div className="form-row">
               <div className="form-group">
-                <h3 className="h2">signature</h3>
+                <h3 className="h2">Signature</h3>
                 <label>
                   <input type="file" name="images" onChange={(e) => setImage3(e.target.files[0])} className="name"
                required />
@@ -236,7 +236,7 @@ const Section10 = () => {
             </div>
             <div className="form-group">
               <h3 className="h2">
-                Name of Co- investigator / Co-Guide:{" "}
+                Name of Co-investigator / Co-Guide:{" "}
               </h3>
               <label>
                 <input type="text" name="guidde"  placeholder="Enter guidde"  value={name_of_co_investigator_2} 
@@ -246,7 +246,7 @@ const Section10 = () => {
             <br></br>
             <div className="form-row">
               <div className="form-group">
-                <h3 className="h2">signature</h3>
+                <h3 className="h2">Signature</h3>
                 <label>
                   <input type="file" name="images" onChange={(e) => setImage4(e.target.files[0])}  
                   className="name" required />

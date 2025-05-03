@@ -76,7 +76,7 @@ useEffect(() => {
     <div className="form-container">
         {existData ? (<TableComponent10 data={existData} />) :
       <form onSubmit={handlePreview}>
-        <h2 className="h2">SECTION D: OTHER ISSUES </h2>
+        <h1 className="hi">SECTION D: OTHER ISSUES </h1>
         <h2 className="h2">10.ADDITIONAL INFORMATION </h2>
         <div >
           <h3 className="h2">

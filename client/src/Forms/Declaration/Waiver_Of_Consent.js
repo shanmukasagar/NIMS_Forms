@@ -125,7 +125,7 @@ function Section14() {
       {existData ? ( <TableComponent14 data={existData} />):
         <form onSubmit={handlePreview}>
         <h1 className="hi">
-          Application Form for Requesting Waiver of Consent
+          14. Application Form for Requesting Waiver of Consent
         </h1>
           <h3 className="h2">1. Principal Investigator’s name: </h3>
           <input

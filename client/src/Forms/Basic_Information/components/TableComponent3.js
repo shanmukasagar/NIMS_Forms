@@ -3,9 +3,9 @@ import React from "react";
 
 const TableComponent3 = ({ data }) => {
   return (
-<div>
+<div className="table-container">
       <h2>Funding Details data</h2>
-      <table border="1" style={{ width: "100%", borderCollapse: "collapse", marginTop: "10px" }}>
+      <table className="custom-table">
         <thead>
           <tr>
             <th>Total Estimated Budget (₹)</th>
