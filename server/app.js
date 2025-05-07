@@ -3,7 +3,6 @@ const cors = require('cors');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
 
-
 const clinicalRoute = require("./routes/ClinicalRoute");
 const userRoute = require("./routes/UserRoute");
 const researchRoute = require("./routes/ResearchRoute");

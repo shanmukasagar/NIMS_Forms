@@ -1,6 +1,5 @@
 import { useState ,useEffect} from "react";
 import "../../App.css";
-
 import TableComponent2 from "./components/TableComponent2.js"; 
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
