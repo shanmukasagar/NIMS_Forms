@@ -31,7 +31,6 @@ const ClinicalFormGrid = () => {
                     console.log("Error occured while fetching data", err.message);
                     alert("Error occured while fetching data");
                 }
-                
             }
         };
     

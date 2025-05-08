@@ -58,8 +58,8 @@ const Sidebar = () => {
       subItems: [
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
         { id: 'CheckList', label: 'CheckList', path: '/checklist' },
-        {id: 'ExpeditedReview', label: 'ExpeditedReview', path:'/expedited'},
-        {id:'WaiverOfConsent', label: 'WaiverOfConsent', path:'/waiver'}
+        {id: 'ExpeditedReview', label: 'Expedited Review', path:'/expedited'},
+        {id:'WaiverOfConsent', label: 'Waiver Of Consent', path:'/waiver'}
       ]
     },
     {

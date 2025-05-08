@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import FormComponent from '../../components/FormComponent';
+import {getSubmittedData} from "./NIEC_Config";
+import NIEC_Form_Preview from './NIEC_Form_Preview';
 
 const formFields = [
     { name: 'register_no', label: 'NIEC registration no',  type: 'text', required: true },
@@ -22,11 +24,32 @@ const formFields = [
 ];
 
 const Amendment = () => {
+
+    const [data, setData] = useState({});
+    const fetchOnce = useRef(false);
+
+    useEffect(() => {
+        if(!fetchOnce.current) {
+            fetchOnce.current = true;
+            getSubmittedData("amendment_form", setData);
+        }
+
+    }, [])
+
     return (
-        <div>
-            <FormComponent formTitle="AMENDMENT REPORTING FORM" fields={formFields} formName = {"amendment_form"}/>
-        </div>
+        <React.Fragment>
+            {
+                data?.formsResult?.length > 0 ?
+                    (<NIEC_Form_Preview formData={data.formsResult[0]} imagePreview={""} 
+                        fields={formFields} isSubmitted = {true} />) :
+                    (
+                        <div>
+                            <FormComponent formTitle="Amendment Reporting Form" fields={formFields} formName={"amendment_form"} />
+                        </div>
+                    )
+            }
+        </React.Fragment>
     );
 };
 
-export default Amendment;
+export default React.memo(Amendment);

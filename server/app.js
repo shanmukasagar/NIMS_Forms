@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const path = require('path');
 
 const clinicalRoute = require("./routes/ClinicalRoute");
 const userRoute = require("./routes/UserRoute");
@@ -26,6 +27,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json());
+// Serve images from the media/niec folder
+app.use('/media/NIEC', express.static(path.join(__dirname, 'media/NIEC')));
 
 //Clinical Routes
 app.use('/api/clinical', clinicalRoute);

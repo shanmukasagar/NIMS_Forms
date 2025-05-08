@@ -1,4 +1,5 @@
 const { pool } = require("../models/db");
+const {connectToMongo, getDB} = require("../models/db");
 
 const TABLE_CONFIGS = {
   amendment_form: {
@@ -73,7 +74,7 @@ function coerceIntegerFields(data, fieldList) {
   });
 }
 
-const NIECFormDetails = async (formData, email, tableName) => {
+const NIECFormDetails = async (formData, email, tableName, imageUrl) => {
   try {
     const config = TABLE_CONFIGS[tableName];
     if (!config) throw new Error("Unsupported table: " + tableName);
@@ -87,6 +88,22 @@ const NIECFormDetails = async (formData, email, tableName) => {
 
     await pool.query(query, values);
 
+    if (imageUrl) {
+      try {
+        await connectToMongo();
+        const NIEC_MediaCollection = getDB().collection("NIEC_Media");
+    
+        const result = await NIEC_MediaCollection.insertOne({ imageUrl, email, formName: tableName });
+        if (!result.acknowledged) {
+          console.log("Insertion not acknowledged for", tableName);
+          return false;
+        }
+        return true;
+      } catch (error) {
+        console.log("Failed to insert into", tableName, ":", error.message);
+        throw error;
+      }
+    }
     return true;
   } catch (error) {
     console.log("Failed to insert into", tableName, ":", error.message);
@@ -94,4 +111,41 @@ const NIECFormDetails = async (formData, email, tableName) => {
   }
 };
 
-module.exports = { NIECFormDetails };
+const NIECFormData = async (email, tableName) => { // Get NIEC forms table data
+  let client;
+
+  try {
+    await connectToMongo();
+    const NIEC_MediaCollection = getDB().collection("NIEC_Media");
+
+    client = await pool.connect();
+    await client.query("BEGIN");
+
+    const formsResult = await client.query(
+      `SELECT * FROM ${tableName} WHERE email = $1`,
+      [email]
+    );
+
+    const imageData = await NIEC_MediaCollection.findOne({
+      email: email,
+      formName: tableName
+    });
+
+    await client.query("COMMIT");
+
+    return {
+      formsResult: formsResult.rows, // Return only rows, not the entire result object
+      imageData
+    };
+
+  } catch (error) {
+    if (client) await client.query("ROLLBACK");
+    console.log("Error occurred while fetching NIEC table form data:", error.message);
+    throw error;
+  } finally {
+    if (client) client.release();
+  }
+};
+
+
+module.exports = { NIECFormDetails, NIECFormData};

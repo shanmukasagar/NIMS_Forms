@@ -54,9 +54,11 @@ const App = () => {
   }
 
   useEffect(() => { // Verify user login or not
-    if(!user) {
+    if(!fetchOnce.current) {
       verifyUser();
+      fetchOnce.current = true;
     }
+    
   }, [location.pathname]);
 
   return (
@@ -75,7 +77,7 @@ const App = () => {
                 <Sidebar/>
                 <Box component="main"  sx={{ flexGrow: 1, marginLeft: '20px', padding: '20px', overflow: 'auto',
                     height: 'calc(100vh - 90px)'
-                  }}
+                  }} 
                 >
             <Routes>
                 <Route path="/basic/administrative" element={<Administration setAdminId={setAdminId} /> }/>
