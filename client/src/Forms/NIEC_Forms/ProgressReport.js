@@ -1,5 +1,7 @@
-import React from 'react';
+import React, {useState,useRef, useEffect } from 'react';
 import FormComponent from '../../components/FormComponent';
+import { getSubmittedData } from './NIEC_Config';
+import NIEC_Form_Preview from './NIEC_Form_Preview';
 
 const formFields = [
     { name: 'study_title', label: 'Title of study:', type: 'text', required: true  },
@@ -59,10 +61,28 @@ const formFields = [
 ];
   
 const ProgressReport = () => {
+  const [data,setData]=useState({})
+  const fetchOnce =useRef(false);
+
+     useEffect(()=> {
+      if(!fetchOnce.current) {
+        fetchOnce.current =true;
+        getSubmittedData("study_progress_report" ,setData);
+      }
+     },[] )
   return (
+    <React.Fragment>
+    {
+          data?.formsResult?.length > 0 ?
+              (<NIEC_Form_Preview formData={data.formsResult[0]} imagePreview={""} 
+                fields={formFields} isSubmitted = {true} />) :
+              (
     <div>
         <FormComponent formTitle="Progress Report" fields={formFields} formName = {"study_progress_report"} />
     </div>
+     )
+        }
+         </React.Fragment>
   )
 }
 

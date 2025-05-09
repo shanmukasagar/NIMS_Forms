@@ -1,6 +1,7 @@
-import React from 'react'
+import React ,{useState,useRef, useEffect }from 'react'
 import FormComponent from '../../components/FormComponent';
-
+import { getSubmittedData } from './NIEC_Config';
+import NIEC_Form_Preview from './NIEC_Form_Preview';
 const formFields = [
     { name: 'niec_reg_no', label: 'NIEC Registration No', type: 'text', required: true  },
     { name: 'project_no', label: 'Project No', type: 'text', required: true  },
@@ -28,20 +29,40 @@ const formFields = [
   
     { name: 'site_closure_report', label: 'Site closure report submitted', type: 'radio', options: ['Yes', 'No', 'N/A'], required: true  },
     { name: 'closure_reason', label: 'If No, specify reasons', type: 'text', required: false  },
-    { name: 'safety_summary', label: 'On-site safety/SAE summary (details)', type: 'textarea', required: true  },
+    { name: 'safety_summary', label: 'On-site safety/SAE summary (details)', type: 'textarea', required: false  },
   
     { name: 'protocol_violations', label: 'Protocol deviations/violations summary', type: 'textarea', required: true  },
-    { name: 'study_summary', label: 'Summary of results and conclusion', type: 'textarea', required: true  },
+    { name: 'study_summary', label: 'Summary of results and conclusion', type: 'textarea', required: false },
     { name: 'publications', label: 'Publications/presentations from data', type: 'text', required: true  },
     { name: 'additional_info', label: 'Any additional information', type: 'textarea', required: false  }
 ];
 
 
 const CompletionReport = () => {
+
+    const [data,setData]=useState({})
+     const fetchOnce = useRef(false);
+      
+          useEffect(() => {
+              if(!fetchOnce.current) {
+                  fetchOnce.current = true;
+                  getSubmittedData("study_completion_report", setData);
+              }
+      
+          }, [])
     return (
+        <React.Fragment>
+        {
+              data?.formsResult?.length > 0 ?
+                  (<NIEC_Form_Preview formData={data.formsResult[0]} imagePreview={""} 
+                    fields={formFields} isSubmitted = {true} />) :
+                  (
         <div>
             <FormComponent formTitle="Completion Report " fields={formFields} formName = {"study_completion_report"}/>
         </div>
+          )
+                }
+                 </React.Fragment>
     )
 }
 

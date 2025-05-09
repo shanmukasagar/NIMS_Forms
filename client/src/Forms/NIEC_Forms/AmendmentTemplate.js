@@ -34,7 +34,7 @@ const AmendmentTemplate = () => {
         <React.Fragment>
             {
                 data?.formsResult?.length > 0 ?
-                    (<NIEC_Form_Preview formData={data.formsResult[0]} imagePreview={`http://localhost:4000/${data.imageData.imageUrl}`} 
+                    (<NIEC_Form_Preview formData={data.formsResult[0]} imagePreview={`http://localhost:4000/${data?.imageData?.imageUrl}`} 
                         fields={formFields} isSubmitted = {true} />) :
                     (
                         <div>
