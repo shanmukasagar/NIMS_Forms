@@ -12,67 +12,37 @@ const Sidebar = () => {
 
   const menuItems = [
     {
-      id: 'Basic Information',
-      label: 'Basic Information',
+      id: 'Research',
+      label: 'Research',
       hasSubMenu: true,
       subItems: [
      
         { id: 'Administrative Details', label: 'Administrative Details', path: '/basic/administrative' },
         { id: 'Details Investigator', label: 'Details Investigator', path: '/basic/details' },
-        { id: 'Funding Details', label: 'Funding Details', path: '/basic/funding' }
-      ]
-    },
-    {
-      id: 'Research Information',
-      label: 'Research Information',
-      hasSubMenu: true,
-      subItems: [
+        { id: 'Funding Details', label: 'Funding Details', path: '/basic/funding' },
         { id: 'Overview of Research', label: 'Overview of Research', path: '/research/overview' },
-       
-      ]
-    },
-    {
-      id: 'Participant Information',
-      label: 'Participant Information',
-      hasSubMenu: true,
-      subItems: [
         { id: 'Research Participant', label: 'Research Participant', path: '/participant/recruitment' },
         { id: 'Benefits and Risks', label: 'Benefits and Risks', path: '/participant/benefits' },
         { id: 'Informed Consent', label: 'Informed Consent', path: '/participant/informedconsent' },
         { id: 'Compensation', label: 'Compensation', path: '/participant/compensation' },
-        { id: 'Confidentiality', label: 'Storage and Confidentiality', path: '/participant/confidentiality' }
-      ]
-    },
-    {
-      id: 'Other Issues',
-      label: 'Other Issues',
-      hasSubMenu: true,
-      subItems: [
-        { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' }
-      ]
-    },
-    {
-      id: 'Declaration and CheckList',
-      label: 'Declaration and CheckList',
-      hasSubMenu: true,
-      subItems: [
+        { id: 'Confidentiality', label: 'Storage and Confidentiality', path: '/participant/confidentiality' },
+        { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' },
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
         { id: 'CheckList', label: 'CheckList', path: '/checklist' },
         {id: 'ExpeditedReview', label: 'Expedited Review', path:'/expedited'},
         {id:'WaiverOfConsent', label: 'Waiver Of Consent', path:'/waiver'}
+
       ]
     },
     {
-      id: 'Add Clinical Trials',
-      label: 'Add Clinical Trials',
-      hasSubMenu: false,
-      path: '/addclinicaltrails',
-    },
-    {
-      id: 'Clinical Trials List',
-      label: 'Clinical Trials List',
-      hasSubMenu: false,
-      path: '/clinicaltrail',
+      id: 'ClinicalTrails',
+      label: 'ClinicalTrails',
+      hasSubMenu: true,
+      subItems: [
+     
+        { id: 'Add Clinical Trials', label: 'Add Clinical Trials', path: '/addclinicaltrails' },
+        { id: 'Clinical Trials List', label: 'Clinical Trials List', path: '/clinicaltrail' },
+      ]
     },
     {
       id: 'NIEC',

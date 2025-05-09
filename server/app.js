@@ -14,7 +14,7 @@ const app = express();
 
 // Middleware
 app.use(cookieParser());
-const allowedOrigins = ['http://localhost:3000', 'http://172.26.0.50:3000'];
+const allowedOrigins = ['http://localhost', 'http://172.26.0.50'];
 
 app.use(cors({
   origin: function (origin, callback) {
