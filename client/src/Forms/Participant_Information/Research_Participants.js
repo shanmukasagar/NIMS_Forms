@@ -1,7 +1,6 @@
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
-
 import TableComponent5 from  "./components/TableComponent5.js";
 import axiosInstance from "../../components/AxiosInstance.js";
 const Section4 = () => {
@@ -81,15 +80,16 @@ const Section4 = () => {
               <input type="text" value={specifiy}onChange={(e) => setSpecifiy(e.target.value)}
                className="name"  required />  </>)}
 
-            <h3>(b) Justification for inclusion (if vulnerable):</h3>
+            <h3>(b) If study includes Vulnerable population, then<br></br> 
+              i.Provide Justification for inclusion (if vulnerable):</h3>
             <textarea  value={justification}   onChange={(e) => setJustification(e.target.value)} 
-              className="custom-textarea"   required />
-            <h3> Are there any additional safeguards to protect research participants?</h3>
+              className="custom-textarea" placeholder="Enter research summary"  required />
+            <h3>ii. Are there any additional safeguards to protect research participants?</h3>
 
             <textarea value={additional_safeguards} onChange={(e) => setAdditionalSafeguards(e.target.value)}
-            className="custom-textarea"required/>
+            className="custom-textarea" placeholder="Enter research summary" required/>
 
-            <h3>(c) Is there any Reimbursement/Payment to the subject for participation?</h3>
+            <h3>(c) Is there any reimbursement/ payment to the subject for participation?</h3>
             <label>
             <input
               type="radio"value="Yes" checked={payment_type === "Yes"}
@@ -109,11 +109,11 @@ const Section4 = () => {
 
           {payment_type === "Yes" && (
             <>
-              <h3>Provide Reimbursement Details:</h3>
+              <h3>If yes,provide details:</h3>
               <input type="text"  value={reimbursement_details} 
               onChange={(e) => setReimbursementDetails(e.target.value)} className="name"   required />
             </> )}
-          <h3>(d) Will Advertisement be used to recruit subjects?</h3>
+          <h3>(d) Will advertisement be used to recruit subjects?</h3>
 
           <label>
             <input type="radio"  value="Yes"checked={advertisement_type === "Yes"}   
@@ -126,7 +126,7 @@ const Section4 = () => {
                onChange={(e) => setAdvertisementType(e.target.value)}  /> No </label>
              {advertisement_type === "Yes" && (
             <>
-              <h3>Advertisement Details:</h3>
+              <h3>If yes,specify details of advertising:</h3>
               <input type="text" value={advertisement_details}
               onChange={(e) => setAdvertisementDetails(e.target.value)} className="name"  required />  </>   )}
           <br></br>

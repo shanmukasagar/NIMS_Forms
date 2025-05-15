@@ -77,10 +77,10 @@ useEffect(() => {
         {existData ? (<TableComponent10 data={existData} />) :
       <form onSubmit={handlePreview}>
         <h1 className="hi">SECTION D: OTHER ISSUES </h1>
-        <h2 className="h2">10.ADDITIONAL INFORMATION </h2>
+        <h2 className="h2">10. ADDITIONAL INFORMATION </h2>
         <div >
           <h3 className="h2">
-            (a)Do you have any additional information to add in support of the
+            (a) Do you have any additional information to add in support of the
             application, which is not included elsewhere in the form? If yes,
             provide the details.{" "}
           </h3>
@@ -105,7 +105,7 @@ useEffect(() => {
             <input
             type="text" name="additionalInformation"  placeholder="Enter details"  checked={additional === "Yes"}
             onChange={(e) => setAdditional(e.target.value)} className="name" required/>
-            <br />
+            
           </div>
         )}
         <button type="submit" className="name">

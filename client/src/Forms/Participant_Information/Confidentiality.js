@@ -89,7 +89,7 @@ const Section8 = () => {
           {existData ? (<TableComponent9 data={existData} />) :
           <form onSubmit={handlePreview}>
           <h1 className="h1">9. STORAGE AND CONFIDENTIALITY </h1>
-          <h1 className="h2">(a)Identifying Information: Study Involves samples / data.</h1>
+          <h1 className="h2">(a) Identifying Information: Study Involves samples / data.</h1>
           <div className="h2">
           <h3 className="h2"> </h3>
           <div className="radio-group">
@@ -134,7 +134,7 @@ const Section8 = () => {
         )}
         <div>
           <h1 className="h2">
-            (b)Will the study documents be under access control?
+            (b) Will the study documents be under access control?
           </h1>
           <div className="h2">
             <label>
@@ -169,7 +169,7 @@ const Section8 = () => {
         )}
         <div >
           <h1 className="h2">
-            (c)Will the study drugs / devices be under access control?
+            (c) Will the study drugs / devices be under access control?
           </h1>
           <div className="h2">
             <label>

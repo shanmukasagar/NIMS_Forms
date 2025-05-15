@@ -87,7 +87,18 @@ const Submit = async (e) => {
         <p><strong>External Lab Involved:</strong> {external_laboratory}</p>
         {external_laboratory === "Yes" && (
           <p><strong>Lab Details:</strong> {specify}</p> )}
-        <p><strong>Uploaded File:</strong> {image ? image.name : "No file uploaded"}</p>
+        <p><strong>Uploaded File:</strong> </p>    {image ? (
+      <div>
+        <img 
+          src={URL.createObjectURL(image)} 
+          alt="Uploaded Preview" 
+          style={{ maxWidth: "300px", maxHeight: "300px" }} 
+        />
+        <p>{image.name}</p>
+      </div>
+    ) : (
+      <p>No file uploaded</p>
+    )}
         <button onClick={Submit} className="name"> Submit</button>
         <button onClick={handleEdit} className="name">Edit</button>
       </div>

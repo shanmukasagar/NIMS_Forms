@@ -64,7 +64,7 @@ function Section13() {
         );
         console.log("Image uploaded:", uploadResponse.data);
       }
-      navigate("/waiver");
+      navigate("/");
     } catch (error) {
       console.error("Submission error:", error);
     }
@@ -80,7 +80,7 @@ function Section13() {
         if (response.data.length > 0) {
           setExistData(response.data); 
         }
-      } catch (err) {
+      } catch (err) { 
         console.error("Fetch error:", err);
         setExistData(null);
       }
@@ -107,7 +107,15 @@ function Section13() {
           <p><strong>Selected Elements: </strong>{selectedElements.join(", ")}</p>
           <p><strong>Name of PI/Researcher:</strong> {name_of_co_investigator_1}</p>
           <p><strong>Date: </strong>{date_2}</p>
-          {image && <p>Image: {image.name}</p>}
+          <p><strong>Uploaded File:</strong> </p>    {image ? (
+          <div>
+         <img src={URL.createObjectURL(image)} alt="Uploaded Preview" style={{ maxWidth: "300px", maxHeight: "300px" }}    />
+        <p>{image.name}</p>
+      </div>
+    ) : (
+      <p>No file uploaded</p>
+    )}
+
           <button onClick={handleSubmit} className="name">
              Submit
           </button>
@@ -125,23 +133,23 @@ function Section13() {
         <form onSubmit={handlePreview}>
         <h1 className="hi">13. Application for Expedited Review</h1>
           <div >
-            <div>
+            <div className="h2">
               <h2 className="h2">Study Protocol No:</h2>
               <input
                 type="number" name="protocolnumber"
-                placeholder="Enter Protocol Number" value={protocol_number} onChange={(e) => 
-                {setProtocolNumber(e.target.value)}}   className="name"  required />
+                placeholder="Number" value={protocol_number} onChange={(e) => 
+                {setProtocolNumber(e.target.value)}}   className= "name"  required />
             </div>
             <br></br>
-            <div>
+            <div className="h2">
               <h2 className="h2">Version number</h2>
-              <input type="number"maxLength={10} pattern="\g{10}" name="versionnumber"
-                placeholder="versionnumber" value={version_number} 
+              <input type="number"maxLength={10} pattern="\g{10}" name="version number"
+                placeholder="Number" value={version_number} 
                 onChange={(e) =>{ setVersionNumber(e.target.value);}} className="name"required />
             </div>
           </div>
 
-          <div >
+          <div  className="h2">
             <h2 className="h2">Date</h2>
             <label>
               <input type="date" name="date"value={date_1}
@@ -151,9 +159,11 @@ function Section13() {
             </label>
             <br />
           </div>
+          <div className="h2">
           <h3 className="h2">1. Principal Investigator’s name: </h3>
           <input type="text" name="name"  placeholder="Enter Name"   value={principal_investigator_name} 
           onChange={(e) => { setPrincipalInvestigatorName(e.target.value); }} className="name" required/>
+          </div>
           <br />
           <div >
             <div className="h2">
@@ -163,7 +173,7 @@ function Section13() {
                 setDepartment(e.target.value);}}
                 className="name"required/>
             </div><br />
-            <div>
+            <div className="h2">
               <h2 className="h2">3. Title Of Project</h2>
               <input
                 type="text" name="title" placeholder="Enter Title" value={title}  
@@ -199,7 +209,7 @@ function Section13() {
                 </label> ))}
             </div>
           </div>
-          <div >
+          <div className="h2" >
             <h2 className="h2">Name of PI / Researcher</h2>
             <label>
               <input type="text" name="researcher"  placeholder="Enter researcher"
@@ -216,7 +226,7 @@ function Section13() {
                   required/>
               </label>
             </div>
-            <div >
+            <div className="h2">
               <h2 className="h2">Date</h2>
               <label>
            <input type="date" name="date"  value={date_2}   placeholder="YYYY/MM/DD" 

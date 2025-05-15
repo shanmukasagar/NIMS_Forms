@@ -319,3 +319,24 @@ body {
 }
 
 
+.input-row {
+  display: flex;
+  gap: 20px; /* space between the inputs */
+  margin-bottom: 20px;
+}
+
+.input-row > div {
+  flex: 1; /* makes both divs take equal width */
+}
+
+
+
+.custom-textt {
+  font-family: 'Lato', sans-serif; /* Modern, clean sans-serif */
+  font-size: 1em;
+  color: #020202;
+  font-weight: 500; /* Bold */
+  /* text-transform: uppercase; */ /* Removed to allow normal casing */
+  letter-spacing: 0.02em;
+  margin-bottom: 1.2em;
+}

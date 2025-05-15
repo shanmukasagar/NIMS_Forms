@@ -24,7 +24,8 @@ const TableComponent4 = ({ data }) => {
               <td>{entry.specify || "N/A"}</td>
               <td>
                 {entry.image_url ? (
-                  <a href={entry.image_url} target="_blank" rel="noopener noreferrer">View File</a>
+                   <img src={entry.image_url} alt="Uploaded" style={{ maxWidth: "100px", maxHeight: "100px" }} />
+                  
                 ) : (
                   "No file"
                 )}

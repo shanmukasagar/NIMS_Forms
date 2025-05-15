@@ -4,13 +4,13 @@ const {connectToMongo, getDB} = require("../models/db");
 const administrationDetails = async (formData) => {
   try {
     const {
-      name_of_research_principal,  department,title,  review_requested,protocol_number, version_number,date, email
+      name_of_research_principal,  department,title,  review_requested,protocol_number, version_number,date, email,date_1
     } = formData;
 
     const newUser = await pool.query(
-      "INSERT INTO administrativee_details (name_of_research_principal,department,title,review_requested,protocol_number,version_number,date,email) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING idd", // Returning only the id
+      "INSERT INTO administrativee_details (name_of_research_principal,department,title,review_requested,protocol_number,version_number,date,email,date_1) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING idd", // Returning only the id
       [
-        name_of_research_principal, department,title,review_requested, protocol_number,version_number,date,email
+        name_of_research_principal, department,title,review_requested, protocol_number,version_number,date,email,date_1
       ]
     );
 
@@ -293,14 +293,14 @@ const saveInvestigatorDetails = async (investigators) => {
   const results = [];
   for (const inv of investigators) {
     const {
-      name,  designation,   qualification,  department, institution,  address,investigator_type,email
+      name,  designation,   qualification,  department, institution,  address,investigator_type,email,gmail,contact
     } = inv;
     const result = await pool.query(
       `INSERT INTO investigatorss ( name, designation, qualification, department, institution, 
-      address, investigator_type,email) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7,$8) RETURNING id`,
+      address, investigator_type,email,gmail,contact) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9,$10) RETURNING id`,
       [
-        name,designation,qualification,department,institution,address, investigator_type,email,
+        name,designation,qualification,department,institution,address, investigator_type,email,gmail,contact
       ]
     );
     results.push(result.rows[0]);

@@ -15,8 +15,8 @@ const TableComponent13 = ({ data }) => {
             <th>Title</th>
             <th>Summary</th>
             <th>Co-Investigator 1</th>
-            <th>Date 1</th>
-            <th>Date 2</th>
+            <th>Date </th>
+            <th>Date </th>
             <th>email</th>
          
           </tr>

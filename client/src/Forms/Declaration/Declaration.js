@@ -115,16 +115,30 @@ const Section10 = () => {
            <ul>
               {selectedElements.map((el, i) => ( <li key={i}>{el}</li>))}  </ul>
           </li>
-          <li>
-            <strong>Signatures:</strong>
-            <ul>
-              <li>Image 1: {image1?.name || "No file selected"}</li>
-              <li>Image 2: {image2?.name || "No file selected"}</li>
-              <li>Image 3: {image3?.name || "No file selected"}</li>
-              <li>Image 4: {image4?.name || "No file selected"}</li>
-            </ul>
-          </li>
-        </ul>
+          
+  <li>
+  <strong>Signatures:</strong>
+  <ul>
+    {[image1, image2, image3, image4].map((img, idx) => (
+      <li key={idx}>
+        {img ? (
+          <div>
+            <img
+              src={URL.createObjectURL(img)}
+              alt={`Signature ${idx + 1}`}
+              style={{ maxWidth: "150px", maxHeight: "150px" }}
+            />
+            <p>{img.name}</p>
+          </div>
+        ) : (
+          `Image ${idx + 1}: No file selected`
+        )}
+      </li>
+    ))}
+  </ul>
+</li>
+</ul>
+
         <button onClick={() => setShowPreview(false)} className="name"> Edit</button>
         <button onClick={confirmSubmit} className="name"> Submit  </button>
       </div>

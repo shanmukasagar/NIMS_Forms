@@ -66,7 +66,7 @@ const Section5 = () => {
       <form onSubmit={handlePreview}>
       <h2 className="hi">6.BENEFITS AND RISKS</h2>
       <h3 className="h2">
-        (a)(i).Are there any anticipated physical / social / psychological
+        (a)(i). Are there any anticipated physical / social / psychological
         discomforts / risk to participants?{" "}
       </h3>
         <label>

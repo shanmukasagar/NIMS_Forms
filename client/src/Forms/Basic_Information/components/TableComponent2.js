@@ -1,5 +1,3 @@
-
-
 import React from "react";
 
 const TableComponent2 = ({ data }) => {
@@ -15,13 +13,17 @@ const TableComponent2 = ({ data }) => {
             <th>Department</th>
             <th>Institution</th>
             <th>Address</th>
-            <th>Investigator Type</th>
+            <th>Investigator Type</th>            
             <th>Email</th>
+            <th>contact</th>
+            <th>Gmail</th>
+            
           </tr>
         </thead>
         <tbody>
           {data.map((investigator, index) => (
             <tr key={index}>
+              
               <td>{investigator.name}</td>
               <td>{investigator.designation}</td>
               <td>{investigator.qualification}</td>
@@ -30,6 +32,8 @@ const TableComponent2 = ({ data }) => {
               <td>{investigator.address}</td>
               <td>{investigator.investigator_type}</td>
               <td>{investigator.email}</td>
+              <td>{investigator.contact}</td>
+              <td>{investigator.gmail}</td>
             </tr>
           ))}
         </tbody>

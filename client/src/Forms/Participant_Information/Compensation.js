@@ -1,6 +1,5 @@
 import { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import "../../App.css";
 import TableComponent8 from  "./components/TableComponent8.js";
 import axiosInstance from "../../components/AxiosInstance.js";
@@ -74,14 +73,14 @@ const Section7 = () => {
         existData ? ( <TableComponent8 data={existData} /> )
      :(
          <form onSubmit={handlePreview}>
-          <h1 className="h1">8.PAYMENT / COMPENSATION</h1>
+          <h1 className="h1">8. PAYMENT /COMPENSATION</h1>
          <h3 className="h2">
-         (a)Is there a provision for treatment free of cost for research related
+         (a) Is there a provision for treatment free of cost for research related
          injuries?{" "}
         </h3>
-        <div className="h2">
+        <div className="h">
       
-          <div className="h">
+          <div className="radio-group">
             <label>
               <input type="radio"  name="waiver" value="Yes"checked={waiver_consent_type === "Yes"}  
               onChange={(e) => setWaiverConsentType(e.target.value)}   />{" "} {""}Yes
@@ -100,7 +99,7 @@ const Section7 = () => {
         </div>
         <div className="h">
           <h3>
-            (b)Is there a provision for compensation of research related SAE?{" "}
+            (b) Is there a provision for compensation of research related SAE?{" "}
           </h3>
           <div className="radio-group">
             <label>

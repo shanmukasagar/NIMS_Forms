@@ -8,14 +8,14 @@ function Section6() {
   const [seeking_waiver_of_consent_type, setSeekingWaiverOfConsentType] = useState("");
   const [languages, setLanguages] = useState("");
   const [version_number, setVersionNumber] = useState("");
-  const [date, setDate] = useState("");
-  const [date_1, setDate1] = useState("");
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date_1, setDate1] = useState(new Date().toISOString().split('T')[0]);
   const [version_1, setVersion1] = useState("");
   const [version_2, setVersion2] = useState("");
   const[version_3, setVersion3]=useState("") 
   const [showPreview, setShowPreview] = useState(false);
-  const[date_2,setDate2] =useState("");
-  const[date_3,setDate3]=useState("");
+  const[date_2,setDate2] =useState(new Date().toISOString().split('T')[0]);
+  const[date_3,setDate3]=useState(new Date().toISOString().split('T')[0]);
   const [certificates, setCertificates] = useState("");
   const [subject, setSubject] = useState("");
   const [specify, setSpecify] = useState("");
@@ -257,7 +257,7 @@ function Section6() {
               type="number"  name="versionnumber"  placeholder="Enter version number"
               value={version_number}    onChange={(e) =>setVersionNumber(e.target.value)}
               className="name" required={languages === "Anyotherspecify"}/>
-            <h2 className="h">Date</h2>
+            <h3 className="h1">Date</h3>
 
             <input type="date"    name="studyDate" id="studyDate"
               placeholder="DD/MM/YYYY"  value={date} onChange={(e) => setDate(e.target.value)}   className="name"

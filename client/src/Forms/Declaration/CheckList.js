@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-
 import { useState ,useEffect} from "react";
 import "../../App.css";
 import TableComponent11 from  "./components/TableComponent11.js";
@@ -62,7 +61,7 @@ const Section11 = () => {
       );
     
       console.log("User created:", userResponse.data);
-      navigate("/expedited");
+      navigate("/waiver");
     } catch (error) {
       console.error(
         "Error:",
@@ -160,7 +159,7 @@ const Section11 = () => {
           </div>
           {/* 2 */}
           <h3 className="h2">
-            2.Brief CV of all Investigators (updated, signed and dated){" "}
+            2. Brief CV of all Investigators (updated, signed and dated){" "}
           </h3>
           <div className="h2">
             <label>
@@ -200,7 +199,7 @@ const Section11 = () => {
           </div>
           {/* 3 */}
           <h3 className="h2">
-            3.Good Clinical Practice (GCP) training of investigators in last 3
+            3. Good Clinical Practice (GCP) training of investigators in last 3
             years{" "}
           </h3>
           <div className="h2">
@@ -234,7 +233,7 @@ const Section11 = () => {
             <div>
               <h2 className="h2">EC Remarks(If applicable)</h2>
               <label>
-                <input type="text" placeholder="Remarks3" value={remarks3}
+                <input type="text" placeholder="Remarks" value={remarks3}
                   onChange={(e) => setRemarks3(e.target.value)} className="name" required
                 />
                 {""}
@@ -243,7 +242,7 @@ const Section11 = () => {
           </div>
 
           {/* 4 */}
-          <h3 className="h2">4.EC clearance of other centers</h3>
+          <h3 className="h2">4. EC clearance of other centers</h3>
           <div className="radio-group">
             <label>
               <input type="radio"  name="clearance"   value="Yes"
@@ -282,7 +281,7 @@ const Section11 = () => {
           </div>
 
           {/* 5 */}
-          <h3 className="h2">5.MOU between collaborating partners</h3>
+          <h3 className="h2">5. MOU between collaborating partners</h3>
           <div className="h2">
             <label>
               <input type="radio"  name="partners"  value="Yes" checked={partners === "Yes"}
@@ -323,7 +322,7 @@ const Section11 = () => {
           <h1 className="h2">PROPOSAL RELATED </h1>
 
           <h3 className="h2">
-            6.Copy of the detailed protocol (clearly identified numbered and
+            6. Copy of the detailed protocol (clearly identified numbered and
             dated) and synopsis (summary as far as possible in non-technical
             language, flowchart, diagrammatic representation of the protocol)
           </h3>
@@ -368,7 +367,7 @@ const Section11 = () => {
           </div>
           {/* 7 */}
           <h3 className="h2">
-            7.Participant Information Sheet (PIS) and Informed Consent Form
+            7. Participant Information Sheet (PIS) and Informed Consent Form
             (ICF) (English and translated) with version number and dated
           </h3>
           <div className="h2">
@@ -412,7 +411,7 @@ const Section11 = () => {
 
           {/* 8 */}
           <h3 className="h2">
-            8.Assent form for minors (12-18 years) (English and Translated)
+            8. Assent form for minors (12-18 years) (English and Translated)
           </h3>
           <div className="h2">
             <label>
@@ -454,7 +453,7 @@ const Section11 = () => {
           </div>
 
           <h3 className="h2">
-            9.Application for waiver of consent if applicable
+            9. Application for waiver of consent if applicable
           </h3>
           {/* 10 */}
           <h3 className="h2">
@@ -502,7 +501,7 @@ const Section11 = () => {
           </div>
 
           <h3 className="h2">
-            11.Advertisement / material to recruit participants (fliers,
+            11. Advertisement / material to recruit participants (fliers,
             posters, etc.)
           </h3>
           <div className="h2">
@@ -543,7 +542,7 @@ const Section11 = () => {
             </div>
           </div>
           <h3 className="h2">
-            12.Insurance policy / A description of arrangement for insurance
+            12. Insurance policy / A description of arrangement for insurance
             coverage for research participants, if applicable
           </h3>
           <div className="h2">

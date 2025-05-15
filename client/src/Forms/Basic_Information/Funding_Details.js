@@ -83,7 +83,7 @@ const FundingDetails = () => {
           type="number"  name="budget" value={total_estimated_budget} 
           onChange={(e) => setTotalEstimatedBudget(e.target.value)} placeholder="Enter Budget Amount" className="name"
           required />
-        <br />
+        
         <h2 className="h2">b. Funding source:</h2>
         <select
           name="fundingSource" value={funding_source} onChange={(e) => setFundingSource(e.target.value)}  

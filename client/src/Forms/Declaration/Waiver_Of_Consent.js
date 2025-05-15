@@ -1,5 +1,4 @@
 import { useState,useEffect } from "react";
-
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import TableComponent14 from  "./components/TableComponent14.js";
@@ -107,8 +106,15 @@ function Section14() {
           <p><strong>Selected Elements:</strong> {selectedElements.join(", ")}</p>
           <p><strong>Summary: </strong>{summary}</p>
           <p><strong>Name of PI/Researcher:</strong> {name_of_co_investigator_1}</p>
-          <p><strong>Date:</strong>{date}</p>
-          {image && <p>Image: {image.name}</p>}
+          <p><strong>Date:</strong>{date}</p>{image ? (
+          <div>
+         <img src={URL.createObjectURL(image)} alt="Uploaded Preview" style={{ maxWidth: "300px", maxHeight: "300px" }}    />
+        <p>{image.name}</p>
+      </div>
+    ) : (
+      <p>No file uploaded</p>
+    )}
+
           <button onClick={handleSubmit} className="name">
              Submit
           </button>
@@ -128,19 +134,21 @@ function Section14() {
           14. Application Form for Requesting Waiver of Consent
         </h1>
           <h3 className="h2">1. Principal Investigator’s name: </h3>
+          <div className="h2">
           <input
             type="text" name="name" placeholder="Enter Name" value={principal_investigator_name}
             onChange={(e) => {setPrincipalInvestigatorName(e.target.value); }}
             className="name" required/>
+            </div>
           <br />
           <div >
-            <div>
+            <div className="h2"> 
               <h2 className="h2">2. Department</h2>
               <input type="text"  name="department" placeholder="Enter Department" value={department}
                 onChange={(e) => {setDepartment(e.target.value);}} className="name" required/>
             </div>
             <br />
-            <div >
+            <div className="h2">
               <h3 className="h2">3. Title </h3>
               <input type="text" name="title"  placeholder="Enter Title"value={title}
                 onChange={(e) => {setTitle(e.target.value); }} className="name" required/>
@@ -172,21 +180,23 @@ function Section14() {
           <br />
           <div className="form-group">
             <h3 className="h2">Name of PI / Researcher</h3>
+            <div className="h2">
             <label>
               <input type="text" name="researcher" placeholder="Enter researcher"value={name_of_co_investigator_1}
                 onChange={(e) => setNameOfCoInvestigator1(e.target.value)}  className="name" required/>
             </label>
+            </div>
           </div>
           <br></br>
 
           <div >
-            <div>
+            <div className="h2">
               <h3 className="h2">signature</h3>
               <label>
             <input type="file" name="image" onChange={(e) => setImage(e.target.files[0])} className="name" required />
               </label>
             </div>
-            <div >
+            <div className="h2" >
               <h3 className="h2">Date</h3>
               <label>
                 <input type="date" name="date" value={date}

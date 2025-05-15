@@ -16,6 +16,7 @@ const TableComponent = ({ data }) => {
             <th>Protocol No</th>
             <th>Version No</th>
             <th>email</th>
+            <th>Dated</th>
           </tr>
         </thead>
         <tbody>
@@ -30,6 +31,7 @@ const TableComponent = ({ data }) => {
               <td>{entry.protocol_number}</td>
               <td>{entry.version_number}</td>
               <td>{entry.email}</td>
+              <td>{entry.date_1}</td>
             </tr>
           ))}
         </tbody>
