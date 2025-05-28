@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, InputAdornment, IconButton, Typography } from '@mui/material';
+import { Box, TextField, Button, InputAdornment, IconButton, Typography, MenuItem, FormControl, InputLabel, Select  } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "../styles/RegistrationForm.css";
-import axiosInstance from "../components/AxiosInstance";
+import axiosInstance from "./AxiosInstance";
 
-const AuthForm = () => {
+const AuthForm = ({selectedRole, setSelectedRole}) => {
     const [isRegistering, setIsRegistering] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '', mobile: '' });
@@ -33,7 +33,7 @@ const AuthForm = () => {
             try {
                 const res = await axiosInstance.post('/api/user/register', formData,);
                 alert(res.data);
-                navigate('/');
+                navigate('/basic/administrative');
                 return ;
             } catch (err) {
                 setError(err.response?.data || 'Registration failed');
@@ -41,7 +41,11 @@ const AuthForm = () => {
         } else {
             try {
                 const res = await axiosInstance.post('/api/user/login', { email, password });
-                navigate('/');
+                if(selectedRole === "Principal/CoInvestigator") {
+                    navigate('/investigator');
+                    return ;
+                }
+                navigate('/basic/administrative');
             } catch (err) {
                 setError(err.response?.data || 'Login failed');
             }
@@ -90,6 +94,22 @@ const AuthForm = () => {
                         <TextField label="Password" name="password" type={showPassword ? 'text' : 'password'} 
                             fullWidth value={formData.password} onChange={handleChange} required 
                                 InputProps={inputProps} />
+                        <FormControl fullWidth required>
+                            <InputLabel id="role-label">Role</InputLabel>
+                            <Select labelId="role-label" name="role" value={selectedRole}
+                                onChange={(e) => setSelectedRole(e.target.value)}  label="Role" >
+                                <MenuItem value="Principal/CoInvestigator">Principal/CoInvestigator</MenuItem>
+                                <MenuItem value="ISRC Committee Member">ISRC Committee Member</MenuItem>
+                                <MenuItem value="ISRC Committee Chair">ISRC Committee Chair</MenuItem>
+                                <MenuItem value="Project Budget committee(PBC) member and chair">
+                                    Project Budget committee(PBC) member and chair
+                                </MenuItem>
+                                <MenuItem value="NIMS IEC committee- member">NIMS IEC committee- member</MenuItem>
+                                <MenuItem value="NIMS IEC CommitteeMember-secretary">NIMS IEC CommitteeMember-secretary</MenuItem>
+                                <MenuItem value="NIMS IEC Committee - Chairman">NIMS IEC Committee - Chairman</MenuItem>
+                                <MenuItem value="Admin">Admin</MenuItem>
+                            </Select>
+                        </FormControl>
                     </React.Fragment>
                     )}
                     <Button type="submit" variant="contained" fullWidth sx = {{ backgroundColor : "#4b1d77",

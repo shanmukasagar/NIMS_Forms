@@ -1,163 +1,180 @@
-import { useState ,useEffect} from "react";
-import TableComponent2 from "./components/TableComponent2.js"; 
-import "../../App.css";
+import { useState, useEffect } from "react";
+import TableComponent2 from "./components/TableComponent2";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../components/AxiosInstance.js";
+import axiosInstance from "../../components/AxiosInstance";
 
-  const DetailsInvestigator =() => { 
-  const [piName, setPiName] = useState("");
-  const [piDesignation, setPiDesignation] = useState("");
-  const [piQualification, setPiQualification] = useState("");
-  const [piDepartment, setPiDepartment] = useState("");
-  const [piInstitution, setPiInstitution] = useState("");
-  const [piAddress, setPiAddress] = useState("");
-  const [piInvestigatorType] = useState("Principal_Investigator");
-  const [coiName, setCoiName] = useState("");
-  const [coiDesignation, setCoiDesignation] = useState("");
-  const [coiQualification, setCoiQualification] = useState("");
-  const [coiDepartment, setCoiDepartment] = useState("");
-  const [coiGmail, setCoiGmail] = useState("");
-  const [coiContact, setCoiContact] = useState("");
-  const [email]=useState("")
-  const[coi_type,setCoiType]=useState("")
-  const [showPreview, setShowPreview] = useState(false);
-  const[existData,setExistData]=useState(null)
+const styles = {
+  formContainer: {
+    maxWidth: "900px",
+    margin: "20px auto",
+    padding: "20px",
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    backgroundColor: "#fafafa",
+    fontFamily: "Arial, sans-serif",
+  },
+  formTitle: {
+    fontSize: "22px",
+    fontWeight: "bold",
+    marginBottom: "20px",
+    color: "#333",
+  },
+  investigatorCard: {
+    marginBottom: "20px",
+    padding: "15px",
+    border: "1px solid #ccc",
+    borderRadius: "6px",
+    backgroundColor: "#fff",
+  },
+  input: {
+    display: "block",
+    width: "100%",
+    padding: "8px",
+    marginBottom: "17px",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    fontSize: "18px",
+  },
+  btn: {
+    padding: "10px 20px",
+    margin: "10px 10px 0 0",
+    fontSize: "14px",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "4px",
+    cursor: "pointer",
+  },
+  btnSecondary: {
+    backgroundColor: "#6c757d",
+  },
+  previewCard: {
+    padding: "15px",
+    marginBottom: "15px",
+    border: "1px solid #bbb",
+    borderRadius: "5px",
+    backgroundColor: "#f9f9f9",
+  },
+};
+
+const DetailsInvestigator = () => {
   const navigate = useNavigate();
+  const [existData, setExistData] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handleChange = (e) => {
-    const value = e.target.value;
-    setCoiType(value);};
+  const [principal, setPrincipal] = useState({
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Principal_Investigator"
+  });
+
+  const [guide, setGuide] = useState({
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Guide"
+  });
+
+  const [coInvestigators, setCoInvestigators] = useState([
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator" },
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator" },
+  ]);
+
+  const handleCoInvestigatorChange = (index, field, value) => {
+    const updated = [...coInvestigators];
+    updated[index][field] = value;
+    setCoInvestigators(updated);
+  };
+
   const Submit = async (e) => {
     e.preventDefault();
     try {
-      const investigatorss = [
-        {
-          name: piName,
-          designation: piDesignation,
-          qualification: piQualification,
-          department: piDepartment,
-          institution: piInstitution,
-          address: piAddress,
-          investigator_type: piInvestigatorType,
-          email,
-        },
-      ];
-  
-      if (coi_type && coiName && coiDesignation && coiQualification && coiDepartment && coiGmail && coiContact) {
-        investigatorss.push({
-          name: coiName,
-          designation: coiDesignation,
-          qualification: coiQualification,
-          department: coiDepartment,
-          gmail: coiGmail,
-          contact: coiContact,
-          investigator_type: coi_type, 
-          email,
-        });
-      }
-      await axiosInstance.post("/api/research/investigatorss", investigatorss);
+      const allInvestigators = [principal, guide, ...coInvestigators].filter(inv => inv.name);
+      await axiosInstance.post("/api/research/investigatorss", allInvestigators);
       console.log("Investigators created");
-      navigate("/basic/funding") 
+      navigate("/basic/funding");
     } catch (error) {
-      console.error(
-        "Error:",
-        error.response ? error.response.data : error.message
-      );
+      console.error("Error:", error.response ? error.response.data : error.message);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axiosInstance.get("/api/research/check/admin", { 
-          params : {
-            form_type:"investigatorss"
-          } });
-        if (response.data.length > 0) {
-          setExistData(response.data); 
-        }
-      } catch (err) {
-        console.error("Fetch error:", err);
-        setExistData(null);
-      }};
-    fetchData();
-  }, [email]);
-  
+
   const handlePreview = (e) => {
     e.preventDefault();
     setShowPreview(true);
   };
 
-  const handleEdit = () => {
-    setShowPreview(false);};
+  const handleEdit = () => setShowPreview(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get("/api/research/check/admin", {
+          params: { form_type: "investigatorss" },
+        });
+        if (response.data.length > 0) setExistData(response.data);
+      } catch (err) {
+        console.error("Fetch error:", err);
+        setExistData(null);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const renderInvestigatorInput = (data, setData, prefix = "", required = false) => (
+    <div style={styles.investigatorCard}>
+      <h4>{prefix}</h4>
+      <input style={styles.input} type="text" placeholder="Name" value={data.name}
+        onChange={(e) => setData({ ...data, name: e.target.value })} required={required} />
+      <input style={styles.input} type="text" placeholder="Designation" value={data.designation}
+        onChange={(e) => setData({ ...data, designation: e.target.value })} required={required} />
+      <input style={styles.input} type="text" placeholder="Qualification" value={data.qualification}
+        onChange={(e) => setData({ ...data, qualification: e.target.value })} required={required} />
+      <input style={styles.input} type="text" placeholder="Department" value={data.department}
+        onChange={(e) => setData({ ...data, department: e.target.value })} required={required} />
+      <input style={styles.input} type="email" placeholder="Email" value={data.Email}
+        onChange={(e) => setData({ ...data, Email: e.target.value })} required={required} />
+      <input style={styles.input} type="text" placeholder="Contact No" value={data.contact}
+        onChange={(e) => setData({ ...data, contact: e.target.value })} required={required} />
+    </div>
+  );
+
   if (showPreview) {
     return (
-      <div className="form-container">
-        <h2 className="h2">Preview </h2>
-         <div className="h">
-          <h3>Principal Investigator:</h3>
-          <p><strong>Name:</strong> {piName}</p>
-          <p><strong>Designation:</strong> {piDesignation}</p>
-          <p><strong>Qualification:</strong> {piQualification}</p>
-          <p><strong>Department:</strong> {piDepartment}</p>
-          <p><strong>Institution:</strong> {piInstitution}</p>
-          <p><strong>Address:</strong> {piAddress}</p>
-        </div>
-        <div className="h">
-          <h3>Co-investigator:</h3>
-          <p><strong>Name:</strong> {coiName}</p>
-          <p><strong>Designation:</strong> {coiDesignation}</p>
-          <p><strong>Qualification:</strong> {coiQualification}</p>
-          <p><strong>Department:</strong> {coiDepartment}</p>
-          <p><strong>Gmail:</strong> {coiGmail}</p>
-          <p><strong>Email</strong></p>
-          <p><strong>contact:</strong> {coiContact}</p>
-        </div>
-        <button onClick={Submit} className="name">Submit</button>
-        <button onClick={handleEdit} className="name">Edit</button>
+      <div style={styles.formContainer}>
+        <h2 style={styles.formTitle}>Preview</h2>
+        {[{ title: "Principal Investigator", data: principal },
+          { title: "Guide", data: guide },
+          ...coInvestigators.map((coi, index) => ({ title: `Co-Investigator ${index + 1}`, data: coi }))
+        ].map((section, idx) => (
+          <div key={idx} style={styles.previewCard}>
+            <h3>{section.title}</h3>
+            {Object.entries(section.data).map(([key, value]) => (
+              <p key={key}><strong>{key}:</strong> {value}</p>
+            ))}
+          </div>
+        ))}
+        <button onClick={Submit} style={styles.btn}>Submit</button>
+        <button onClick={handleEdit} style={{ ...styles.btn, ...styles.btnSecondary }}>Edit</button>
       </div>
     );
   }
 
   return (
-    <div className="form-container">
-      {existData ? (<TableComponent2 data={existData} />) :
-      <form>
-      <h3 className="h2">G. Details of Investigators / Researcher(s): </h3>
-        <div className="form-row">
-          <div className="h">
-            <h3>Principal Investigator / Researcher:</h3>
-            <input type="text" placeholder="Name" value={piName} onChange={(e) => setPiName(e.target.value)} required className="name" />
-            <input type="text" placeholder="Designation" value={piDesignation} onChange={(e) => setPiDesignation(e.target.value)} required className="name" />
-            <input type="text" placeholder="Qualification" value={piQualification} onChange={(e) => setPiQualification(e.target.value)} required className="name" />
-            <input type="text" placeholder="Department" value={piDepartment} onChange={(e) => setPiDepartment(e.target.value)} required className="name" />
-            <input type="text" placeholder="Institution" value={piInstitution} onChange={(e) => setPiInstitution(e.target.value)} required className="name" />
-            <textarea placeholder="Address" value={piAddress} onChange={(e) => setPiAddress(e.target.value)} required className="custom-textarea" />
-          </div>
-
-          <div className="h">
-          <label>
-            <input type="radio" name="coi_type"  value="Co-investigator" checked={coi_type ==="Co-investigator"} onChange={handleChange} />
-            Co-investigator </label>
-           <label>
-              <input type="radio" name="coi_type" value="Guide" checked={coi_type === "Guide"} onChange={handleChange}/>
-               Guide
-            </label>
-            <br></br>
-            <input type="text" placeholder="Name" value={coiName} onChange={(e) => setCoiName(e.target.value)} required className="name" />
-            <input type="text" placeholder="Designation" value={coiDesignation} onChange={(e) => setCoiDesignation(e.target.value)} required className="name" />
-            <input type="text" placeholder="Qualification" value={coiQualification} onChange={(e) => setCoiQualification(e.target.value)} required className="name" />
-            <input type="text" placeholder="Department" value={coiDepartment} onChange={(e) => setCoiDepartment(e.target.value)} required className="name" />
-            <input type="email" placeholder="Gmail" value={coiGmail} onChange={(e) => setCoiGmail(e.target.value)} pattern=".+@gmail\.com"
-            required className="name" />
-            <input type="text" placeholder="Contact No" value={coiContact} onChange={(e) => setCoiContact(e.target.value)}required className="name" />
-          </div>
-        </div>
-        <button onClick={handlePreview} className="name">
-          Preview
-        </button>
-      </form>
-}
-</div>
-);
+    <div style={styles.formContainer}>
+      {existData ? (
+        <TableComponent2 data={existData} />
+      ) : (
+        <form onSubmit={handlePreview}>
+          <h2 style={styles.formTitle}>G. Details of Investigators / Researcher(s):</h2>
+          {renderInvestigatorInput(principal, setPrincipal, "Principal Investigator", true)}
+          {renderInvestigatorInput(guide, setGuide, "Guide", false)}
+          {coInvestigators.map((coi, index) =>
+            renderInvestigatorInput(coi, (newData) => {
+              const updated = [...coInvestigators];
+              updated[index] = newData;
+              setCoInvestigators(updated);
+            }, `Co-Investigator ${index + 1}`)
+          )}
+          <button type="submit" style={styles.btn}>Preview</button>
+        </form>
+      )}
+    </div>
+  );
 };
+
 export default DetailsInvestigator;

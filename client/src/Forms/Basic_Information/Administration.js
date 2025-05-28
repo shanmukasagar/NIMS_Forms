@@ -19,7 +19,7 @@ const[existData,setExistData]=useState(null);
 const navigate = useNavigate();
 const [formData, setFormData] = useState({review_requested: "",email:""});
 
-const handleChange = async (e) => {
+const handleChange = async (e) => { 
   const value = e.target.value;
 
   if (value === "Expedited Review") {
@@ -167,7 +167,7 @@ const handleFinalSubmit = async () => {
         <div>
         <h2 className="h2">Version number</h2>
         <input
-          type="number" value={version_number} onChange={(e) => setVersionNumber(e.target.value)}
+          type="text" value={version_number} onChange={(e) => setVersionNumber(e.target.value)}
           className="name" placeholder="Enter version"  required/>
        </div>
        <div>

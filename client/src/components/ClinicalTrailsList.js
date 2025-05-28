@@ -1,7 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { Grid, Typography, IconButton, Paper, Box } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import axios from "axios";
 import PreviewPopup from "../Forms/Add_Clinical_Form/Clinical_Preview";
 import axiosInstance from "../components/AxiosInstance";
 import {formatDateTime} from "../data/Clinical_CheckList";

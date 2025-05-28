@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Typography, Grid } from '@mui/material';
+import React, { useState, useEffect, useRef } from 'react';
+import { Button, Typography, Grid, Dialog, DialogTitle, DialogContent, DialogActions, } from '@mui/material';
 
 import AdministrativeDetails from '../Forms/Add_Clinical_Form/AdministrativeDetails';
 import Investigators from '../Forms/Add_Clinical_Form/Investigators';
@@ -12,25 +12,32 @@ import Checklist from '../Forms/Add_Clinical_Form/Checklist';
 import PreviewPopup from "../Forms/Add_Clinical_Form/Clinical_Preview";
 
 import "../styles/Forms/Add_Clinical.css";
-import {checklist, InvestigatorsInformation} from "../data/Clinical_CheckList";
-import { useNavigate } from 'react-router-dom';
+import {checklist} from "../data/Clinical_CheckList";
+import { investigators as defaultInvestigators } from "../data/Clinical_CheckList";
+import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from "../components/AxiosInstance";
 
 const MainContent = ({user}) => {
 
   const navigate = useNavigate(); //Handle navigation
   const [openPreview, setOpenPreview] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const fetchOnce = useRef(false);
+  const location = useLocation();
+  const initialData = location.state?.initialData || null;
+  const [isEdit, setIsEdit] = useState(false);
+  const [submittedFormId, setSubmittedFormId] = useState('');
 
   //Administration State
-  const [administration, setAdministration] = useState({ name: "", department: "", submissionDate: "",
-     reviewType: "", studyTitle: "", shortTitle: "", protocol: "", version: "", Date: "" });
+  const [administration, setAdministration] = useState({ name: "", department: "", submission_date: new Date(),
+     review_type: "", study_title: "", short_title: "", protocol: "", version: "", date: "" });
 
   //Investigators State
-  const [researchers, setResearchers] = useState(InvestigatorsInformation);
+  const [researchers, setResearchers] = useState(defaultInvestigators);
 
   //Participants State
-  const [participants, setParticipants] = useState({ participantType: "", Justification: "", safeguards: "",
-    reimbursement: "", reimbursementDetails: "" }); 
+  const [participants, setParticipants] = useState({ participant_type: "", justification: "", safeguards: "",
+    reimbursement: "", reimbursement_details: "" }); 
 
 
   //Benefits State
@@ -39,7 +46,7 @@ const MainContent = ({user}) => {
   });
 
   //Payment State
-  const [paymentState, setPaymentState] = useState({ injury_treatment : "", SAE_compensation : "",
+  const [paymentState, setPaymentState] = useState({ injury_treatment : "", sae_compensation : "",
     approval : "", approval_details : ""});
 
   //Stoarge and confidentiality state
@@ -54,12 +61,28 @@ const MainContent = ({user}) => {
 
   const handleSubmit = async(e) => { //Handle Submit
     e.preventDefault();
+    setShowConfirmDialog(true);
+  }
+
+  const buttonStyle = { //Button style
+    color: 'white',
+    backgroundColor: '#4b1d77',
+    fontSize: '18px',
+    fontWeight: 500,
+    width: '200px',
+    borderRadius: '10px',
+    cursor: 'pointer'
+  };
+
+  const handleConfirmSubmission = async () => { //Handle conform submission function
     try{
       const formData = {administration, researchers, participants, benefits, paymentState, storage,
-        additional, checkListData, email : user };
-      const response = await axiosInstance.post("/api/clinical/add", formData);
+        additional, checkListData, email : user, submittedFormId : submittedFormId };
+      const response = await axiosInstance.post("/api/clinical/add", formData, {
+        params: { isEdit: isEdit }, });
       if(response.status === 200) {
         alert("Form submitted successfully");
+        navigate("/investigator");
         return;
       }
     }
@@ -77,16 +100,21 @@ const MainContent = ({user}) => {
     }
   }
 
-  //Button style
-  const buttonStyle = {
-    color: 'white',
-    backgroundColor: '#4b1d77',
-    fontSize: '18px',
-    fontWeight: 500,
-    width: '200px',
-    borderRadius: '10px',
-    cursor: 'pointer'
-  };
+  useEffect(() => { // Set initial form data
+    if(initialData && !fetchOnce.current) {
+      fetchOnce.current = true;
+      setAdministration(initialData.administration || {});
+      setResearchers(initialData.researchers || []);
+      setParticipants(initialData.participants || {});
+      setBenefits(initialData.benefits || {});
+      setPaymentState(initialData.paymentState || {});
+      setStorage(initialData.storage || {});
+      setAdditional(initialData.additional || {});
+      setCheckListData(initialData.checkListData || []);
+      setSubmittedFormId(initialData.submittedFormId)
+      setIsEdit(true);
+    }
+  },[initialData])
 
   return (
     <React.Fragment>
@@ -134,6 +162,20 @@ const MainContent = ({user}) => {
               />
           </Grid>
         </form>
+      )}
+      { showConfirmDialog && (
+        <React.Fragment>
+          <Dialog open={showConfirmDialog} onClose={() => setShowConfirmDialog(false)}
+              PaperProps={{ 
+                sx: { width: '500px', height: '200px', }, }}>
+            <DialogTitle>Confirm Submission</DialogTitle>
+            <DialogContent>Are you sure once submitted you can not modify or edit?</DialogContent>
+            <DialogActions sx = {{ display : "flex", justifyContent : "space-around"}}>
+              <Button sx={buttonStyle} onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
+              <Button sx={buttonStyle} onClick={handleConfirmSubmission} autoFocus>Confirm</Button>
+            </DialogActions>
+          </Dialog>
+        </React.Fragment>
       )}
     </React.Fragment>
   );

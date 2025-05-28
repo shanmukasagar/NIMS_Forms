@@ -24,7 +24,7 @@ const PaymentCompensation = ({ setPaymentState, paymentState }) => {
       <Grid item size={4}>
         <FormControl fullWidth required>
           <InputLabel >Compensation for SAE</InputLabel>
-          <Select label="Compensation for SAE"  name = "SAE_compensation" value={paymentState.SAE_compensation} onChange={handleChange} >
+          <Select label="Compensation for SAE"  name = "sae_compensation" value={paymentState.sae_compensation || paymentState.sae_compensation} onChange={handleChange} >
             <MenuItem value="Yes">Yes</MenuItem>
             <MenuItem value="No">No</MenuItem>
             <MenuItem value="NA">NA</MenuItem>

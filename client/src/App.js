@@ -4,7 +4,6 @@ import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './components/SideMenu';
 import Header from "./components/AppBar";
 import "./App.css";
-import axios from "axios";
 import Administration from './Forms/Basic_Information/Administration';
 import DetailsInvestigator from './Forms/Basic_Information/Details_Investigator';
 import FundingDetails from './Forms/Basic_Information/Funding_Details';
@@ -21,7 +20,7 @@ import ResearchParticipants from './Forms/Participant_Information/Research_Parti
 import ResearchOverview from './Forms/Research_Information/Overview_Research';
 import AddClinicalTrails from './components/AddClinicalTrails';
 import ClinicalPreview from './Forms/Add_Clinical_Form/Clinical_Preview';
-import RegistrationForm from './components/RegistrationForm';
+import AuthForm from './components/AuthForm';
 import ClinicalTrailList from "./components/ClinicalTrailsList";
 import axiosInstance from "./components/AxiosInstance";
 import AmendmentForm from "./Forms/NIEC_Forms/Amendment";
@@ -32,6 +31,12 @@ import ProgressReport from './Forms/NIEC_Forms/ProgressReport';
 import ProtocolDeviation from './Forms/NIEC_Forms/Protocol_Deviation';
 import TerminationReport from './Forms/NIEC_Forms/TerminationReport';
 
+//Roles specific code
+import ISRC_Member from './Roles/ISRC_Member';
+import ClinicalFormFeedback from './Roles/Investigators/ClinicalTrailFeedback';
+import InvestigatorDashboard from "./Roles/Investigators/components/Dashboard";
+import InvestigatorStudy from "./Roles/Investigators/components/StudyList";
+
 const App = () => {
   const[adminId,setAdminId]=useState(null);
   const location = useLocation();
@@ -39,6 +44,9 @@ const App = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const fetchOnce = useRef(false);
+
+  const [selectedRole, setSelectedRole] = useState('Principal/CoInvestigator');
+  const [selectedForm, setSelectedForm] = useState("");
 
   const verifyUser = async() => {
     try{
@@ -65,7 +73,7 @@ const App = () => {
     <React.Fragment>
       {isRegistration ? (
         <Routes>
-          <Route path="/register" element={<RegistrationForm />} />
+          <Route path="/register" element={<AuthForm selectedRole = {selectedRole} setSelectedRole = {setSelectedRole}/>} />
         </Routes>
       ) : (
         <React.Fragment>
@@ -74,7 +82,7 @@ const App = () => {
               <CssBaseline />
               <Header/>
               <Box sx={{ display: 'flex', marginTop: '90px' }}>
-                <Sidebar/>
+                <Sidebar selectedRole = {selectedRole} selectedForm = {selectedForm}/>
                 <Box component="main"  sx={{ flexGrow: 1, marginLeft: '20px', padding: '20px', overflow: 'auto',
                     height: 'calc(100vh - 90px)'
                   }} 
@@ -97,7 +105,7 @@ const App = () => {
                 <Route path="/" element={<Administration  setAdminId={setAdminId}/>} />          
                 <Route path="/addclinicaltrails" element = {<AddClinicalTrails user = {user}/>} />
                 <Route path="/clinicalpreview" element = {<ClinicalPreview/>} />
-                <Route path="/register" element = {<RegistrationForm/>} />
+                <Route path="/register" element = {<AuthForm selectedRole = {selectedRole} setSelectedRole = {setSelectedRole}/>} />
                 <Route path="/clinicaltrail" element = {<ClinicalTrailList/>} />
                 <Route path="/amendment" element = {<AmendmentForm/>} />
                 <Route path="/amendment/template" element = {<AmendmentTemplate/>} />
@@ -106,6 +114,11 @@ const App = () => {
                 <Route path="/study/completion" element = {<CompletionReport/>} />
                 <Route path="/termination" element = {<TerminationReport/>} />
                 <Route path="/protocol/deviation" element = {<ProtocolDeviation/>} />
+
+                <Route path="/isrc/commitee/member" element={<ISRC_Member />} />
+                <Route path = "/investigator/feedback" element = {<ClinicalFormFeedback/>} />
+                <Route path = "/investigator" element = {<InvestigatorDashboard user = {user}/>} />
+                <Route path = "/investigator/studylist" element = {<InvestigatorStudy setSelectedForm = {setSelectedForm}/>} />
           </Routes>
           </Box>
           </Box>

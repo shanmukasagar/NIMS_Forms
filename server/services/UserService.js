@@ -1,5 +1,5 @@
 const {connectToMongo, getDB} = require("../models/db");
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const userRegistration = async(userData) => {
     try{

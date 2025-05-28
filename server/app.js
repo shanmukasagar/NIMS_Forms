@@ -9,6 +9,7 @@ const userRoute = require("./routes/UserRoute");
 const researchRoute = require("./routes/ResearchRoute");
 const checkAdminRoute=require("./routes/CheckAdminRoute");
 const NIECRoute = require("./routes/NIECRoute");
+const InvestigatorRoute = require("./routes/InvestigatorRoute");
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use('/api/user', userRoute);
 app.use("/api/research", researchRoute);
 app.use("/api/research/check", checkAdminRoute);
 app.use("/api/niec", NIECRoute);
+app.use("/api/investigator", InvestigatorRoute);
 
 
 app.use('/', (req, res) => { 

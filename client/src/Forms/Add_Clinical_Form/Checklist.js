@@ -18,7 +18,7 @@ const ChecklistRow = React.memo(({ item, index, handleChange }) => (
       </FormControl>
     </Grid>
     <Grid item size = {3} >
-      <TextField fullWidth label="Enclosure No" value={item.enclosureNo} onChange={(e) => handleChange(e, index, 'enclosureNo')} />
+      <TextField fullWidth label="Enclosure No" value={item.enclosure_no || item.enclosure_no} onChange={(e) => handleChange(e, index, 'enclosure_no')} />
     </Grid>
     <Grid item size = {3}>
       <TextField fullWidth label="Remarks" value={item.remarks} onChange={(e) => handleChange(e, index, 'remarks')} />

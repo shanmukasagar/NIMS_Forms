@@ -1,9 +1,17 @@
-const {addClinicalService, getClinicalService} = require("../services/AddClinicalService");
+const {addClinicalService, getClinicalService, getProjectsService, updateClinicalService} = require("../services/AddClinicalService");
 
 const addClinical = async(req, res) => {
     const formData = req.body;
+    formData.email = req.user.email;
+    const isEdit = req.query.isEdit === 'true';
     try{
-        const result = await addClinicalService(formData);
+        let result;
+        if (isEdit) {
+            result = await updateClinicalService(formData);
+        }
+        else{
+            result = await addClinicalService(formData);
+        }
         if(result) {
             res.status(200).json("success");
             return;
@@ -27,5 +35,16 @@ const clinicalList = async(req, res) => {
     }
 }
 
+const getProjects = async(req, res) => { //Get all projects
+    const emp_code = "12345";
+    try{
+        const result = await getProjectsService(emp_code);
+        return res.status(200).json(result);
+    }
+    catch(error) {
+        console.log("Error occured while fetching projects", error.message);
+        res.status(500).json("Internal Server Error");
+    }
+}
 
-module.exports = {addClinical, clinicalList};
+module.exports = {addClinical, clinicalList, getProjects};

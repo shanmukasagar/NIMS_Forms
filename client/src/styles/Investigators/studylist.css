@@ -1,0 +1,22 @@
+.study_main{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+}
+.sub_study_main{
+  font-size: 22px !important;
+  font-weight: 500 !important;
+}
+.radio_group_main{
+  display : flex !important;
+  gap : 7px !important;
+}
+.button_style{
+    background-color: #4b1d77  !important;
+    color: white  !important;
+    padding: 10px  !important;
+    cursor: pointer  !important;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    width: auto !important;
+}

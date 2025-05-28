@@ -36,12 +36,22 @@ const submitInvestigators = async (req, res) => {
     const investigators = req.body;
     const email = req.user.email;
 
- 
-    const investigatorsWithEmail = investigators.map(inv => ({
-      ...inv,
-      email,
-    }));
-    const result = await saveInvestigatorDetails(investigatorsWithEmail);
+    // Check if principal investigator is present
+    const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
+    if (!principal) {
+      return res.status(400).json({ message: "Principal Investigator is required" });
+    }
+
+    // Filter out empty (optional) investigator entries
+    const validInvestigators = investigators
+      .filter(inv => inv.name && inv.investigator_type)
+      .map(inv => ({
+        ...inv,
+        email,
+      }));
+
+    const result = await saveInvestigatorDetails(validInvestigators, email);
+
     return res.status(200).json({
       message: "Investigators saved successfully",
       ids: result.map(r => r.id)
@@ -50,8 +60,8 @@ const submitInvestigators = async (req, res) => {
     console.error("Error saving investigators:", err.message);
     return res.status(500).json({ message: "Server Error" });
   }
-
 };
+
 
 
 
