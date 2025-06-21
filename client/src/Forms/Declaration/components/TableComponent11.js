@@ -1,6 +1,12 @@
 import React from "react";
 
-const TableComponent11 = ({ data }) => {
+const TableComponent11 = ({ data , setOpenTable, setEditableData}) => {
+
+  const handleEdit = () => {
+    setOpenTable(false);
+    setEditableData(data[0]);
+  }
+
   return (
     <div className="table-container">
       <h3 className="hi">checklist data</h3>
@@ -86,6 +92,11 @@ const TableComponent11 = ({ data }) => {
           ))}
         </tbody>
       </table>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "3rem" }}>
+        <button style={{ padding: "8px 16px", fontSize: "14px", cursor: "pointer" , width : "150px"}} onClick = {handleEdit}>
+          Edit
+        </button>
+      </div>
     </div>
   );
 };

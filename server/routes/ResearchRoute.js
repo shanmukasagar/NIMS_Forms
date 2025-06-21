@@ -3,7 +3,9 @@ const router = express.Router();
 const {verifyToken} = require("../config/VerifyToken");
 const {connectToMongo, getDB} = require("../models/db");
 
-const multer = require("multer");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const { administartion, fundingBudget ,overviewResearch,participantRelatedInformation,benefitsAndRisk,
      paymentCompensation,additionalInformation, storageAndConfidentiality,administrativeRequirements,declaration,
@@ -11,17 +13,18 @@ const { administartion, fundingBudget ,overviewResearch,participantRelatedInform
 const { CURSOR_FLAGS } = require('mongodb');
 
 
+const mediaPath = path.join(__dirname, "../media/research/checklist");
+if (!fs.existsSync(mediaPath)) fs.mkdirSync(mediaPath);
+
 const storage = multer.diskStorage({
-    destination: function ( req, file, cb) {
-        cb(null, 'media/research/');
-    },
-    filename:  function(req, file, cb) {
-        cb(null, file.originalname);
-    }
+  destination: (req, file, cb) => cb(null, mediaPath),
+  filename: (req, file, cb) => {
+    const uniqueName = `${Date.now()}_${file.originalname}`;
+    cb(null, uniqueName);
+  }
 });
 
-// Create multer instance
-const upload = multer({ storage: storage });
+const upload = multer({ storage });
 
 router.post("/administrativee_details", verifyToken, administartion);
 router.post("/investigatorss",verifyToken, submitInvestigators);
@@ -32,7 +35,7 @@ router.post("/benefits_and_risk",verifyToken,benefitsAndRisk);
 router.post("/payment_compensation",verifyToken, paymentCompensation);
 router.post("/additional_information",verifyToken,additionalInformation);
 router.post("/storage_and_confidentiality",verifyToken,storageAndConfidentiality);
-router.post("/administrative_requirements",verifyToken,administrativeRequirements);
+router.post("/administrative_requirements", verifyToken, upload.any(), administrativeRequirements);
 router.post("/declaration",verifyToken,declaration);
 router.post("/expedited_review",verifyToken, expeditedReview);
 router.post("/requesting_waiver", verifyToken,requestingWaiver);

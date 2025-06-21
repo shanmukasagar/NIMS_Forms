@@ -4,15 +4,18 @@ import { useNavigate } from "react-router-dom";
 
 import TableComponent6 from  "./components/TableComponent6.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-const Section5 = () => {
+const Section5 = ({selectedForm}) => {
   const [anticipated_type, setAnticipatedType] = useState("");
   const [reimbursement_details, setReimbursementDetails] = useState("");
   const [management_strategy, setManagementStrategy] = useState("");
   const [participant_benefits, setParticipantBenefits] = useState("");
   const [improvement_benefits, setImprovementBenefits] = useState("");
   const [society_benefits, setSocietyBenefits] = useState("");
+
   const [showPreview, setShowPreview] = useState(false);
-  const[existData,setExistData]=useState(null)
+  const[existData,setExistData]=useState(null);
+  const [openTable, setOpenTable] = useState(false);
+  const [editableData, setEditableData] = useState({});
   const [email]=useState("");
   const navigate = useNavigate();
 
@@ -23,6 +26,18 @@ const Section5 = () => {
   const handleEdit = () => {
     setShowPreview(false);
   };
+
+  useEffect(() => {
+      if(editableData) {
+        setAnticipatedType(editableData?.anticipated_type || "");
+        setReimbursementDetails(editableData?.reimbursement_details || "");
+        setManagementStrategy(editableData?.management_strategy || "");
+        setParticipantBenefits(editableData?.participant_benefits || "");
+        setImprovementBenefits(editableData?.improvement_benefits || "");
+        setSocietyBenefits(editableData?.society_benefits || "");
+      }
+    },[editableData])
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -30,7 +45,7 @@ const Section5 = () => {
         {
           improvement_benefits, reimbursement_details,
           management_strategy, participant_benefits, anticipated_type, society_benefits, email,
-        }
+        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "benefits_and_risk", formId : editableData?.form_id}}
       );
       console.log("User created:", userResponse.data);
       navigate("/participant/informedconsent");
@@ -51,6 +66,7 @@ const Section5 = () => {
         });
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
+          setOpenTable(true);
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -62,7 +78,7 @@ const Section5 = () => {
 
   return (
     <div className="h">
-       {existData ? ( <TableComponent6 data={existData} />):!showPreview ? (  
+       {(existData && openTable) ? ( <TableComponent6 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData} />):!showPreview ? (  
       <form onSubmit={handlePreview}>
       <h2 className="hi">6.BENEFITS AND RISKS</h2>
       <h3 className="h2">
@@ -90,36 +106,32 @@ const Section5 = () => {
          onChange={(e) => setAnticipatedType(e.target.value)}  />{" "}
          {""}NA
         </label>
-        <h5>if yes specify:</h5>
-        {/* Show input if "Yes" is selected */}
-        {anticipated_type === "Yes" && (
+         {anticipated_type === "Yes" && (
           <>
-            <h3>Provide Reimbursement Details:</h3>
-            <input
-              type="text" name="EnterreimbursementDetails" placeholder="Enter details" value={reimbursement_details}
+            <h5>if yes specify:</h5>
+            {/* Show input if "Yes" is selected */}
+       
+            <input style = {{width : "100%"}}
+              type="text" name="EnterreimbursementDetails" placeholder="specify" value={reimbursement_details}
               onChange={(e) => setReimbursementDetails(e.target.value)} className="name"  required/>
-            <br />
+            <div className="formm-row">
+              <h3 className="h2">i. Describe the risk management strategy: </h3>
+              <label>
+                <textarea name="researchSummary" placeholder="Risk management strategy" value={management_strategy}
+                  onChange={(e) => setManagementStrategy(e.target.value)}
+                  className="custom-textarea" maxLength={600}  required />
+                {""}
+              </label>
+            </div>
           </>
         )}
-        <div className="formm-row">
-          <h3 className="h2">i. Describe the risk management strategy: </h3>
-          <label>
-            <textarea
-              name="researchSummary" placeholder="Enter research summary" value={management_strategy}
-              onChange={(e) => setManagementStrategy(e.target.value)}
-              className="custom-textarea" maxLength={600}  required />
-            {""}
-          </label>
-        </div>
-
         <h3 className="h2">(b)Are there potential benefits from the study </h3>
 
         <div className="formm-row">
           <h4>For the participant</h4>
           <div className="formm-row">
             <label>
-          <input
-            type="radio" name="EnterparticipantBenefit" value="Direct"
+          <input type="radio" name="participantBenefit" value="Direct" required
             checked={participant_benefits === "Direct"} onChange={(e) => setParticipantBenefits(e.target.value)}/>{" "}
               Direct
             </label>
@@ -136,7 +148,7 @@ const Section5 = () => {
           <h4>For the society/ community</h4>
           <div className="formm-row">
             <label>
-              <input  type="radio"  name="societyBenefit" value="Direct"
+              <input  type="radio"  name="societyBenefit" value="Direct" required
                 checked={society_benefits === "Direct"} onChange={(e) => setSocietyBenefits(e.target.value)} />{" "}
               Direct
             </label>
@@ -156,7 +168,7 @@ const Section5 = () => {
 
           <div className="formm-row">
             <label>
-              <input type="radio"  name="improvementBenefit"  value="Direct"
+              <input type="radio"  name="improvementBenefit"  value="Direct" required
                 checked={improvement_benefits === "Direct"} onChange={(e) => setImprovementBenefits(e.target.value)}
               />{" "}
               Direct

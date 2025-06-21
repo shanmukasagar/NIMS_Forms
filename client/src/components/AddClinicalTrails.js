@@ -10,10 +10,15 @@ import StorageAndConfidentiality from '../Forms/Add_Clinical_Form/StorageAndConf
 import AdditionalInformation from "../Forms/Add_Clinical_Form/AdditionalDetails";
 import Checklist from '../Forms/Add_Clinical_Form/Checklist';
 import PreviewPopup from "../Forms/Add_Clinical_Form/Clinical_Preview";
+import FundingDetails from '../Forms/Add_Clinical_Form/FundingDetails';
+import OverviewResearch from '../Forms/Add_Clinical_Form/OverviewResearch';
+import MethodologyDetails from '../Forms/Add_Clinical_Form/Methodology';
+import InformedConsent from '../Forms/Add_Clinical_Form/InformedConsent';
+import Declaration from "../Forms/Add_Clinical_Form/Declaration";
 
 import "../styles/Forms/Add_Clinical.css";
 import {checklist} from "../data/Clinical_CheckList";
-import { investigators as defaultInvestigators } from "../data/Clinical_CheckList";
+import { investigators  } from "../data/Clinical_CheckList";
 import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from "../components/AxiosInstance";
 
@@ -33,20 +38,45 @@ const MainContent = ({user}) => {
      review_type: "", study_title: "", short_title: "", protocol: "", version: "", date: "" });
 
   //Investigators State
-  const [researchers, setResearchers] = useState(defaultInvestigators);
+  const [researchers, setResearchers] = useState([ 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "principal" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "guide" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "hod" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator" },
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator" } 
+  ]);
+
+  const [investigatorsCount, setInvestigatorsCount] = useState({
+    pi_count : "", co_pi_count : "", duration : ""
+  })
+
+  //Funding details and budget
+  const [fundingData, setFundingData] = useState({ estimated_budget: '', funding_source: '', other_funding_details: '', });
+
+  //Overview research
+  const [overviewResearch, setOverviewResearch] = useState({ overview_summary: '', study_type: '', other_study_type: '', });
+
+  //Methodology details
+  const [methodologyData, setMethodologyData] = useState({ total_sample_size: '', site_participants: '', lab_outsourcing: '', lab_details: '' });
 
   //Participants State
-  const [participants, setParticipants] = useState({ participant_type: "", justification: "", safeguards: "",
-    reimbursement: "", reimbursement_details: "" }); 
+  const [participants, setParticipants] = useState({ participant_type: "", vulnerable_groups: [], safeguards: "", other_participant : "",
+    reimbursement: "", reimbursement_details: "", additional_safeguards : "", justification : "" }); 
 
 
   //Benefits State
-  const [benefits, setBenefits] = useState({ any_risk : "", risk_details : "", risk_strategy : "", participant_benefits : "",
-    social_benefits : "", science_benefits : "", adv_details : ""
-  });
+  const [benefits, setBenefits] = useState({ any_risk : "", is_adv : "", risk_details : "", risk_strategy : "", participant_benefits : "",
+    social_benefits : "", science_benefits : "", adv_details : "" });
+
+  //Informed consent
+  const [consentData, setConsentData] = useState({ waiver_consent: '', english_version_number: '', english_date : "", translated_languages: [],
+    translation_cert_provided: '', understanding_tools: '', understanding_tools_specify: '',
+    pis_elements: [], languageDetails: {}, reason_for_waiver: [], other_reason: '',});
+
 
   //Payment State
-  const [paymentState, setPaymentState] = useState({ injury_treatment : "", sae_compensation : "",
+  const [paymentState, setPaymentState] = useState({ injury_treatment : "", sae_compensation : "", sae_details : "", injury_details : "",
     approval : "", approval_details : ""});
 
   //Stoarge and confidentiality state
@@ -55,6 +85,23 @@ const MainContent = ({user}) => {
 
   //Additional information state
   const [additional, setAdditional] = useState({ any_additional : "", additional_info : ""});
+
+  //Declaration
+  const [declaration, setDeclaration] = useState({
+    declarations: { checkbox_0: false, checkbox_1: false, checkbox_2: false, checkbox_3: false, checkbox_4: false, checkbox_5: false, checkbox_6: false,
+      checkbox_7: false, checkbox_8: false, checkbox_9: false, checkbox_10: false, checkbox_11: false, checkbox_12: false, checkbox_13: false,
+    },
+    pi_name: "", pi_signature: "", pi_date: null,
+
+    guide_name : "", guide_signature : "", guide_date : null,
+
+    hod_name : "", hod_signature : "", hod_date : null,
+    
+    co1_name: "", co1_signature: "", co1_date: null,
+
+    co2_name: "", co2_signature: "", co2_date: null,
+
+ });
 
   //Check list state
   const [checkListData, setCheckListData] = useState(checklist);
@@ -76,10 +123,31 @@ const MainContent = ({user}) => {
 
   const handleConfirmSubmission = async () => { //Handle conform submission function
     try{
-      const formData = {administration, researchers, participants, benefits, paymentState, storage,
-        additional, checkListData, email : user, submittedFormId : submittedFormId };
+      const formData = new FormData();
+
+      // 2. Construct full object without files
+      const submissionData = { administration, researchers, investigatorsCount, fundingData, overviewResearch, methodologyData, participants,
+        benefits, consentData, paymentState, storage, additional, declaration, email: user, submittedFormId, };
+
+      // 3. Append data JSON as a field
+      formData.append("data", JSON.stringify(submissionData));
+
+      checkListData.forEach(item => {
+        const id = isEdit ? Number(item.label_id) : item.id;
+        const label = item.label;
+
+        formData.append(`label_${id}`, label || "");
+
+        if (item.file) {
+          formData.append(`file_${id}`, item.file);
+        }
+        else if (isEdit && item.file_name) {
+          formData.append(`existingFile_${id}`, item.file_name);
+        }
+      });
+
       const response = await axiosInstance.post("/api/clinical/add", formData, {
-        params: { isEdit: isEdit }, });
+        params: { isEdit: isEdit },  headers: { 'Content-Type': 'multipart/form-data' } });
       if(response.status === 200) {
         alert("Form submitted successfully");
         navigate("/investigator");
@@ -113,6 +181,12 @@ const MainContent = ({user}) => {
       setCheckListData(initialData.checkListData || []);
       setSubmittedFormId(initialData.submittedFormId)
       setIsEdit(true);
+      setInvestigatorsCount(initialData.investigatorsCount || {});
+      setDeclaration(initialData.declaration || {});
+      setConsentData(initialData.consentData || {});
+      setFundingData(initialData.fundingData || {});
+      setOverviewResearch(initialData.overviewResearch || {});
+      setMethodologyData(initialData.methodologyData || {});
     }
   },[initialData])
 
@@ -123,11 +197,24 @@ const MainContent = ({user}) => {
           <Grid container spacing={2} sx = {{display : "flex", flexDirection : "column", gap : "60px"}}>
               <Grid item size={12} className="content-box" id="AdministrativeDetails">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Administrative Details</Typography>
-                  <AdministrativeDetails administration = {administration}  setAdministration = {setAdministration}/>
+                  <AdministrativeDetails administration = {administration}  setAdministration = {setAdministration} isEdit = {isEdit}/>
               </Grid>
               <Grid item size={12} className="content-box" id="Investigators">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Investigators</Typography>
-                  <Investigators researchers = {researchers} setResearchers = {setResearchers} />
+                  <Investigators researchers = {researchers} setResearchers = {setResearchers} investigatorsCount = {investigatorsCount}
+                    setInvestigatorsCount = {setInvestigatorsCount} />
+              </Grid>
+              <Grid item size={12} className="content-box" id="Funding">
+                  <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Funding Details and Budget</Typography>
+                  <FundingDetails fundingData = {fundingData} setFundingData = {setFundingData}/>
+              </Grid>
+              <Grid item size={12} className="content-box" id="research">
+                  <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Overview Research</Typography>
+                  <OverviewResearch overviewResearch = {overviewResearch} setOverviewResearch = {setOverviewResearch}/>
+              </Grid>
+              <Grid item size={12} className="content-box" id="research">
+                  <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Methodology</Typography>
+                  <MethodologyDetails methodologyData = {methodologyData} setMethodologyData = {setMethodologyData}/>
               </Grid>
               <Grid item size={12} className="content-box" id="Participants">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Participants</Typography>
@@ -137,9 +224,13 @@ const MainContent = ({user}) => {
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Benefits And Risks</Typography>
                   <BenefitsAndRisks  benefits = {benefits} setBenefits = {setBenefits} />
               </Grid>
+              <Grid item size={12} className="content-box" id="InformedConsent">
+                  <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Informed Consent</Typography>
+                  <InformedConsent  consentData = {consentData} setConsentData = {setConsentData} />
+              </Grid>
               <Grid item size={12} className="content-box" id="PaymentCompensation">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Payment Compensation</Typography>
-                  <PaymentCompensation paymentState = {paymentState} setPaymentState = {setPaymentState}  />
+                  <PaymentCompensation paymentState = {paymentState} setPaymentState = {setPaymentState} isEdit = {isEdit} />
               </Grid>
               <Grid item size={12} className="content-box" id="StorageAndConfidentiality">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Storage And Confidentiality</Typography>
@@ -149,16 +240,21 @@ const MainContent = ({user}) => {
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Additional Information</Typography>
                   <AdditionalInformation additional = {additional} setAdditional = {setAdditional} />
               </Grid>
+              <Grid item size={12} className="content-box" id="Declaration">
+                  <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Declaration</Typography>
+                  <Declaration declaration = {declaration} setDeclaration = {setDeclaration} isEdit = {isEdit}/>
+              </Grid>
               <Grid item size={12} className="content-box" id="Checklist">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Checklist</Typography>
-                  <Checklist checkListData = {checkListData} setCheckListData = {setCheckListData} />
+                  <Checklist checkListData = {checkListData} setCheckListData = {setCheckListData} isEdit = {isEdit}/>
               </Grid>
               <Grid item size={12} sx={{ display: "flex", justifyContent:"center", gap : "40px"}}>
                 <Button onClick={() => setOpenPreview(true)} sx={buttonStyle}>Preview</Button>
                 <Button type="submit" variant="contained" color="primary" sx={buttonStyle}>Submit</Button>
               </Grid>
               <PreviewPopup open={openPreview} onClose={() => setOpenPreview(false)}
-                formData={{ administration, researchers, participants, benefits, paymentState, storage, additional, checkListData }}
+                formData={{ administration, researchers, investigatorsCount, fundingData, overviewResearch, methodologyData, participants, benefits, consentData, 
+                    paymentState, storage, additional, declaration, checkListData }}
               />
           </Grid>
         </form>

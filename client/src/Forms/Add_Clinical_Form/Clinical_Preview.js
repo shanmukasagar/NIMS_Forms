@@ -1,5 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, Typography, Grid, Divider, Box } from '@mui/material';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { IconButton, Tooltip } from '@mui/material';
 
 const formatKey = (key) => {
   return key
@@ -7,6 +9,8 @@ const formatKey = (key) => {
     .replace(/([a-z])([A-Z])/g, '$1 $2')
     .replace(/\b\w/g, l => l.toUpperCase());
 };
+
+const fieldNames = ["pi_signature", "co1_signature", "co2_signature", "co3_signature"];
 
 const isIsoDateString = (value) =>
   typeof value === "string" && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}Z$/.test(value);
@@ -37,16 +41,53 @@ const formatValue = (value) => {
 const renderFields = (data) => (
   <Grid container spacing={1} direction="column" >
     {Object.entries(data).map(([key, value]) => {
-      if (key !== "id" && key !== "form_id" && key !== "type") {
+      if (key !== "id" && key !== "form_id" && key !== "type" && key !== "approved" && key !== "approval_token") {
         return (
           <Grid item xs={12} key={key}>
-            <Box sx={{ display: "flex" }}>
-              <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
-                {formatKey(key)}:
-              </Typography>
-              <Typography>{formatValue(value)}</Typography>
-            </Box>
+            {/* {key === "approval_letter" ? (
+              <Box sx={{ display: "flex" }}>
+                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
+                  {formatKey(key)}:
+                </Typography>
+                 { value ? ( 
+                    <Tooltip title="View PDF">
+                      <IconButton onClick={() => window.open(`http://localhost:4000/media/clinical/payment_compensation/${value}`, '_blank')} color="error" >
+                        <PictureAsPdfIcon fontSize="large" />
+                      </IconButton>
+                    </Tooltip> ) : null }
+              </Box>
+            ) : fieldNames.includes(key) ? (
+              <Box sx={{ display: "flex" }}>
+                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
+                  {formatKey(key)}:
+                </Typography>
+                { value ? 
+                  ( <Tooltip title="View PDF">
+                      <IconButton onClick={() => window.open(`http://localhost:4000/media/clinical/declaration/${value}`, '_blank')} color="error" >
+                        <PictureAsPdfIcon fontSize="large" />
+                      </IconButton>
+                    </Tooltip> ) : null }
+              </Box>
+            ) : key !== "email" ? (
+              <Box sx={{ display: "flex" }}>
+                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
+                  {formatKey(key)}:
+                </Typography>
+                <Typography>{formatValue(value)}</Typography>
+              </Box>
+            ) : null} */}
+            {
+              key !== "email" ? (
+              <Box sx={{ display: "flex" }}>
+                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
+                  {formatKey(key)}:
+                </Typography>
+                <Typography>{formatValue(value)}</Typography>
+              </Box>
+            ) : null}
           </Grid>
+
+
         );
       }
       return null;
@@ -69,11 +110,17 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
   const {
     administration = {},
     researchers = [],
+    investigatorsCount = {},
+    fundingData = {},
+    overviewResearch = {},
+    methodologyData = {},
     participants = {},
     benefits = {},
+    consentData = {},
     paymentState = {},
     storage = {},
     additional = {},
+    declaration = {},
     checkListData = []
   } = formData;
 
@@ -135,21 +182,39 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
               </>
             )}
           </Grid>
+          {/* Investigators count */}
+          {renderSection("2. Investigator Counts", investigatorsCount)}
+
+          {/* Funding Data */}
+          {renderSection("3. Funding Details", fundingData)}
+
+          {/* Overview Research */}
+          {renderSection("4. Overview Research", overviewResearch)}
+
+          {/* Methodology */}
+          {renderSection("5. Methodology", methodologyData)}
 
           {/* Participants */}
-          {renderSection("3. Participants", participants)}
+          {renderSection("6. Participants", participants)}
 
           {/* Benefits & Risks */}
-          {renderSection("4. Benefits & Risks", benefits)}
+          {renderSection("7. Benefits & Risks", benefits)}
+
+          {/* Informed Consent */}
+          {renderSection("8. Informed Consent", consentData)}
+
 
           {/* Payment & Compensation */}
-          {renderSection("5. Payment & Compensation", paymentState)}
+          {renderSection("9. Payment & Compensation", paymentState)}
 
           {/* Storage & Confidentiality */}
-          {renderSection("6. Storage & Confidentiality", storage)}
+          {renderSection("10. Storage & Confidentiality", storage)}
 
           {/* Additional Info */}
-          {renderSection("7. Additional Information", additional)}
+          {renderSection("11. Additional Information", additional)}
+
+          {/* Declaration */}
+          {renderSection("12. Declaration", declaration)}
 
           {/* Checklist */}
           {checkListData.length > 0 && (
@@ -158,17 +223,34 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
               <Divider sx={{ mb: 2 }} />
               <Box sx={{ display: "flex", flexDirection: "column", gap: "15px" }}>
                 <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                  <Typography sx={{ width: "300px" }}>Label</Typography>
-                  <Typography sx={{ width: "50px" }}>Status</Typography>
-                  <Typography sx={{ width: "100px" }}>Enclosure No</Typography>
-                  <Typography sx={{ width: "150px" }}>Remarks</Typography>
+                  <Typography>S.NO</Typography>
+                  <Typography sx = {{ width : "600px"}}>Label</Typography>
+                  <Typography>Uploaded files</Typography>
                 </Box>
                 {checkListData.map((item, ind) => (
-                  <Box key={ind} sx={{ display: "flex", justifyContent: "space-between" }}>
-                    <Typography sx={{ width: "300px", color: "gray" }}>{item.label || '-'}</Typography>
-                    <Typography sx={{ width: "50px" }}>{item.status || '-'}</Typography>
-                    <Typography sx={{ width: "100px" }}>{item.enclosureNo || '-'}</Typography>
-                    <Typography sx={{ width: "150px" }}>{item.remarks || '-'}</Typography>
+                  <Box key={ind} sx={{ display: "flex", gap : "100px" }}>
+                    <Typography sx={{ color: "gray" }}>{ind + 1}</Typography>
+                    <Typography sx={{ width: "600px", color: "gray" }}>{item.label || '-'}</Typography>
+                    {item.file ? (
+                      <Tooltip title="View uploaded PDF">
+                        <IconButton
+                          onClick={() => {
+                            const fileURL = URL.createObjectURL(item.file);
+                            window.open(fileURL, "_blank");
+                          }}
+                        >
+                          <PictureAsPdfIcon color="error" />
+                        </IconButton>
+                      </Tooltip>
+                    ) : item.file_name && (
+                        <Tooltip title="View uploaded PDF">
+                          <IconButton
+                            onClick={() => window.open(`http://localhost:4000/media/clinical/checklist/${item.file_name}`, "_blank")}
+                          >
+                            <PictureAsPdfIcon color="error" />
+                          </IconButton>
+                        </Tooltip>
+                    )}
                   </Box>
                 ))}
               </Box>

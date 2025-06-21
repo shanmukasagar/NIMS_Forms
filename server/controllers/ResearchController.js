@@ -7,20 +7,33 @@ const { benefitsAndRiskDetails } = require("../services/ResearchService");
 const { paymentCompensationDetails} = require("../services/ResearchService");
 const {storageAndConfidentialityDetails} =require( "../services/ResearchService");
 const {additionalInformationDetails}=require("../services/ResearchService");
-const {administrativeRequirementsDetails}=require("../services/ResearchService");
+const {administrativeRequirementsDetails, insertAdminFiles, updateAdminFiles}=require("../services/ResearchService");
 const {declarationDetails}=require("../services/ResearchService");
 const { expeditedReviewDetails } = require("../services/ResearchService");
 const { requestingWaiverDetails } = require("../services/ResearchService");
 const{insertInformedConsent} =require("../services/ResearchService");
-const {saveInvestigatorDetails}=require("../services/ResearchService")
+const {saveInvestigatorDetails}=require("../services/ResearchService");
+const {updateResearchForms, updateInvestigators} = require("../services/ResearchService");
 
 const administartion = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await administrationDetails(formData);
-    if (result) {
-      return res.status(200).json({ idd: result.rows[0].idd });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await administrationDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ idd: result.rows[0].idd });
+      }
     }
     return res.status(400).json("Error occured");
   } catch (err) {
@@ -29,12 +42,14 @@ const administartion = async (req, res) => {
   }
 };
 
-
-
 const submitInvestigators = async (req, res) => {
   try {
     const investigators = req.body;
     const email = req.user.email;
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
 
     // Check if principal investigator is present
     const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
@@ -50,28 +65,42 @@ const submitInvestigators = async (req, res) => {
         email,
       }));
 
-    const result = await saveInvestigatorDetails(validInvestigators, email);
-
-    return res.status(200).json({
-      message: "Investigators saved successfully",
-      ids: result.map(r => r.id)
-    });
+    if(isEdit) {
+        const result = await updateInvestigators(validInvestigators, email, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await saveInvestigatorDetails(validInvestigators, email, form_type);
+      return res.status(200).json({ message: "Investigators saved successfully", ids: result.map(r => r.id) });
+    }
+    return res.status(400).json("Error occured");
   } catch (err) {
     console.error("Error saving investigators:", err.message);
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
-
-
 const fundingBudget = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await fundingBudgetDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await fundingBudgetDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ id: result.rows[0].id });
+      }
     }
     return res.status(400).json("Error occured");
   } catch (err) {
@@ -82,12 +111,23 @@ const fundingBudget = async (req, res) => {
 
 const overviewResearch = async (req, res) => {
   try {
-   
     const formData = req.body;
-  formData.email = req.user.email;
-    const result = await overviewResearchDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    formData.email = req.user.email;
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await overviewResearchDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ id: result.rows[0].id });
+      }
     }
     return res.status(400).json("Error occured");
   } catch (err) {
@@ -100,9 +140,21 @@ const participantRelatedInformation = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await participantRelatedInformationDetails(formData);
-    if (result) {
-      return res.status(200).json({ idd: result.rows[0].idd });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await participantRelatedInformationDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ idd: result.rows[0].idd });
+      }
     }
     return res.status(400).json("Error occured");
   } catch (err) {
@@ -115,9 +167,21 @@ const benefitsAndRisk = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await benefitsAndRiskDetails(formData);
-    if (result) {
-      return res.status(200).json({ idd: result.rows[0].idd });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await benefitsAndRiskDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ idd: result.rows[0].idd });
+      }
     }
     return res.status(400).json("Error occured");
   } catch (err) {
@@ -131,9 +195,21 @@ const paymentCompensation = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await paymentCompensationDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await paymentCompensationDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ id: result.rows[0].id });
+      }
     }
     return res.status(400).json("Error occured");
   } catch (err) {
@@ -146,10 +222,23 @@ const storageAndConfidentiality= async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await storageAndConfidentialityDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
     }
+    else{
+      const result = await storageAndConfidentialityDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ id: result.rows[0].id });
+      }
+    }
+    
     return res.status(400).json("Error occured");
   } catch (err) {
     console.error(err.message);
@@ -162,10 +251,23 @@ const additionalInformation= async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await additionalInformationDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
     }
+    else{
+      const result = await additionalInformationDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ id: result.rows[0].id });
+      }
+    }
+    
     return res.status(400).json("Error occured");
   } catch (err) {
     console.error(err.message);
@@ -173,17 +275,41 @@ const additionalInformation= async (req, res) => {
   }
 };
 
-const administrativeRequirements= async (req, res) => {
+const administrativeRequirements = async (req, res) => {
   try {
-    const formData = req.body;
-    formData.email = req.user.email;
-    const result = await administrativeRequirementsDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    const email = req.user.email;
+    const files = req.files;
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === "true";
+    const { formId } = req.query;
+    const numericFormId = Number(formId);
+
+    if (!files || Object.keys(files).length === 0) {
+      return res.status(200).json({ message: "No new files uploaded." });
     }
-    return res.status(400).json("Error occured");
+
+    const parsedFiles = req.files.map(file => {
+      const id = file.fieldname.replace("file_", "");
+      const label_name = req.body[`label_name_${id}`];
+
+      return {
+        label_id: parseInt(id),
+        label_name,
+        file_name: file.filename,
+        email,
+      };
+    });
+
+
+    if (isEdit) {
+      const updated = await updateAdminFiles(parsedFiles, numericFormId);
+      return res.status(200).json({ message: "Updated modified files.", updatedCount: updated });
+    } else {
+      const inserted = await insertAdminFiles(parsedFiles, email, form_type);
+      return res.status(200).json({ message: "All files uploaded.", insertedCount: inserted });
+    }
   } catch (err) {
-    console.error(err.message);
+    console.error("Admin requirements error:", err.message);
     res.status(500).send("Server Error");
   }
 };
@@ -193,10 +319,23 @@ const declaration= async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await declarationDetails(formData);
-    if (result) {
-      return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
     }
+    else{
+      const result = await declarationDetails(formData, form_type);
+      if (result) {
+        return res.status(200).json({ id: result.rows[0].id });
+      }
+    }
+    
     return res.status(400).json("Error occured");
   } catch (err) {
     console.error("Error declaration:", err.message);
@@ -209,8 +348,21 @@ const expeditedReview = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await expeditedReviewDetails(formData);
-    return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await expeditedReviewDetails(formData, form_type);
+      return res.status(200).json({ id: result.rows[0].id });
+    }
+    
   } catch (err) {
     console.error("Error inserting expedited review:", err.message);
     return res.status(500).send("Internal Server Error");
@@ -219,10 +371,22 @@ const expeditedReview = async (req, res) => {
  
 const requestingWaiver = async (req, res) => {
   try {
-  const formData =req.body;
-   formData.email =req.user.email;
-    const result = await requestingWaiverDetails(formData);
-    return res.status(200).json({ id: result.rows[0].id });
+    const formData =req.body;
+    formData.email =req.user.email;
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await requestingWaiverDetails(formData, form_type);
+      return res.status(200).json({ id: result.rows[0].id });
+    }
   } catch (error) {
     console.error("Error inserting requesting waiver:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -233,8 +397,21 @@ const informedConsent = async (req, res) => {
   try {
     const formData = req.body;
     formData.email = req.user.email;
-    const result = await insertInformedConsent(formData);
-    return res.status(200).json({ id: result.rows[0].id });
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
+    const numericFormId = Number(formId); 
+    if(isEdit) {
+        const result = await updateResearchForms(tableName, formData, numericFormId);
+        if(result) {
+          return res.status(200).json("Form successfully updated");
+        }
+    }
+    else{
+      const result = await insertInformedConsent(formData, form_type);
+      return res.status(200).json({ id: result.rows[0].id });
+    }
+    
   } catch (error) {
     console.error("Error inserting informed consent:", error.message);
     res.status(500).json({ error: "Internal Server Error" });
@@ -245,5 +422,7 @@ const informedConsent = async (req, res) => {
   
 
 module.exports = {
-  administartion,fundingBudget,overviewResearch,administrativeRequirements, participantRelatedInformation,benefitsAndRisk,  paymentCompensation, storageAndConfidentiality,additionalInformation,declaration,expeditedReview,  requestingWaiver,informedConsent,submitInvestigators
+  administartion,fundingBudget,overviewResearch,administrativeRequirements, participantRelatedInformation,benefitsAndRisk,  
+    paymentCompensation, storageAndConfidentiality,additionalInformation,declaration,expeditedReview,  requestingWaiver, 
+    informedConsent,submitInvestigators
 };

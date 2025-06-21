@@ -9,6 +9,7 @@ import axiosInstance from "./AxiosInstance";
 const AuthForm = ({selectedRole, setSelectedRole}) => {
     const [isRegistering, setIsRegistering] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
+    const [conformPassword, setConformPassword] = useState(false);
     const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '', mobile: '' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
@@ -33,16 +34,28 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
             try {
                 const res = await axiosInstance.post('/api/user/register', formData,);
                 alert(res.data);
-                navigate('/basic/administrative');
+                navigate('/investigator');
                 return ;
             } catch (err) {
                 setError(err.response?.data || 'Registration failed');
             }
         } else {
             try {
-                const res = await axiosInstance.post('/api/user/login', { email, password });
+                const res = await axiosInstance.post('/api/user/login', { email, password, selectedRole });
                 if(selectedRole === "Principal/CoInvestigator") {
                     navigate('/investigator');
+                    return ;
+                }
+                else if(selectedRole === "ISRC Committee Member") {
+                    navigate('/isrc/commitee/member');
+                    return ;
+                }
+                else if(selectedRole === "ISRC Member Secretary") {
+                    navigate('/isrc/chair/assignreviewers');
+                    return ;
+                }
+                else if(selectedRole === "ISRC Committee Chair"){
+                    navigate('/isrc/chair/assignreviewers');
                     return ;
                 }
                 navigate('/basic/administrative');
@@ -55,7 +68,15 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
     const inputProps = { endAdornment: (
         <InputAdornment position="end">
             <IconButton onClick={() => setShowPassword(!showPassword)}>
-                {showPassword ? <VisibilityOff /> : <Visibility />}
+                {showPassword ? <VisibilityOff sx={{ color: 'gray' }}/> : <Visibility sx={{ color: 'gray' }}/>}
+            </IconButton>
+        </InputAdornment>
+    )};
+
+    const conformPasswordProps = { endAdornment: ( // Conform password
+        <InputAdornment position="end">
+            <IconButton onClick={() => setConformPassword(!conformPassword)}>
+                {conformPassword ? <VisibilityOff sx={{ color: 'gray' }}/> : <Visibility sx={{ color: 'gray' }}/>}
             </IconButton>
         </InputAdornment>
     )};
@@ -64,6 +85,8 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
         setIsRegistering(!isRegistering);
         setError("");
         setFormData({ username: '', email: '', password: '', confirmPassword: '', mobile: '' });
+        setShowPassword(false);
+        setConformPassword(false);
     }
 
     return (
@@ -82,9 +105,9 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                                 onChange={handleChange} required inputProps={{ maxLength: 10 }} />
                             <TextField label="Password" name="password" type={showPassword ? 'text' : 'password'}
                                 fullWidth value={formData.password} onChange={handleChange} required InputProps={inputProps} />
-                            <TextField label="Confirm Password" name="confirmPassword" type={showPassword ?
+                            <TextField label="Confirm Password" name="confirmPassword" type={conformPassword ?
                                 'text' : 'password'} fullWidth value={formData.confirmPassword} 
-                                    onChange={handleChange} required InputProps={inputProps} />
+                                    onChange={handleChange} required InputProps={conformPasswordProps} />
                         </React.Fragment>
                     )}
                     {!isRegistering && (
@@ -99,6 +122,7 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                             <Select labelId="role-label" name="role" value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}  label="Role" >
                                 <MenuItem value="Principal/CoInvestigator">Principal/CoInvestigator</MenuItem>
+                                <MenuItem value="ISRC Member Secretary">ISRC Member Secretary</MenuItem>
                                 <MenuItem value="ISRC Committee Member">ISRC Committee Member</MenuItem>
                                 <MenuItem value="ISRC Committee Chair">ISRC Committee Chair</MenuItem>
                                 <MenuItem value="Project Budget committee(PBC) member and chair">

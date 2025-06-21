@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import "../../App.css"; 
 import TableComponent13 from  "./components/TableComponent13.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-function Section13() {
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { IconButton, Tooltip } from '@mui/material';
+
+function Section13({selectedForm}) {
   const [protocol_number, setProtocolNumber] = useState("");
   const [version_number, setVersionNumber] = useState("");
   const [principal_investigator_name, setPrincipalInvestigatorName] = useState("");
@@ -16,10 +19,31 @@ function Section13() {
   const [image, setImage] = useState(null); 
   const [date_1, setDate1] = useState(new Date().toISOString().split("T")[0]);
   const [date_2, setDate2] = useState(new Date().toISOString().split("T")[0]);
+
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
   const [email]=useState("");
   const navigate = useNavigate();
+  const [openTable, setOpenTable] = useState(false);
+  const [editableData, setEditableData] = useState({});
+  const [previewURL, setPreviewURL] = useState(null);
+
+  useEffect(() => {
+    if (editableData) {
+      setProtocolNumber(editableData?.protocol_number || "");
+      setVersionNumber(editableData?.version_number || "");
+      setPrincipalInvestigatorName(editableData?.principal_investigator_name || "");
+      setDepartment(editableData?.department || "");
+      setTitle(editableData?.title || "");
+      setSelectedElements(editableData?.selectedElements || []);
+      setSummary(editableData?.summary || "");
+      setNameOfCoInvestigator1(editableData?.name_of_co_investigator_1 || "");
+      setImage(editableData?.image || null);
+      setDate1(editableData?.date_1 ? new Date(editableData.date_1).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]);
+      setDate2(editableData?.date_2 ? new Date(editableData.date_2).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]);
+    }
+  }, [editableData]);
+
 
   const elementsList = [
     "No more than minimal risk to the trial participants",
@@ -27,6 +51,7 @@ function Section13() {
     "Research involving non-identifiable specimen and human tissue from sources like blood banks, tissue banks and left-over clinical samples;",
     "Any other reason, specify ",
   ];
+
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
     if (event.target.checked) {
@@ -35,17 +60,19 @@ function Section13() {
       setSelectedElements(selectedElements.filter((item) => item !== value));
     }
   };
+
   const handlePreview = (e) => {
     e.preventDefault();
     setShowPreview(true);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const userResponse = await axiosInstance.post("/api/research/expedited_review", {
         selectedElements: selectedElements, protocol_number,version_number,principal_investigator_name, department,
         title,   summary,name_of_co_investigator_1, date_1, date_2,email
-      });
+      }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "expedited_review", formId : editableData?.form_id}});
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
 
@@ -79,6 +106,7 @@ function Section13() {
         });
         if (response.data.length > 0) {
           setExistData(response.data); 
+          setOpenTable(true);
         }
       } catch (err) { 
         console.error("Fetch error:", err);
@@ -91,6 +119,31 @@ function Section13() {
   const handleEdit = () => {
     setShowPreview(false);
   };
+
+  // Handle file change
+  const handleFileChange = (e) => { 
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (file.type !== "application/pdf") {
+      alert("Only PDF files are allowed");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      alert("File size must be less than 5MB");
+      return;
+    }
+
+    setImage(file);
+
+    const url = URL.createObjectURL(file);
+    setPreviewURL(url);
+  };
+
 
   if (showPreview) {
     return (
@@ -107,14 +160,15 @@ function Section13() {
           <p><strong>Selected Elements: </strong>{selectedElements.join(", ")}</p>
           <p><strong>Name of PI/Researcher:</strong> {name_of_co_investigator_1}</p>
           <p><strong>Date: </strong>{date_2}</p>
-          <p><strong>Uploaded File:</strong> </p>    {image ? (
-          <div>
-         <img src={URL.createObjectURL(image)} alt="Uploaded Preview" style={{ maxWidth: "300px", maxHeight: "300px" }}    />
-        <p>{image.name}</p>
-      </div>
-    ) : (
-      <p>No file uploaded</p>
-    )}
+          <p><strong>Uploaded File:</strong> </p>    {previewURL ? (
+            <Tooltip title="View PDF">
+              <IconButton onClick={() => window.open(previewURL, '_blank')} color="error" >
+                <PictureAsPdfIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <p>No file uploaded</p>
+          )}
 
           <button onClick={handleSubmit} className="name">
              Submit
@@ -129,7 +183,7 @@ function Section13() {
   return (
     <div>
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-      {existData ? ( <TableComponent13 data={existData} />):
+      {(existData && openTable) ? ( <TableComponent13 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData}/>):
         <form onSubmit={handlePreview}>
         <h1 className="hi">13. Application for Expedited Review</h1>
           <div >
@@ -190,7 +244,7 @@ function Section13() {
             used in the project.{" "}
           </h3>
           <textarea
-            name="researchSummary" placeholder="Enter research summary" value={summary}
+            name="researchSummary" placeholder="Brief summary of the project" value={summary}
             onChange={(e) => setSummary(e.target.value)} className="custom-textarea"
              maxLength={600}required />
           <br />
@@ -199,7 +253,8 @@ function Section13() {
             applicable){" "}
           </h3>
           <div >
-            <div className="h2"> {elementsList.map((item, index) => (
+            <div className="h2"> 
+              {elementsList.map((item, index) => (
                 <label key={index} className="h2">
                   <br></br>
                   <input type="checkbox" value={item} checked={selectedElements.includes(item)}
@@ -212,7 +267,7 @@ function Section13() {
           <div className="h2" >
             <h2 className="h2">Name of PI / Researcher</h2>
             <label>
-              <input type="text" name="researcher"  placeholder="Enter researcher"
+              <input type="text" name="researcher"  placeholder="Name"
                 value={name_of_co_investigator_1} onChange={(e) => setNameOfCoInvestigator1(e.target.value)}
                 className="name" required />
             </label>
@@ -222,9 +277,16 @@ function Section13() {
             <div >
               <h2 className="h2">signature</h2>
               <label>
-            <input type="file"  name="image" onChange={(e) => setImage(e.target.files[0])}  className="name"
-                  required/>
+                <input type="file" name="image" accept="application/pdf"
+                  onChange={handleFileChange}  className="name" required/>
               </label>
+                {previewURL && (
+                  <Tooltip title="View PDF">
+                    <IconButton onClick={() => window.open(previewURL, '_blank')} color="error" >
+                      <PictureAsPdfIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                )}
             </div>
             <div className="h2">
               <h2 className="h2">Date</h2>

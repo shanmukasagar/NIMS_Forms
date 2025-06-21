@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { Box, TextField, Typography, Grid } from '@mui/material';
 
-const Investigators = ({ researchers, setResearchers }) => {
-  const fieldNames = ['name', 'designation', 'qualification', 'department', 'email', 'contact'];
+const Investigators = ({ researchers, setResearchers, investigatorsCount, setInvestigatorsCount}) => {
+  const fieldNames = ['name', 'designation', 'qualification', 'department', 'gmail', 'contact'];
 
   const normalizeType = (researcher) => researcher.type || researcher.role || '';
 
@@ -44,9 +44,14 @@ const Investigators = ({ researchers, setResearchers }) => {
     setResearchers(updated);
   };
 
+  const handleInvestigatorsCount = (e) => {
+    setInvestigatorsCount((prev) => ({...prev, [e.target.name] : e.target.value}))
+  }
+
   const getLabel = (type) => {
     if (type === 'principal') return 'Principal Investigator';
     if (type === 'guide') return 'Guide';
+    if (type === "hod") return "HOD"
     return 'Co-Investigator';
   };
 
@@ -61,13 +66,13 @@ const Investigators = ({ researchers, setResearchers }) => {
 
   return (
     <Box>
-      {['principal', 'guide', 'co-investigator'].map((type) => (
+      {['principal', 'guide', 'hod', 'co-investigator'].map((type) => (
         <Box key={type} sx={{ mb: 3 }}>
           <Typography sx={{ fontWeight: 600, mb: 1 }}>{getLabel(type)}</Typography>
           <Grid container spacing={2}>
             {getGroupedResearchers(type).map((inv) =>
               fieldNames.map((field, fieldIdx) => (
-                <Grid item xs={12} md={4} key={`${type}-${inv._index}-${fieldIdx}`}>
+                <Grid item size={2} md={4} key={`${type}-${inv._index}-${fieldIdx}`}>
                   <TextField
                     fullWidth
                     required={normalizeType(inv) === 'principal'}
@@ -83,6 +88,20 @@ const Investigators = ({ researchers, setResearchers }) => {
           </Grid>
         </Box>
       ))}
+      <Grid container spacing={2}>
+        <Grid item size={4}>
+          <TextField label="Number of studies as Principal Investigator" name="pi_count" type="number" fullWidth
+            required value={investigatorsCount.pi_count} onChange={handleInvestigatorsCount} />
+        </Grid>
+        <Grid item size={4}>
+          <TextField label="Number of studies as Co-Principal Investigator" name="co_pi_count" type="number" fullWidth
+            required value={investigatorsCount.co_pi_count} onChange={handleInvestigatorsCount} />
+        </Grid>
+        <Grid item size={4}>
+          <TextField  label="Proposed Duration of present study" name="duration"   fullWidth  
+            required   value={investigatorsCount.duration}   onChange={handleInvestigatorsCount} />
+        </Grid>
+      </Grid>
     </Box>
   );
 };

@@ -20,6 +20,33 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       ]
     },
     {
+      id: 'ISRC Committee Member',
+      label: 'ISRC Committee Member',
+      hasSubMenu: false,
+      role: "ISRC Committee Member",
+      subItems: [
+        { id: 'ISRC Committee Member', label: 'ISRC Committee Member', path: '/isrc/commitee/member' },
+      ]
+    },
+    {
+      id: 'Assign Reviewers',
+      label: 'Assign Reviewers',
+      hasSubMenu: false,
+      role: "ISRC Member Secretary",
+      subItems: [
+        { id: 'Assign Reviewers', label: 'Assign Reviewers', path: '/isrc/chair/assignreviewers' },
+      ]
+    },
+    {
+      id: 'Final Decision',
+      label: 'Final Decision',
+      hasSubMenu: false,
+      role: "ISRC Committee Chair",
+      subItems: [
+        { id: 'Final Decision', label: 'Final Decision', path: '/isrc/chair/decision' },
+      ]
+    },
+    {
       id: 'Research',
       label: 'Research',
       hasSubMenu: true,
@@ -42,20 +69,37 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       ]
     },
     {
-      id: 'ClinicalTrails',
-      label: 'Clinical Trails',
+      id: 'Medical Research',
+      label: 'Medical Research',
       hasSubMenu: true,
-      role: "",
+      role: "biomedical-2",
       subItems: [
-        { id: 'Add Clinical Trials', label: 'Add Clinical Trials', path: '/addclinicaltrails' },
-        { id: 'Clinical Trials Feedback', label: 'Clinical Trials Feedback', path: '/investigator/feedback' },
+        { id: 'Administrative Details', label: 'Administrative Details', path: '/basic/administrative' },
+        { id: 'Details Investigator', label: 'Details Investigator', path: '/basic/details' },
+        { id: 'Funding Details', label: 'Funding Details', path: '/basic/funding' },
+        { id: 'Overview of Research', label: 'Overview of Research', path: '/research/overview' },
+        { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' },
+        { id: 'Declaration', label: 'Declaration', path: '/declaration' },
+        { id: 'CheckList', label: 'CheckList', path: '/checklist' },
+        { id: 'ExpeditedReview', label: 'Expedited Review', path: '/expedited' },
+        { id: 'WaiverOfConsent', label: 'Waiver Of Consent', path: '/waiver' }
       ]
     },
+    // {
+    //   id: 'ClinicalTrails',
+    //   label: 'Clinical Trails',
+    //   hasSubMenu: true,
+    //   role: "",
+    //   subItems: [
+    //     { id: 'Add Clinical Trials', label: 'Add Clinical Trials', path: '/addclinicaltrails' },
+    //     { id: 'Clinical Trials Feedback', label: 'Clinical Trials Feedback', path: '/investigator/feedback' },
+    //   ]
+    // },
     {
       id: 'NIEC',
       label: 'NIEC',
       hasSubMenu: true,
-      role: "",
+      role: "NIEC",
       subItems: [
         { id: 'Amendment', label: 'Amendment', path: '/amendment' },
         { id: 'Amendment Template', label: 'Amendment Template', path: '/amendment/template' },
@@ -66,15 +110,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
         { id: 'Protocol Deviation and Compilance', label: 'Protocol Deviation and Compilance', path: '/protocol/deviation' },
       ]
     },
-    {
-      id: 'ISRC Committee Member',
-      label: 'ISRC Committee Member',
-      hasSubMenu: false,
-      role: "ISRC Committee Member",
-      subItems: [
-        { id: 'ISRC Committee Member', label: 'ISRC Committee Member', path: '/isrc/commitee/member' },
-      ]
-    },
+    
     
   ];
 

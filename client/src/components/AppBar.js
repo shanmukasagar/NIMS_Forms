@@ -9,7 +9,7 @@ const Header = () => {
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1, textAlign : "center", color : "#4b1d77",
           fontWeight : "600"
-         }}>NIMS RESEARCH FORMS</Typography>
+         }}>NIMS Research Submission Portal</Typography>
       </Toolbar>
     </AppBar>
   );

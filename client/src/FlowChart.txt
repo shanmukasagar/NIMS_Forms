@@ -1,0 +1,39 @@
+Principal Investigator
+     |
+     +--> Submit New Research Project
+     |
+     +--> View Project List
+     |       |
+     |       +--> Edit Project Info
+     |
+     +--> View ISRC Chair Comments
+             |
+             +--> Edit Project Info
+
+
+ISRC Chair
+     |
+     +--> View All Projects
+     |       |
+     |       +--> Assign Reviewer
+     |       |       |
+     |       |       +--> ISRC Member
+     |       |
+     |       +--> Add Comment to Project
+     |               |
+     |               +--> PI Views ISRC Chair Comments
+     |
+     +--> Review Reviewer Comments
+     |
+     +--> Approve / Reject / Review Project
+
+
+ISRC Member
+     |
+     +--> View Assigned Projects
+     |       |
+     |       +--> Add Comment to Project
+     |       |       |
+     |       |       +--> Chair Reviews Comments
+     |       |
+     |       +--> Approve / Reject / Review

@@ -5,23 +5,31 @@ import "../../App.css";
 import TableComponent4 from  "./TableComponent4.js";
 import axiosInstance from "../../components/AxiosInstance.js";
 
-const OverviewResearch = () => {
+const OverviewResearch = ({selectedForm}) => {
 const [summary, setSummary] = useState("");
 const [type_of_study, setTypeOfStudy] = useState("");
 const [external_laboratory, setExternalLaboratory] = useState("");
 const [specify, setSpecify] = useState("");
 const [image, setImage] = useState(null);
+const [otherStudyType, setOtherStudyType] = useState("");
+const [justification, setJustification] = useState("");
+
 const[existData,setExistData]=useState(null)
 const [email]=useState("")
 const [showPreview, setShowPreview] = useState(false); 
 const navigate = useNavigate();
+
+const [openTable, setOpenTable] = useState(false);
+const [editableData, setEditableData] = useState({})
+const [previewURL, setPreviewURL] = useState(null);
+
 const Submit = async (e) => {
     e.preventDefault();
     try {
       const userResponse = await axiosInstance.post("/api/research/overvieww_research",
         {
-          summary,type_of_study,external_laboratory, specify,  email,
-        }
+          summary, type_of_study, external_laboratory, specify, otherStudyType, justification,  email,
+        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "overvieww_research", formId : editableData?.form_id}}
       );
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
@@ -51,6 +59,16 @@ const Submit = async (e) => {
   };
 
   useEffect(() => {
+    setSummary(editableData?.summary || "");
+    setTypeOfStudy(editableData?.type_of_study || "");
+    setExternalLaboratory(editableData?.external_laboratory || "");
+    setSpecify(editableData?.specify || "");
+    setImage(editableData?.image || null); // Assuming image could be null or a URL/blob
+    setOtherStudyType(editableData?.otherStudyType);
+    setJustification(editableData?.justification);
+  }, [editableData])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
@@ -59,7 +77,9 @@ const Submit = async (e) => {
           }
         });
         if (response.data.length > 0) {
-          setExistData(response.data); 
+          setExistData([response.data[response.data.length - 1]]);
+          setOpenTable(true); 
+          
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -78,27 +98,44 @@ const Submit = async (e) => {
     setShowPreview(false);
   };
 
+  const handleFileChange = (e) => { // Handle file change
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (file.type !== "application/pdf") {
+      alert("Only PDF files are allowed");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      alert("File size must be less than 5MB");
+      return;
+    }
+
+    setImage(file);
+
+    const url = URL.createObjectURL(file);
+    setPreviewURL(url);
+  };
+
   if (showPreview) {
     return (
       <div className="h">
         <h3 className="h2">Preview</h3>
         <p><strong>Summary:</strong> {summary}</p>
         <p><strong>Type of Study:</strong> {type_of_study}</p>
+        {
+          type_of_study === "others" && (
+            <p><strong>Other Study Type:</strong> {otherStudyType}</p>
+          )
+        }
         <p><strong>External Lab Involved:</strong> {external_laboratory}</p>
         {external_laboratory === "Yes" && (
           <p><strong>Lab Details:</strong> {specify}</p> )}
-        <p><strong>Uploaded File:</strong> </p>    {image ? (
-      <div>
-        <img 
-          src={URL.createObjectURL(image)} 
-          alt="Uploaded Preview" 
-          style={{ maxWidth: "300px", maxHeight: "300px" }} 
-        />
-        <p>{image.name}</p>
-      </div>
-    ) : (
-      <p>No file uploaded</p>
-    )}
+        <p><strong>Justification:</strong>{justification} </p>  
         <button onClick={Submit} className="name"> Submit</button>
         <button onClick={handleEdit} className="name">Edit</button>
       </div>
@@ -107,48 +144,49 @@ const Submit = async (e) => {
 
     return (
     <div >
-    {existData ? (<TableComponent4 data={existData} />) :
-    (  <form>
+    {(existData && openTable ) ? (<TableComponent4 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData}/>) :
+    (  <form onSubmit={handlePreview}>
       <h2 className="hi">SECTION B - RESEARCH RELATED INFORMATION</h2>
       <h2 className="h2">3. OVERVIEW OF RESEARCH</h2>
         <h2 className="h1">(a). Summary of study (within 300 words)</h2>
-        <textarea
-          name="researchSummary" placeholder="Enter research summary" value={summary}
-          onChange={(e) => setSummary(e.target.value)} className="custom-textarea"   maxLength={600}
-          required/>
+        <textarea name="researchSummary" placeholder="Enter research summary" value={summary}
+          onChange={(e) => setSummary(e.target.value)} className="custom-textarea"   maxLength={600} required/>
         <div>
           <h3 className="h2">(b). Type of study</h3>
-          <select
-            name="studyType" value={type_of_study}
-            onChange={(e) => setTypeOfStudy(e.target.value)}
-            className="name"  required >
-            <option value="">Select study type</option>
-            <option value="interventional">Interventional studies</option>
-            <option value="case-control">Case Control / Cohort</option>
+          <select name="studyType" value={type_of_study} onChange={(e) => setTypeOfStudy(e.target.value)} className="name" required >
+            <option value="" disabled>Select study type</option>
+            <option value="interventional">Interventional Studies</option>
+            <option value="case-control">Case Control / Cohort / Prospective Observation Study</option>
+
             <option value="retrospective">Retrospective</option>
-            <option value="epidomological">Epidemiological/Public Health</option>
-            <option value="cross-section">Cross-sectional</option>
-            <option value="sociobehaviour">Socio-behaviour</option>
-            <option value="anyothers">Any others</option>
+            <option value="epidemiological">Epidemiological / Public Health</option>
+            <option value="cross-sectional">Cross-sectional</option>
+            <option value="sociobehavioural">Socio-behavioural</option>
+            <option value="others">Any Others</option>
           </select>
         </div>
+        {type_of_study === "others" && (
+          <div className="h1">
+            <h3>If others, specify:</h3>
+            <input  style = {{width : "100%"}} type="text" name="otherStudyType"  placeholder="Enter details"   value={otherStudyType} 
+              onChange={(e) => setOtherStudyType(e.target.value)} className="name"  required/>
+          </div>
+        )}
 
         <h2 className="h2">4. METHODOLOGY</h2>
         <div className="form-group">
           <h2 className="custom-text">Sample size:</h2>
           <h2 className="h2">Justification for the sample size chosen:</h2>
-          <label>
-            <input type="file" name="image"
-              onChange={(e) => setImage(e.target.files[0])}  className="name" required/>
-          </label>
+          <input  style = {{width : "100%"}} type="text" name="justification"  placeholder="Enter Justification"   value={justification} 
+              onChange={(e) => setJustification(e.target.value)} className="name"  required/>
         </div>
 
         <div className="h">
-          <h3>Is there an external laboratory / outsourcing involved for inveestigations?</h3>
+          <h3>Is there an external laboratory / outsourcing involved for investigations?</h3>
           <div className="radio-group">
             <label>
               <input type="radio" name="laboratory" value="Yes" checked={external_laboratory === "Yes"}  
-              onChange={(e) => setExternalLaboratory(e.target.value)}  />{" "}
+              onChange={(e) => setExternalLaboratory(e.target.value)} required  />{" "}
               Yes
             </label>
             <label>
@@ -157,20 +195,25 @@ const Submit = async (e) => {
               />{" "}
               No
             </label>
+            <label>
+              <input type="radio"  name="laboratory"   value="NA"
+                checked={external_laboratory === "NA"} onChange={(e) => setExternalLaboratory(e.target.value)}
+              />{" "}
+              NA
+            </label>
           </div>
         </div>
 
         {external_laboratory === "Yes" && (
           <div className="h1">
             <h3>If yes, specify:</h3>
-            <input  type="text" name="laboratoryDetails"  placeholder="Enter details"   value={specify} 
+            <input  style = {{width : "100%"}} type="text" name="laboratoryDetails"  placeholder="Enter details"   value={specify} 
               onChange={(e) => setSpecify(e.target.value)} className="name"  required/>
+              
           </div>
         )}
        <br></br>
-        <button onClick={handlePreview} className="name">
-        Preview
-        </button>
+        <button type = "submit" className="name">Preview </button>
        </form>
       )
       }

@@ -9,7 +9,7 @@ import { Dialog, DialogTitle, DialogContent, IconButton, Tooltip} from '@mui/mat
 import PreviewPopup from "../../../Forms/Add_Clinical_Form/Clinical_Preview";
 import AddClinicalTrails from '../../../components/AddClinicalTrails';
 
-const Dashboard = ({user}) => {
+const Dashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
     const [selectedComment, setSelectedComment] = useState('');
     const [open, setOpen] = useState(false);
@@ -23,10 +23,15 @@ const Dashboard = ({user}) => {
 
     useEffect(() => {
         const handleGetProjects = async () => {
-            if(!fetchOnce.current) {
-                fetchOnce.current = true;
-                const response = await axiosInstance.get('/api/investigator/projects');
-                setProjectsData(response.data);
+            try{
+                if(!fetchOnce.current) {
+                    fetchOnce.current = true;
+                    const response = await axiosInstance.get('/api/investigator/projects', {params : {type : "investigators"}});
+                    setProjectsData(response.data);
+                }
+            }
+            catch(error) {
+                console.log("Error occured while fetching projects");
             }
         }
         handleGetProjects();
@@ -50,32 +55,58 @@ const Dashboard = ({user}) => {
         return `${formattedDate} ${formattedTime}`;
     };
 
-    const handleViewIcon = async (project_ref) => { // Handle view icon
+    const handleViewIcon = async (item) => { // Handle view icon
         try {
-            const result = await handleGetProjectDetails(project_ref);
-            setProjectView(result);
-            setOpenPreview(true);
+            if(item.form_type === "biomedical-1") {
+                setSelectedForm("biomedical-1");
+                navigate("/basic/administrative")
+            }
+            else if(item.form_type === "biomedical-2") {
+                setSelectedForm("biomedical-2");
+                navigate("/basic/administrative")
+            }
+            else{
+                const result = await handleGetProjectDetails(item.project_ref);
+                setProjectView(result);
+                setOpenPreview(true);
+            }
         } catch (error) {
             console.log("Error occurred while fetching project data", error.message);
         }
     };
 
-    const handleEditIcon = async (project_ref) => { // Handle Edit icon
+    const handleEditIcon = async (item) => { // Handle Edit icon
         try {
-            const result = await handleGetProjectDetails(project_ref);
-            setProjectView(result);
-            const initialData = {
-                administration: result?.administration,
-                researchers: result?.researchers,
-                participants: result?.participants,
-                benefits: result?.benefits,
-                paymentState: result?.paymentState,
-                storage: result?.storage,
-                additional: result?.additional,
-                checkListData: result?.checkListData,
-                submittedFormId : result?.administration?.form_id || "",
+            if(item.form_type === "biomedical-1") {
+                setSelectedForm("biomedical-1");
+                navigate("/basic/administrative")
             }
-            navigate("/addclinicaltrails", { state: { initialData: initialData, user : user } });
+            else if(item.form_type === "biomedical-2") {
+                setSelectedForm("biomedical-2");
+                navigate("/basic/administrative")
+            }
+            else{
+                const result = await handleGetProjectDetails(item.project_ref);
+                setProjectView(result);
+                const initialData = {
+                    administration: result?.administration,
+                    researchers: result?.researchers,
+                    participants: result?.participants,
+                    benefits: result?.benefits,
+                    paymentState: result?.paymentState,
+                    storage: result?.storage,
+                    additional: result?.additional,
+                    checkListData: result?.checkListData,
+                    submittedFormId : result?.administration?.form_id || "",
+                    investigatorsCount: result?.investigatorsCount,
+                    fundingData: result?.fundingData,
+                    overviewResearch: result?.overviewResearch,
+                    methodologyData: result?.methodologyData,
+                    consentData: result?.consentData,
+                    declaration: result?.declaration,
+                }
+                navigate("/addclinicaltrails", { state: { initialData: initialData, user : user } });
+            }
         } catch (error) {
             console.log("Error occurred while fetching project data", error.message);
         }
@@ -110,22 +141,23 @@ const Dashboard = ({user}) => {
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Edit</Typography></Grid>
                     </Grid>
                     <Grid container spacing={3} style={{ backgroundColor: 'white', color: '#4b1d77', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        {projectsData.length > 0 && projectsData.map((item, key) => (
+                        {projectsData.length > 0 ? projectsData.map((item, key) => (
                             <React.Fragment>
                                 <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{item.status}</Typography></Grid>
                                 <Grid item size={1}>
-                                    <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item.project_ref)} /> 
+                                    <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
                                 </Grid>
                                 <Grid item size={1}>
                                     <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenComment(item.comments)}/>
                                 </Grid>
                                 <Grid item size={1}> 
-                                    <Edit sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleEditIcon(item.project_ref)} />
+                                    <Edit sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleEditIcon(item)} />
                                 </Grid>
                             </React.Fragment>
-                        ))}
+                        )) : <Typography style = {{textAlign : "center", fontSize : "20px", color : "#5a4c4c"}}>No projects to display</Typography>
+                        }
                     </Grid>
                 </Box>
             </Box>
@@ -143,7 +175,13 @@ const Dashboard = ({user}) => {
                     paymentState: projectView?.paymentState,
                     storage: projectView?.storage,
                     additional: projectView?.additional,
-                    checkListData: projectView?.checkListData
+                    checkListData: projectView?.checkListData,
+                    investigatorsCount: projectView.investigatorsCount,
+                    fundingData: projectView.fundingData,
+                    overviewResearch: projectView.overviewResearch,
+                    methodologyData: projectView.methodologyData,
+                    consentData: projectView.consentData,
+                    declaration: projectView.declaration,
                 }}/>
             )}
         </React.Fragment>

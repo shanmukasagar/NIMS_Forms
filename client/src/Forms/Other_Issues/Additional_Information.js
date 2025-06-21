@@ -1,15 +1,27 @@
 import { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-
 import TableComponent10 from  "./components/TableComponent10.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-const Section9 = () => {
+
+const Section9 = ({selectedForm}) => {
 const [support_type, setSupportType] = useState("");
 const [additional, setAdditional] = useState("");
+
 const [preview, setPreview] = useState(false); 
 const navigate = useNavigate();
 const[existData,setExistData]=useState(null)
+const [openTable, setOpenTable] = useState(false);
+const [editableData, setEditableData] = useState({});
 const [email]=useState("");
+
+useEffect(() => {
+  if (editableData) {
+    setSupportType(editableData?.support_type || "");
+    setAdditional(editableData?.additional || "");
+  }
+}, [editableData]);
+
+
 const handlePreview = (e) => {
     e.preventDefault();
     setPreview(true);
@@ -25,7 +37,7 @@ const handlePreview = (e) => {
           support_type,
           additional, 
           email,
-        }
+        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "additional_information", formId : editableData?.form_id}}
       );
       console.log("User created:", userResponse.data);
       navigate("/declaration");
@@ -47,6 +59,7 @@ useEffect(() => {
   
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
+          setOpenTable(true);
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -74,7 +87,7 @@ useEffect(() => {
   }
   return (
     <div className="form-container">
-        {existData ? (<TableComponent10 data={existData} />) :
+        {(existData && openTable) ? (<TableComponent10 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData} />) :
       <form onSubmit={handlePreview}>
         <h1 className="hi">SECTION D: OTHER ISSUES </h1>
         <h2 className="h2">10. ADDITIONAL INFORMATION </h2>
@@ -86,7 +99,7 @@ useEffect(() => {
           </h3>
           <div className="radio-group">
             <label>
-              <input
+              <input required
                 type="radio" name="additional" value="Yes"  checked={support_type === "Yes"}
                 onChange={(e) => setSupportType(e.target.value)} />{" "}
               Yes
@@ -101,10 +114,9 @@ useEffect(() => {
 
         {support_type === "Yes" && (
           <div className="h">
-            <h3>specify:</h3>
-            <input
-            type="text" name="additionalInformation"  placeholder="Enter details"  checked={additional === "Yes"}
-            onChange={(e) => setAdditional(e.target.value)} className="name" required/>
+            <h3>If yes, specify:</h3>
+            <input type="text" name="additionalInformation"  placeholder="Enter details"  checked={additional === "Yes"} style = {{width : "100%"}}
+            onChange={(e) => setAdditional(e.target.value)} className="name" required value = {additional}/>
             
           </div>
         )}

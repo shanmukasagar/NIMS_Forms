@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import TableComponent14 from  "./components/TableComponent14.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { IconButton, Tooltip } from '@mui/material';
 
-function Section14() {
+function Section14({selectedForm}) {
   const [principal_investigator_name, setPrincipalInvestigatorName] =useState("");
   const [department, setDepartment] = useState("");
   const [title, setTitle] = useState("");
@@ -13,10 +15,14 @@ function Section14() {
   const [name_of_co_investigator_1, setNameOfCoInvestigator1] = useState("");
   const [image, setImage] = useState(null); 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
   const [email]=useState("");
   const navigate = useNavigate();
+  const [openTable, setOpenTable] = useState(false);
+  const [editableData, setEditableData] = useState({});
+  const [previewURL, setPreviewURL] = useState(null);
 
   const elementsList = [
     "research cannot practically be carried out without the waiver and the waiver is scientifically justified",
@@ -26,6 +32,20 @@ function Section14() {
     "research on data available in the public domain",
     "research during humanitarian emergencies and disasters, when the participant may not be in a position to give consent.",
   ];
+
+  useEffect(() => {
+    if (editableData) {
+      setPrincipalInvestigatorName(editableData?.principal_investigator_name || "");
+      setDepartment(editableData?.department || "");
+      setTitle(editableData?.title || "");
+      setSelectedElements(editableData?.selectedElements || []);
+      setSummary(editableData?.summary || "");
+      setNameOfCoInvestigator1(editableData?.name_of_co_investigator_1 || "");
+      setImage(editableData?.image || null);
+      setDate(editableData?.date ? new Date(editableData.date).toISOString().split("T")[0] : new Date().toISOString().split("T")[0]);
+    }
+  }, [editableData]);
+
 
   const handleCheckboxChange = (event) => {
     const value = event.target.value;
@@ -48,7 +68,7 @@ function Section14() {
         {
           selectedElements: selectedElements,  principal_investigator_name,
           department,title,summary,name_of_co_investigator_1,date,
-        }
+        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "requesting_waiver", formId : editableData?.form_id}}
       );
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
@@ -83,6 +103,7 @@ function Section14() {
         });
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
+          setOpenTable(true);
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -91,8 +112,33 @@ function Section14() {
     };
     fetchData();
   }, [email]);
+
   const handleEdit = () => {
     setShowPreview(false);
+  };
+
+  // Handle file change
+  const handleFileChange = (e) => { 
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (file.type !== "application/pdf") {
+      alert("Only PDF files are allowed");
+      return;
+    }
+
+    if (file.size > maxSize) {
+      alert("File size must be less than 5MB");
+      return;
+    }
+
+    setImage(file);
+
+    const url = URL.createObjectURL(file);
+    setPreviewURL(url);
   };
 
   if (showPreview) {
@@ -106,21 +152,18 @@ function Section14() {
           <p><strong>Selected Elements:</strong> {selectedElements.join(", ")}</p>
           <p><strong>Summary: </strong>{summary}</p>
           <p><strong>Name of PI/Researcher:</strong> {name_of_co_investigator_1}</p>
-          <p><strong>Date:</strong>{date}</p>{image ? (
-          <div>
-         <img src={URL.createObjectURL(image)} alt="Uploaded Preview" style={{ maxWidth: "300px", maxHeight: "300px" }}    />
-        <p>{image.name}</p>
-      </div>
-    ) : (
-      <p>No file uploaded</p>
-    )}
-
-          <button onClick={handleSubmit} className="name">
-             Submit
-          </button>
-          <button onClick={handleEdit} className="name">
-            Edit
-          </button>
+          <p><strong>Date:</strong>{date}</p>
+          {previewURL ? (
+            <Tooltip title="View PDF">
+              <IconButton onClick={() => window.open(previewURL, '_blank')} color="error" >
+                <PictureAsPdfIcon fontSize="large" />
+              </IconButton>
+            </Tooltip>
+          ) : (
+            <p>No file uploaded</p>
+          )}
+          <button onClick={handleSubmit} className="name"> Submit </button>
+          <button onClick={handleEdit} className="name"> Edit </button>
         </div>
       </div>
     );
@@ -128,7 +171,7 @@ function Section14() {
   return (
     <div >
       <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-      {existData ? ( <TableComponent14 data={existData} />):
+      {(existData && openTable) ? ( <TableComponent14 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData}/>):
         <form onSubmit={handlePreview}>
         <h1 className="hi">
           14. Application Form for Requesting Waiver of Consent
@@ -175,11 +218,11 @@ function Section14() {
           </div>
 
           <h3 className="h2">Any other reason (please specify)</h3>
-          <textarea name="researchSummary" placeholder="Enter research summary"  value={summary}
+          <textarea name="researchSummary" placeholder="Specify"  value={summary}
             onChange={(e) => setSummary(e.target.value)} className="custom-textarea"  maxLength={600}  required />
           <br />
           <div className="form-group">
-            <h3 className="h2">Name of PI / Researcher</h3>
+            <h3 className="h2">Name of Principal Investigator / Researcher</h3>
             <div className="h2">
             <label>
               <input type="text" name="researcher" placeholder="Enter researcher"value={name_of_co_investigator_1}
@@ -193,8 +236,16 @@ function Section14() {
             <div className="h2">
               <h3 className="h2">signature</h3>
               <label>
-            <input type="file" name="image" onChange={(e) => setImage(e.target.files[0])} className="name" required />
+                <input type="file" name="image" accept="application/pdf"
+                  onChange={handleFileChange}  className="name" required/>
               </label>
+                {previewURL && (
+                  <Tooltip title="View PDF">
+                    <IconButton onClick={() => window.open(previewURL, '_blank')} color="error" >
+                      <PictureAsPdfIcon fontSize="large" />
+                    </IconButton>
+                  </Tooltip>
+                )}
             </div>
             <div className="h2" >
               <h3 className="h2">Date</h3>

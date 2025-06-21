@@ -1,6 +1,12 @@
 import React from "react";
 
-const TableComponent14 = ({ data }) => {
+const TableComponent14 = ({ data , setOpenTable, setEditableData}) => {
+
+  const handleEdit = () => {
+    setOpenTable(false);
+    setEditableData(data[0]);
+  }
+
   return (
     <div className="table-container">
       <h2>Waiverof consent data</h2>
@@ -34,6 +40,11 @@ const TableComponent14 = ({ data }) => {
           ))}
         </tbody>
       </table>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "3rem" }}>
+        <button style={{ padding: "8px 16px", fontSize: "14px", cursor: "pointer" , width : "150px"}} onClick = {handleEdit}>
+          Edit
+        </button>
+      </div>
     </div>
   );
 };

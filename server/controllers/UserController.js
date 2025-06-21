@@ -7,7 +7,7 @@ const userRegister = async(req, res) => { //User Registration
         const userData = req.body;
         const result = await userRegistration(userData);
         if(result.success) {
-            const token = await createToken(userData.email);
+            const token = await createToken(userData.email, userData?.selectedRole);
             // Set the token in a cookie
             res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 3600000 });  // 1 hour expiration time
             res.status(200).json(result.message);
@@ -26,7 +26,7 @@ const userLogin = async(req, res) => { //User Login
         const userData = req.body;
         const result = await userAuthentication(userData);
         if(result.success) {
-            const token = await createToken(userData.email);
+            const token = await createToken(userData.email, userData.selectedRole);
             // Set the token in a cookie
             res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'lax', maxAge: 3600000 });  // 1 hour expiration time
             res.status(200).json(result.message);

@@ -2,13 +2,7 @@ import React from 'react';
 import { Box, TextField, MenuItem, Select, InputLabel, FormControl, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 
-const AdministrativeDetails = ({setAdministration, administration}) => {
-
-    const formatDateForInput = (date) => { //Date Display
-        if (!date) return '';
-        const [day, month, year] = date.split('/');
-        return `${year}-${month}-${day}`;
-    };
+const AdministrativeDetails = ({setAdministration, administration, isEdit}) => {
 
     const formatSubmissionDate = (date) => {
         if (!date) return '';
@@ -25,7 +19,7 @@ const AdministrativeDetails = ({setAdministration, administration}) => {
     const handleChange = (e) => { // Handle Textfield change
         const { name, value } = e.target;
         let updatedValue = value;
-        if (name === 'submission_date' || name === 'date') { // Convert date value to dd/mm/yyyy format if it's a date field
+        if (name === 'submission_date') { // Convert date value to dd/mm/yyyy format if it's a date field
             updatedValue = formatDateForState(value);
         }
         setAdministration({...administration, [name] : updatedValue});
@@ -42,7 +36,7 @@ const AdministrativeDetails = ({setAdministration, administration}) => {
             <Grid item size={4}>
                 <TextField fullWidth label="Date of Submission to NIEC" type="date" InputLabelProps={{ shrink: true }}
                     name="submission_date" variant="outlined" required disabled 
-                    value={formatSubmissionDate(administration.submission_date || administration.submission_date)} onChange={handleChange}
+                    value={formatSubmissionDate(administration.submission_date)} onChange={handleChange}
                 />
             </Grid>
             <Grid item size={12}>
@@ -66,16 +60,16 @@ const AdministrativeDetails = ({setAdministration, administration}) => {
                     value={administration.short_title || administration.short_title} onChange={handleChange} />
             </Grid>
             <Grid item size={4}>
-                <TextField fullWidth type = "number" required label="Protocol Number" variant="outlined" 
+                <TextField fullWidth required label="Protocol Number" variant="outlined" 
                 name='protocol' value={administration.protocol} onChange={handleChange} />
             </Grid>
             <Grid item size={4}>
-                <TextField fullWidth type = "number" required label="Version Number" variant="outlined" 
+                <TextField fullWidth required label="Version Number" variant="outlined" 
                 name='version' value={administration.version} onChange={handleChange} />
             </Grid>
             <Grid item size={4}>
-                <TextField fullWidth label="Dated" type="date" required InputLabelProps={{ shrink: true }}
-                    variant="outlined" name='date' value={administration.date.split('T')[0] || ""} onChange={handleChange}/>
+                <TextField fullWidth label="Date" type="date" required InputLabelProps={{ shrink: true }} variant="outlined"
+                    name="date" value={isEdit ? formatSubmissionDate(administration?.date) : administration?.date} onChange={handleChange} />
             </Grid>
         </Grid>
     );

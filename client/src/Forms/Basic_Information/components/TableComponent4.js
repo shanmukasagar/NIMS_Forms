@@ -25,7 +25,6 @@ const TableComponent4 = ({ data }) => {
               <td>
                 {entry.image_url ? (
                    <img src={entry.image_url} alt="Uploaded" style={{ maxWidth: "100px", maxHeight: "100px" }} />
-                  
                 ) : (
                   "No file"
                 )}
@@ -34,6 +33,11 @@ const TableComponent4 = ({ data }) => {
           ))}
         </tbody>
       </table>
+      <div style={{ display: "flex", justifyContent: "center", marginTop: "3rem" }}>
+        <button style={{ padding: "8px 16px", fontSize: "14px", cursor: "pointer" , width : "150px"}}>
+          Edit
+        </button>
+      </div>
     </div>
   );
 };

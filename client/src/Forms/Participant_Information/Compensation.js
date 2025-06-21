@@ -1,17 +1,21 @@
-import { useState,useEffect } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import TableComponent8 from  "./components/TableComponent8.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-const Section7 = () => {
+const Section7 = ({selectedForm}) => {
+
  const [waiver_consent_type, setWaiverConsentType] = useState("");
  const [specify, setSpecify] = useState("");
  const [specific, setSpecific] = useState("");
  const [compensation_research_of_type, setCompensationResearchOfType] =useState("");
+
  const [showPreview, setShowPreview] = useState(false);
  const[existData,setExistData]=useState(null)
  const [email,]=useState("");
  const navigate = useNavigate();
+ const [openTable, setOpenTable] = useState(false);
+ const [editableData, setEditableData] = useState({});
  
  const handlePreview = (e) => {
     e.preventDefault();
@@ -25,7 +29,7 @@ const Section7 = () => {
       const userResponse = await axiosInstance.post("/api/research/payment_compensation",
         {
           waiver_consent_type, specify,compensation_research_of_type,  specific,email,
-        }
+        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "payment_compensation", formId : editableData?.form_id}}
       );
       console.log("User created:", userResponse.data);
       navigate("/participant/confidentiality");
@@ -38,6 +42,15 @@ const Section7 = () => {
   };
 
   useEffect(() => {
+    if(editableData) {
+      setWaiverConsentType(editableData?.waiver_consent_type || "");
+      setSpecify(editableData?.specify || "");
+      setCompensationResearchOfType(editableData?.compensation_research_of_type || "");
+      setSpecific(editableData?.specific || "");
+    }
+  },[editableData])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
@@ -47,6 +60,7 @@ const Section7 = () => {
         });
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
+          setOpenTable(true);
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -70,7 +84,7 @@ const Section7 = () => {
         </div>
       ):
 
-        existData ? ( <TableComponent8 data={existData} /> )
+        (existData && openTable) ? ( <TableComponent8 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData}/> )
      :(
          <form onSubmit={handlePreview}>
           <h1 className="h1">8. PAYMENT /COMPENSATION</h1>
@@ -79,22 +93,27 @@ const Section7 = () => {
          injuries?{" "}
         </h3>
         <div className="h">
-      
           <div className="radio-group">
             <label>
-              <input type="radio"  name="waiver" value="Yes"checked={waiver_consent_type === "Yes"}  
-              onChange={(e) => setWaiverConsentType(e.target.value)}   />{" "} {""}Yes
+              <input type="radio"  name="waiver" value="Yes" checked={waiver_consent_type === "Yes"}  
+                onChange={(e) => setWaiverConsentType(e.target.value)} required  />Yes
             </label>
             <label>
-              <input
-                type="radio" name="waiver" value="No"  checked={waiver_consent_type === "No"} 
-                onChange={(e) => setWaiverConsentType(e.target.value)}   />{" "}  {""}
-              No
+              <input type="radio" name="waiver" value="No"  checked={waiver_consent_type === "No"} 
+                onChange={(e) => setWaiverConsentType(e.target.value)}   />No
             </label>
-            <h3 className="h2">Kindly specify:</h3>
-            <textarea
-              type="text" name="specifydata" placeholder="Enter research summary"value={specify}
-              onChange={(e) => setSpecify(e.target.value)}  className="custom-textarea" maxLength={600} required/>
+            <label>
+              <input type="radio" name="waiver" value="NA"  checked={waiver_consent_type === "NA"} 
+                onChange={(e) => setWaiverConsentType(e.target.value)}   />NA
+            </label>
+            { waiver_consent_type === "Yes" && (
+              <React.Fragment>
+                <h3 className="h2">Kindly specify:</h3>
+                <textarea type="text" name="specifydata" placeholder="Specify"value={specify}
+                onChange={(e) => setSpecify(e.target.value)}  className="custom-textarea" maxLength={600} required/>
+              </React.Fragment>
+            )}
+            
           </div>
         </div>
         <div className="h">
@@ -104,7 +123,7 @@ const Section7 = () => {
           <div className="radio-group">
             <label>
               <input type="radio"  name="compensation" value="Yes"  checked={compensation_research_of_type === "Yes"}
-                onChange={(e) => setCompensationResearchOfType(e.target.value)}   />{" "}
+                onChange={(e) => setCompensationResearchOfType(e.target.value)}  required />{" "}
               Yes
             </label>
             <label>
@@ -113,11 +132,20 @@ const Section7 = () => {
                 onChange={(e) => setCompensationResearchOfType(e.target.value)}/>{" "}
               No
             </label>
+            <label>
+              <input
+                type="radio" name="compensation" value="NA" checked={compensation_research_of_type === "NA"}
+                onChange={(e) => setCompensationResearchOfType(e.target.value)}/>{" "}
+              NA
+            </label>
           </div>
-          <h3 className="custom">Kindly specify:</h3>
-          <textarea
-            name="specific"  placeholder="Enter research summary"   value={specific}
-            onChange={(e) => setSpecific(e.target.value)} className="custom-textarea" maxLength={600} required/>
+          { compensation_research_of_type === "Yes" && (
+            <React.Fragment>
+              <h3 className="custom">Kindly specify:</h3>
+              <textarea name="specific"  placeholder="Specify"   value={specific} onChange={(e) => setSpecific(e.target.value)} 
+                className="custom-textarea" maxLength={600} required/>
+            </React.Fragment>
+          )}
         </div>
        <br></br>
         <button type="submit" className="name">

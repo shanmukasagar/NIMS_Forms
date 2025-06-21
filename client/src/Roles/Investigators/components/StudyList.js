@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 const studyOptions = [
   { key: "a", label: "Regulatory clinical trial" },
-  { key: "b", label: "Drug/ Device intervention trial- Approved drug for New indication or New dose/route of administration" },
+  { key: "b", label: "Drug/ Device intervention trial- (Academic Clinical Trial) Approved drug for New indication or New dose/route of administration" },
   { key: "c", label: "Bio-availability and Bio-equivalence study" },
   { key: "d", label: "Drug/ Device intervention trial- Already Approved Drug in the same indication/route and dose" },
   { key: "e", label: "Case Control/Cohort studies" },

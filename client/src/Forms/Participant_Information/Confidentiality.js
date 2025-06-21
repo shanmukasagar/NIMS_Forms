@@ -1,20 +1,25 @@
-import { useState ,useEffect} from "react";
+import React, { useState ,useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../App.css";
 import TableComponent9 from  "./components/TableComponent9.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-const Section8 = () => {
+const Section8 = ({selectedForm}) => {
+
  const[sample_access_type,setSampleAccessType]=useState("");
  const[sample_details,setSampleDetails]=useState("");
  const [control_details, setControlDetails] = useState("");
  const [access_details, setAccessDetails] = useState("");
  const [drugs_access_type, setDrugsAccessType] = useState("");
  const [document_access_type, setDocumentAccessType] = useState("");
+ const [identifierPrecautions, setIdentifierPrecautions] = useState("");
+
  const [preview, setPreview] = useState(false); 
  const[existData,setExistData]=useState(null)
  const [email]=useState("");
  const navigate = useNavigate();
+ const [openTable, setOpenTable] = useState(false);
+ const [editableData, setEditableData] = useState({});
  
   const handlePreview = (e) => {
     e.preventDefault();
@@ -24,13 +29,14 @@ const Section8 = () => {
   const handleEdit = () => {
     setPreview(false);
   };
+
   const handleSubmit = async () => {
     try {
       const userResponse = await axiosInstance.post("/api/research/storage_and_confidentiality",
         {
           document_access_type, access_details,
           drugs_access_type,control_details, sample_access_type,  sample_details,  email,
-        }
+        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "storage_and_confidentiality", formId : editableData?.form_id}}
       );
       console.log("User created:", userResponse.data);
       navigate("/issues/additional");
@@ -41,6 +47,19 @@ const Section8 = () => {
       );
     }
   };
+
+  useEffect(() => {
+  if (editableData) {
+    setSampleAccessType(editableData?.sample_access_type || "");
+    setSampleDetails(editableData?.sample_details || "");
+    setControlDetails(editableData?.control_details || "");
+    setAccessDetails(editableData?.access_details || "");
+    setDrugsAccessType(editableData?.drugs_access_type || "");
+    setDocumentAccessType(editableData?.document_access_type || "");
+    setIdentifierPrecautions(editableData?.identifierPrecautions || "");
+  }
+}, [editableData]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,6 +70,8 @@ const Section8 = () => {
         });
         if (response.data.length > 0) {
           setExistData(response.data); // You probably meant setExistData, not setExistData
+          setOpenTable(true);
+          
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -68,6 +89,9 @@ const Section8 = () => {
         {sample_access_type === "Yes" && (
           <>
             <p><strong>Sample Details:</strong> {sample_details}</p>
+            {sample_details === "Identifiable" && (
+              <p><strong> Identifier Precautions:</strong> {identifierPrecautions}</p>
+            )}
           </>)}
         <p><strong>Document Access Type:</strong> {document_access_type}</p>
         {document_access_type === "Yes" && (
@@ -86,50 +110,54 @@ const Section8 = () => {
   }
   return (
          <div className="form-container">
-          {existData ? (<TableComponent9 data={existData} />) :
+          {(existData && openTable) ? (<TableComponent9 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData}/>) :
           <form onSubmit={handlePreview}>
           <h1 className="h1">9. STORAGE AND CONFIDENTIALITY </h1>
           <h1 className="h2">(a) Identifying Information: Study Involves samples / data.</h1>
           <div className="h2">
-          <h3 className="h2"> </h3>
-          <div className="radio-group">
-          <label>
-              <input type="radio" name="sampleaccesstype" value="Yes" checked={sample_access_type === "Yes"} 
-              onChange={(e) => setSampleAccessType(e.target.value)}/>{" "} Yes
-            </label>
+            <h3 className="h2"> </h3>
+            <div className="radio-group">
             <label>
-              <input
-                type="radio" name="sampleaccesstype" value="No" checked={sample_access_type === "No"} 
-                 onChange={(e) => setSampleAccessType(e.target.value)}/>{" "}No
-            </label>
-            <label>
-              <input type="radio"  name="sampleaccesstype" value="NA" checked={sample_access_type === "NA"} 
-              onChange={(e) => setSampleAccessType(e.target.value)}/>{" "}NA
-            </label>
-          </div>
+                <input type="radio" name="sampleaccesstype" value="Yes" checked={sample_access_type === "Yes"}  required
+                onChange={(e) => setSampleAccessType(e.target.value)}/>{" "} Yes
+              </label>
+              <label>
+                <input
+                  type="radio" name="sampleaccesstype" value="No" checked={sample_access_type === "No"} 
+                  onChange={(e) => setSampleAccessType(e.target.value)}/>{" "}No
+              </label>
+              <label>
+                <input type="radio"  name="sampleaccesstype" value="NA" checked={sample_access_type === "NA"} 
+                onChange={(e) => setSampleAccessType(e.target.value)}/>{" "}NA
+              </label>
+            </div>
         </div>
        <br></br>
         {/* Show input if "Yes" is selected */}
         {sample_access_type === "Yes" && (
           <div className="h2">
-           
             <label>
-            <input  type="radio" name="sampledetails" value="Unidentified"
-              checked={sample_details === "Unidentified"} onChange={(e) => setSampleDetails(e.target.value)} />{""}
-            Unidentified
+            <input  type="radio" name="sampledetails" value="Unidentified" required
+              checked={sample_details === "Unidentified"} onChange={(e) => setSampleDetails(e.target.value)} />Anonymous / unidentified
             </label>
-        
-          <label>
-              <input
-                type="radio" name="sampledetails"  value="Identifiable" checked={sample_details === "Identifiable"}
-                onChange={(e) => setSampleDetails(e.target.value)} />{" "}
+            <label>
+              <input type="radio" name="sampledetails"  value="Identifiable" checked={sample_details === "Identifiable"}
+                onChange={(e) => setSampleDetails(e.target.value)} />
             Identifiable
             </label><br></br>
             <br></br>
-            <h3 className="h2">
-            If identifiers must be retained, what additional precautions will be taken to ensure that
-            access is limited / confidentiality is maintained? (e.g. data stored in a cabinet, password
-            protected computer etc.) Kindly specify? </h3>
+            {sample_details === "Identifiable" && (
+              <React.Fragment>
+                <h3 className="h2">  If identifiers must be retained, what additional precautions will be taken to ensure that
+                  access is limited / confidentiality is maintained? (e.g. data stored in a cabinet, password
+                  protected computer etc.) Kindly specify? </h3>
+                
+                <input type = "text"  placeholder = "specify" name = "identifierPrecautions" value = {identifierPrecautions}  required 
+                  style = {{width : "100%", padding : "10px", fontSize : "16px"}}
+                  onChange = {(e) => setIdentifierPrecautions(e.target.value)}/>
+              </React.Fragment>
+            )}
+            
             </div>
         )}
         <div>
@@ -138,7 +166,7 @@ const Section8 = () => {
           </h1>
           <div className="h2">
             <label>
-              <input type="radio"  name="accessControl"  value="Yes"
+              <input type="radio"  name="accessControl"  value="Yes" required
                 checked={document_access_type === "Yes"}  onChange={(e) => setDocumentAccessType(e.target.value)}
               />{" "}
               Yes
@@ -163,7 +191,8 @@ const Section8 = () => {
           <div className="h2">
             <h5>Specify Access Control Details:</h5>
             <input type="text" name="accessDetails"  placeholder="Enter details" value={control_details}
-              onChange={(e) => setControlDetails(e.target.value)} className="name"   required/>
+              onChange={(e) => setControlDetails(e.target.value)} className="name"   required 
+              style = {{width : "100%", padding : "10px", fontSize : "16px"}}/>
             <br />
           </div>
         )}
@@ -173,7 +202,7 @@ const Section8 = () => {
           </h1>
           <div className="h2">
             <label>
-              <input type="radio" name="drugsControl" value="Yes"
+              <input type="radio" name="drugsControl" value="Yes"  required
                 checked={drugs_access_type === "Yes"} onChange={(e) => setDrugsAccessType(e.target.value)} 
               />{" "}
               Yes
@@ -194,12 +223,10 @@ const Section8 = () => {
         {drugs_access_type === "Yes" && (
           <div className="h2">
             <h5>Specify Access Control Details:</h5>
-            <input type="text" name="drugsDetails"placeholder="Enter details"  value={access_details}
-             onChange={(e) => setAccessDetails(e.target.value)}  className="name"   required/>
+            <input type="text" name="drugsDetails"placeholder="Enter details"  value={access_details} style = {{width : "100%", padding : "10px", fontSize : "16px"}}
+             onChange={(e) => setAccessDetails(e.target.value)}     required/>
             <br /></div>  )}
-           <br></br>
-
-           <button type="submit" className="name">
+           <button type="submit" style = {{marginTop : "30px"}} className="name">
           Preview
         </button>
       </form>

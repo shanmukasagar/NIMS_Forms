@@ -3,8 +3,8 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY;
 
-const createToken = async (email) => {
-    return jwt.sign({ email: email }, secretKey, { expiresIn: '1h' });
+const createToken = async (email, selectedRole = "") => {
+    return jwt.sign({ email: email , selectedRole : selectedRole}, secretKey, { expiresIn: '1h' });
 }
 
 // Middleware to verify the token

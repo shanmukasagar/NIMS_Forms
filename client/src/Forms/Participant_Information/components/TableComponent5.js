@@ -1,40 +1,137 @@
 import React from "react";
 
-const TableComponent5 = ({ data }) => {
-  return (
-    <div className="table-container">
-      <h3 className>Participant Information data</h3>
-      <table className="custom-table">
-        <thead >
-          <tr>
-            <th >Type of Participant</th>
-            <th >Specify (if Others)</th>
-            <th >Justification</th>
-            <th >Additional Safeguards</th>
-            <th>Payment</th>
-            <th >Reimbursement Details</th>
-            <th >Advertisement Used</th>
-            <th >Advertisement Details</th>
-            <th>email</th>
+const TableComponent5 = ({ data, setOpenTable, setEditableData }) => {
+  const handleEdit = () => {
+    setOpenTable(false);
+    const safeData = Array.isArray(data) ? data[0] : data;
+    setEditableData(safeData);
+  };
 
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((entry, index) => (
-            <tr key={index} className="hover:bg-gray-50">
-              <td >{entry.type_of_participants}</td>
-              <td >{entry.specifiy || "_"}</td>
-              <td >{entry.justification}</td>
-              <td >{entry.additional_safeguards}</td>
-              <td >{entry.payment_type}</td>
-              <td >{entry.reimbursement_details }</td>
-              <td >{entry.advertisement_type}</td>
-              <td >{entry.advertisement_details || "—"}</td>
-              <td>{entry.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  const safeDataList = Array.isArray(data) ? data : [data];
+
+  const containerStyle = {
+    padding: "20px",
+    maxWidth: "800px",
+    margin: "0 auto",
+    fontFamily: "Arial, sans-serif",
+  };
+
+  const titleStyle = {
+    textAlign: "center",
+    marginBottom: "20px",
+    color: "#333",
+  };
+
+  const cardStyle = {
+    backgroundColor: "#f9f9f9",
+    borderRadius: "12px",
+    padding: "20px",
+    marginBottom: "20px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    maxHeight: "500px",
+    overflowY: "auto",
+  };
+
+  const rowStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    marginBottom: "16px",
+    wordBreak: "break-word",
+  };
+
+  const labelStyle = {
+    fontWeight: 600,
+    color: "#444",
+    fontSize: "14px",
+  };
+
+  const valueStyle = {
+    color: "#222",
+    fontSize: "15px",
+    backgroundColor: "#fff",
+    padding: "8px",
+    borderRadius: "6px",
+    border: "1px solid #ddd",
+  };
+
+  const buttonContainerStyle = {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "2rem",
+  };
+
+  const buttonStyle = {
+    padding: "10px 24px",
+    fontSize: "15px",
+    backgroundColor: "#1976d2",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    transition: "0.3s",
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h2 style={titleStyle}>Participant Information Data</h2>
+
+      {safeDataList.map((entry, index) => (
+        <div key={index} style={cardStyle}>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Type of Participant:</span>
+            <span style={valueStyle}>{entry.type_of_participants || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Specify (if Others):</span>
+            <span style={valueStyle}>{entry.specifiy || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Justification:</span>
+            <span style={valueStyle}>{entry.justification || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Additional Safeguards:</span>
+            <span style={valueStyle}>{entry.additional_safeguards || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Vulnerable Groups:</span>
+            <span style={valueStyle}>
+              {(entry.vulnerablegroups && entry.vulnerablegroups.length > 0)
+                && entry.vulnerablegroups.map((item, index) => (
+                  <p key = {index}>{item}</p>
+                ))
+              }
+            </span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Payment Type:</span>
+            <span style={valueStyle}>{entry.payment_type || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Reimbursement Details:</span>
+            <span style={valueStyle}>{entry.reimbursement_details || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Advertisement Type:</span>
+            <span style={valueStyle}>{entry.advertisement_type || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Advertisement Details:</span>
+            <span style={valueStyle}>{entry.advertisement_details || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
+            <span style={labelStyle}>Email:</span>
+            <span style={valueStyle}>{entry.email || "N/A"}</span>
+          </div>
+        </div>
+      ))}
+
+      <div style={buttonContainerStyle}>
+        <button style={buttonStyle} onClick={handleEdit}>
+          Edit
+        </button>
+      </div>
     </div>
   );
 };

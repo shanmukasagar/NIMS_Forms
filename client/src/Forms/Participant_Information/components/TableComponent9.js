@@ -1,37 +1,125 @@
-
 import React from "react";
 
-const TableComponent9 = ({ data }) => {
-    return (
-        <div className="table-container">
-          <h2>Storage and Confidentiality</h2>
-      <table className="custom-table">
-        <thead>
-          <tr>
-            <th>Sample Access</th>
-            <th>Sample Details</th>
-            <th>Document Access</th>
-            <th>Control Details</th>
-            <th>Drugs Access</th>
-            <th>Access Details</th>
-            <th>email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, i) => (
-            <tr key={i}>
-              <td>{row.sample_access_type}</td>
-              <td>{row.sample_details}</td>
-              <td>{row.document_access_type}</td>
-              <td>{row.control_details}</td>
-              <td>{row.drugs_access_type}</td>
-              <td>{row.access_details}</td>
-              <td>{row.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      </div>
-    );
+const TableComponent9 = ({ data, setOpenTable, setEditableData }) => {
+  const handleEdit = () => {
+    setOpenTable(false);
+    const safeData = Array.isArray(data) ? data[0] : data;
+    setEditableData(safeData);
   };
-  export default TableComponent9;
+
+  const safeDataList = Array.isArray(data) ? data : [data];
+
+  const containerStyle = {
+    padding: "20px",
+    maxWidth: "800px",
+    margin: "0 auto",
+    fontFamily: "Arial, sans-serif",
+  };
+
+  const titleStyle = {
+    textAlign: "center",
+    marginBottom: "20px",
+    color: "#333",
+  };
+
+  const cardStyle = {
+    backgroundColor: "#f9f9f9",
+    borderRadius: "12px",
+    padding: "20px",
+    marginBottom: "20px",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    maxHeight: "500px",
+    overflowY: "auto",
+  };
+
+  const rowStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
+    marginBottom: "16px",
+    wordBreak: "break-word",
+  };
+
+  const labelStyle = {
+    fontWeight: 600,
+    color: "#444",
+    fontSize: "14px",
+  };
+
+  const valueStyle = {
+    color: "#222",
+    fontSize: "15px",
+    backgroundColor: "#fff",
+    padding: "8px",
+    borderRadius: "6px",
+    border: "1px solid #ddd",
+  };
+
+  const buttonContainerStyle = {
+    display: "flex",
+    justifyContent: "center",
+    marginTop: "2rem",
+  };
+
+  const buttonStyle = {
+    padding: "10px 24px",
+    fontSize: "15px",
+    backgroundColor: "#1976d2",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    transition: "0.3s",
+  };
+
+  return (
+    <div style={containerStyle}>
+      <h2 style={titleStyle}>Storage and Confidentiality</h2>
+
+      {safeDataList.length > 0 ? (
+        safeDataList.map((entry, index) => (
+          <div key={index} style={cardStyle}>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Sample Access:</span>
+              <span style={valueStyle}>{entry.sample_access_type || "N/A"}</span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Sample Details:</span>
+              <span style={valueStyle}>{entry.sample_details || "N/A"}</span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Document Access:</span>
+              <span style={valueStyle}>{entry.document_access_type || "N/A"}</span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Control Details:</span>
+              <span style={valueStyle}>{entry.control_details || "N/A"}</span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Drugs Access:</span>
+              <span style={valueStyle}>{entry.drugs_access_type || "N/A"}</span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Access Details:</span>
+              <span style={valueStyle}>{entry.access_details || "N/A"}</span>
+            </div>
+            <div style={rowStyle}>
+              <span style={labelStyle}>Email:</span>
+              <span style={valueStyle}>{entry.email || "N/A"}</span>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p style={{ textAlign: "center" }}>No data found.</p>
+      )}
+
+      <div style={buttonContainerStyle}>
+        <button style={buttonStyle} onClick={handleEdit}>
+          Edit
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default TableComponent9;

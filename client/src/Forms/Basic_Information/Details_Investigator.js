@@ -57,23 +57,69 @@ const styles = {
   },
 };
 
-const DetailsInvestigator = () => {
+const DetailsInvestigator = ({selectedForm}) => {
   const navigate = useNavigate();
   const [existData, setExistData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
 
+  const [openTable, setOpenTable] = useState(false);
+  const [editableData, setEditableData] = useState({});
+
   const [principal, setPrincipal] = useState({
-    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Principal_Investigator"
-  });
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Principal_Investigator", 
+      approved : false, approval_token : ""});
 
   const [guide, setGuide] = useState({
-    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Guide"
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Guide", approved : false, approval_token : ""
+  });
+
+  const [hod, setHod] = useState({
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "hod", approved : false, approval_token : ""
   });
 
   const [coInvestigators, setCoInvestigators] = useState([
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator" },
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator" },
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator", approved : false, approval_token : ""},
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
   ]);
+
+  useEffect(() => {
+    if (Array.isArray(editableData) && editableData.length > 0) {
+      editableData.forEach(inv => {
+        const commonFields = {
+          name: inv?.name || "",
+          designation: inv?.designation || "",
+          qualification: inv?.qualification || "",
+          department: inv?.department || "",
+          Email: inv?.email || "",
+          contact: inv?.contact || "",
+          investigator_type: inv?.investigator_type || ""
+        };
+
+        if (inv.investigator_type === "Principal_Investigator") {
+          setPrincipal(commonFields);
+        } else if (inv.investigator_type === "Guide") {
+          setGuide(commonFields);
+        } else if (inv.investigator_type === "hod") {
+          setHod(commonFields);
+        }else if (inv.investigator_type === "Co-investigator") {
+          setCoInvestigators(prev => {
+            const updated = [...prev];
+            const emptyIndex = updated.findIndex(i => i.name === "");
+            if (emptyIndex !== -1) {
+              updated[emptyIndex] = commonFields;
+            } else {
+              updated.push(commonFields);
+            }
+            return updated;
+          });
+        }
+      });
+    }
+  }, [editableData]);
+
+
+
 
   const handleCoInvestigatorChange = (index, field, value) => {
     const updated = [...coInvestigators];
@@ -84,8 +130,9 @@ const DetailsInvestigator = () => {
   const Submit = async (e) => {
     e.preventDefault();
     try {
-      const allInvestigators = [principal, guide, ...coInvestigators].filter(inv => inv.name);
-      await axiosInstance.post("/api/research/investigatorss", allInvestigators);
+      const allInvestigators = [principal, guide,hod, ...coInvestigators].filter(inv => inv.name);
+      await axiosInstance.post("/api/research/investigatorss", allInvestigators, 
+        { params : { selectedForm : selectedForm, isEdit: (editableData && editableData.length > 0 )? "true" : "false", tableName : "investigatorss", formId: editableData?.[0]?.form_id}});
       console.log("Investigators created");
       navigate("/basic/funding");
     } catch (error) {
@@ -106,7 +153,10 @@ const DetailsInvestigator = () => {
         const response = await axiosInstance.get("/api/research/check/admin", {
           params: { form_type: "investigatorss" },
         });
-        if (response.data.length > 0) setExistData(response.data);
+        if (response.data.length > 0) {
+          setExistData(response.data);
+          setOpenTable(true);
+        } 
       } catch (err) {
         console.error("Fetch error:", err);
         setExistData(null);
@@ -139,6 +189,7 @@ const DetailsInvestigator = () => {
         <h2 style={styles.formTitle}>Preview</h2>
         {[{ title: "Principal Investigator", data: principal },
           { title: "Guide", data: guide },
+          { title: "HOD", data: hod },
           ...coInvestigators.map((coi, index) => ({ title: `Co-Investigator ${index + 1}`, data: coi }))
         ].map((section, idx) => (
           <div key={idx} style={styles.previewCard}>
@@ -156,13 +207,14 @@ const DetailsInvestigator = () => {
 
   return (
     <div style={styles.formContainer}>
-      {existData ? (
-        <TableComponent2 data={existData} />
+      {(existData && openTable) ? (
+        <TableComponent2 data={existData} setOpenTable = {setOpenTable} setEditableData = {setEditableData} />
       ) : (
         <form onSubmit={handlePreview}>
           <h2 style={styles.formTitle}>G. Details of Investigators / Researcher(s):</h2>
           {renderInvestigatorInput(principal, setPrincipal, "Principal Investigator", true)}
           {renderInvestigatorInput(guide, setGuide, "Guide", false)}
+          {renderInvestigatorInput(hod, setHod, "HOD", false)}
           {coInvestigators.map((coi, index) =>
             renderInvestigatorInput(coi, (newData) => {
               const updated = [...coInvestigators];

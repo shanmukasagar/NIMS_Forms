@@ -7,6 +7,11 @@ const {verifyToken} = require("../config/VerifyToken");
 router.get("/admin", verifyToken, async (req, res) => {
   const form_type = req.query.form_type;
   const email = req.user.email; // You can also get from req.query.email
+  const formResult = await pool.query(`SELECT * FROM forms WHERE email = $1`, [email]);
+  if (formResult.rows.length === 0) {
+    return res.status(200).json([]);
+  }
+  const formId = formResult.rows[0].id;
 
   let tableName;
 
@@ -65,13 +70,9 @@ router.get("/admin", verifyToken, async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT * FROM ${tableName} WHERE email = $1`,
-      [email]
+      `SELECT * FROM ${tableName} WHERE form_id = $1`,
+      [formId]
     );
-    // if (form_type === "expedited_review") {
-    //   // const formFilled = result.rows.length > 0;
-    //   return res.status(200).json({ formFilled});
-    // }
     return res.status(200).json(result.rows);
   } catch (err) {
     console.error("Database error:", err);

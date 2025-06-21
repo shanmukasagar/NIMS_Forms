@@ -13,16 +13,21 @@ const AdditionalDetails = ({ additional, setAdditional }) => {
     <Grid container spacing={2}>
         <Grid item size={12}>
             <FormControl fullWidth required>
-                <InputLabel >Any Addition Information</InputLabel>
-                <Select label="Any Addition Information" name='any_additional' value={additional.any_additional} onChange={handleChange} >
+                <InputLabel >Do you have any additional information to add in support of the application, which is not included elsewhere in the form?</InputLabel>
+                <Select label="Do you have any additional information to add in support of the application, which is not included elsewhere in the form?" 
+                  name='any_additional' value={additional.any_additional} onChange={handleChange} >
                     <MenuItem value="Yes">Yes</MenuItem>
                     <MenuItem value="No">No</MenuItem>
                 </Select>
             </FormControl>
         </Grid>
         <Grid item size = {12}>
-            <TextField fullWidth multiline rows = {3} label = "If yes provide details"
-              name = "additional_info" value = {additional.additional_info} onChange = {handleChange}/>
+          {
+            additional.any_additional === "Yes" && (
+              <TextField fullWidth required multiline rows = {3} label = "If yes provide details"
+                name = "additional_info" value = {additional.additional_info} onChange = {handleChange}/>
+            )
+          }
         </Grid>
     </Grid>
   );

@@ -175,12 +175,12 @@ body {
 
 /* Scrollbar Styling */
 ::-webkit-scrollbar {
-  width: 5px;
+  width: 10px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  border-radius: 5px;
+  border-radius: 10px;
   background-color: #9d67ea4a;
   border: none;
 }
