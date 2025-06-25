@@ -91,7 +91,7 @@ const DetailsInvestigator = ({selectedForm}) => {
           designation: inv?.designation || "",
           qualification: inv?.qualification || "",
           department: inv?.department || "",
-          Email: inv?.email || "",
+          Email: inv?.gmail || "",
           contact: inv?.contact || "",
           investigator_type: inv?.investigator_type || ""
         };

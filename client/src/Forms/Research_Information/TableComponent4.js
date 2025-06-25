@@ -99,6 +99,10 @@ const TableComponent4 = ({ data, setEditableData, setOpenTable }) => {
             <span style={valueStyle}>{entry.otherstudytype || "N/A"}</span>
           </div>
           <div style={rowStyle}>
+            <span style={labelStyle}>Sample Size:</span>
+            <span style={valueStyle}>{entry.sample_size || "N/A"}</span>
+          </div>
+          <div style={rowStyle}>
             <span style={labelStyle}>Justification:</span>
             <span style={valueStyle}>{entry.justification || "N/A"}</span>
           </div>

@@ -6,6 +6,6 @@ const {getProjectsController, getOverallProjectController, checkInvestigatorAppr
 router.get("/projects", verifyToken, getProjectsController);
 router.get("/projectdata", verifyToken, getOverallProjectController);
 router.get("/approve", verifyToken, checkInvestigatorApproval);
-router.post('/hod-approve', approveHOD);
+router.get('/hod-approve', approveHOD);
 
 module.exports = router;

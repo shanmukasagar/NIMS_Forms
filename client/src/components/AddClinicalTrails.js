@@ -168,11 +168,29 @@ const MainContent = ({user}) => {
     }
   }
 
+  // Call this function when fetching data
+const mergeResearchers = (fetched = []) => {
+  const updatedList = [...researchers];
+  const used = new Array(fetched.length).fill(false);
+
+  // Map filled data to empty slots with matching type
+  for (let i = 0; i < updatedList.length; i++) {
+    for (let j = 0; j < fetched.length; j++) {
+      if (!used[j] && fetched[j].role === updatedList[i].type) {
+        updatedList[i] = { ...updatedList[i], ...fetched[j] };
+        used[j] = true;
+        break;
+      }
+    }
+  }
+
+  return updatedList;
+};
+
   useEffect(() => { // Set initial form data
     if(initialData && !fetchOnce.current) {
       fetchOnce.current = true;
       setAdministration(initialData.administration || {});
-      setResearchers(initialData.researchers || []);
       setParticipants(initialData.participants || {});
       setBenefits(initialData.benefits || {});
       setPaymentState(initialData.paymentState || {});
@@ -187,6 +205,10 @@ const MainContent = ({user}) => {
       setFundingData(initialData.fundingData || {});
       setOverviewResearch(initialData.overviewResearch || {});
       setMethodologyData(initialData.methodologyData || {});
+      if (initialData?.researchers) {
+        const merged = mergeResearchers(initialData.researchers);
+        setResearchers(merged);
+      }
     }
   },[initialData])
 

@@ -1,24 +1,36 @@
-// /pages/hod/approval.js (in Next.js)
-import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import React,{ useEffect, useState, useRef} from "react";
+import axiosInstance from "../../../components/AxiosInstance"; // adjust path as needed
 
-export default function HODApprovalPage() {
-    const router = useRouter();
-    const { token, tableName } = router.query;
-    const [message, setMessage] = useState("Verifying...");
 
-    useEffect(() => {
-        if (token && tableName) {
-        axiosInstance.post('/api/investigator/hod-approve', { token, tableName })
-            .then(() => setMessage("HOD Approval successful."))
-            .catch(() => setMessage("Invalid or expired token."));
+const HODApprovalPage = () => {
+  const [message, setMessage] = useState("");
+  const fetchOnce = useRef(false);
+
+  const handleApproval = async () => {
+    const token = new URLSearchParams(window.location.search).get("token");
+    const tableName = new URLSearchParams(window.location.search).get("tableName");
+
+    if (!token) {
+      setMessage("❌ No approval token found.");
+      return;
+    }
+
+    try {
+        if(!fetchOnce.current) {
+            fetchOnce.current = true;
+            const response = await axiosInstance.get("/api/investigator/hod-approve", {params : { token : token, tableName : tableName }});
+            setMessage("✅ Approved successfully!");
         }
-    }, [token, tableName]);
+    } catch (error) {
+      setMessage("❌ Invalid or expired approval link.");
+    }
+  };
 
-    return (
-        <div style={{ padding: '40px' }}>
-        <h2>{message}</h2>
-        </div>
-    );
-}
+  useEffect(() => {
+    handleApproval();
+  }, []);
+
+  return message;
+};
+
+export default HODApprovalPage;

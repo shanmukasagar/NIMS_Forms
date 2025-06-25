@@ -39,6 +39,7 @@ const ClinicalFormFeedback = lazy(() => import('./Roles/Investigators/ClinicalTr
 const InvestigatorDashboard = lazy(() => import('./Roles/Investigators/components/Dashboard'));
 const InvestigatorStudy = lazy(() => import('./Roles/Investigators/components/StudyList'));
 const InvestigatorsApproval = lazy(() => import('./Roles/Investigators/components/InvestigatorsApproval'));
+const HODApproval = lazy(() => import('./Roles/Investigators/components/HODApproval'));
 const AssignReviewers = lazy(() => import('./Roles/ISRC/AssignReviewers'));
 const ISRCChairMemberDecision = lazy(() => import('./Roles/ISRC/ISRC_Chair_Decision'));
 
@@ -123,6 +124,7 @@ const App = () => {
                   <Route path="/investigator" element={<InvestigatorDashboard user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/investigator/studylist" element={<InvestigatorStudy setSelectedForm={setSelectedForm} />} />
                   <Route path="/investigator/approval" element={<InvestigatorsApproval />} />
+                  <Route path="/hod/approval" element={<HODApproval />} />
                   <Route path="/isrc/chair/assignreviewers" element={<AssignReviewers user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/isrc/chair/decision" element={<ISRCChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
                 </Routes>

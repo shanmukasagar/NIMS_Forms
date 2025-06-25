@@ -46,7 +46,7 @@ const checkInvestigatorApproval = async (req, res) => {
 
 //HOD approval controller
 const approveHOD = async (req, res) => {
-    const { token, tableName } = req.body;
+    const { token, tableName } = req.query;
 
     try {
         const result = await approveHODService(token, tableName);

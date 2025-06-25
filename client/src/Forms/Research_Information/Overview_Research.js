@@ -12,6 +12,7 @@ const [external_laboratory, setExternalLaboratory] = useState("");
 const [specify, setSpecify] = useState("");
 const [image, setImage] = useState(null);
 const [otherStudyType, setOtherStudyType] = useState("");
+const [sampleSize, setSampleSize] = useState("");
 const [justification, setJustification] = useState("");
 
 const[existData,setExistData]=useState(null)
@@ -28,7 +29,7 @@ const Submit = async (e) => {
     try {
       const userResponse = await axiosInstance.post("/api/research/overvieww_research",
         {
-          summary, type_of_study, external_laboratory, specify, otherStudyType, justification,  email,
+          summary, type_of_study, external_laboratory, specify, otherStudyType, sampleSize, justification,  email,
         }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "overvieww_research", formId : editableData?.form_id}}
       );
       const id = userResponse.data.id;
@@ -66,6 +67,7 @@ const Submit = async (e) => {
     setImage(editableData?.image || null); // Assuming image could be null or a URL/blob
     setOtherStudyType(editableData?.otherStudyType);
     setJustification(editableData?.justification);
+    setSampleSize(editableData?.sample_size)
   }, [editableData])
 
   useEffect(() => {
@@ -135,6 +137,7 @@ const Submit = async (e) => {
         <p><strong>External Lab Involved:</strong> {external_laboratory}</p>
         {external_laboratory === "Yes" && (
           <p><strong>Lab Details:</strong> {specify}</p> )}
+          <p><strong>sample size:</strong>{sampleSize} </p> 
         <p><strong>Justification:</strong>{justification} </p>  
         <button onClick={Submit} className="name"> Submit</button>
         <button onClick={handleEdit} className="name">Edit</button>
@@ -176,6 +179,8 @@ const Submit = async (e) => {
         <h2 className="h2">4. METHODOLOGY</h2>
         <div className="form-group">
           <h2 className="custom-text">Sample size:</h2>
+          <input  style = {{width : "100%"}} type="text" name="sample_size"  placeholder="Sample Size"   value={sampleSize} 
+              onChange={(e) => setSampleSize(e.target.value)} className="name"  required/>
           <h2 className="h2">Justification for the sample size chosen:</h2>
           <input  style = {{width : "100%"}} type="text" name="justification"  placeholder="Enter Justification"   value={justification} 
               onChange={(e) => setJustification(e.target.value)} className="name"  required/>

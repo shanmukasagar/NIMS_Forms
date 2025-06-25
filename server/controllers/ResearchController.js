@@ -7,7 +7,7 @@ const { benefitsAndRiskDetails } = require("../services/ResearchService");
 const { paymentCompensationDetails} = require("../services/ResearchService");
 const {storageAndConfidentialityDetails} =require( "../services/ResearchService");
 const {additionalInformationDetails}=require("../services/ResearchService");
-const {administrativeRequirementsDetails, insertAdminFiles, updateAdminFiles}=require("../services/ResearchService");
+const { insertAdminFiles, updateAdminFiles}=require("../services/ResearchService");
 const {declarationDetails}=require("../services/ResearchService");
 const { expeditedReviewDetails } = require("../services/ResearchService");
 const { requestingWaiverDetails } = require("../services/ResearchService");
@@ -288,17 +288,35 @@ const administrativeRequirements = async (req, res) => {
       return res.status(200).json({ message: "No new files uploaded." });
     }
 
-    const parsedFiles = req.files.map(file => {
-      const id = file.fieldname.replace("file_", "");
-      const label_name = req.body[`label_name_${id}`];
-
-      return {
-        label_id: parseInt(id),
-        label_name,
-        file_name: file.filename,
-        email,
-      };
+    // 1. Map uploaded files by fieldname for easy access
+    const uploadedFilesMap = {};
+      req.files.forEach(file => {
+        uploadedFilesMap[file.fieldname] = file;
     });
+
+    // 2. Parse all labels from form body, even if file is not present
+    const parsedFiles = [];
+
+    for (const key in req.body) {
+      if (key.startsWith('label_name_')) {
+        const id = key.replace('label_name_', '');
+        const label_name = req.body[key];
+        const file = uploadedFilesMap[`file_${id}`];
+        const existingFile = req.body[`existingFile_${id}`];
+
+        parsedFiles.push({
+          label_id: parseInt(id),
+          label_name,
+          file_name: file
+            ? file.filename
+            : isEdit
+            ? existingFile || null
+            : null,
+          email:email,
+        });
+      }
+    }
+
 
 
     if (isEdit) {

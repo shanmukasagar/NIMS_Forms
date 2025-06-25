@@ -44,38 +44,6 @@ const renderFields = (data) => (
       if (key !== "id" && key !== "form_id" && key !== "type" && key !== "approved" && key !== "approval_token") {
         return (
           <Grid item xs={12} key={key}>
-            {/* {key === "approval_letter" ? (
-              <Box sx={{ display: "flex" }}>
-                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
-                  {formatKey(key)}:
-                </Typography>
-                 { value ? ( 
-                    <Tooltip title="View PDF">
-                      <IconButton onClick={() => window.open(`http://localhost:4000/media/clinical/payment_compensation/${value}`, '_blank')} color="error" >
-                        <PictureAsPdfIcon fontSize="large" />
-                      </IconButton>
-                    </Tooltip> ) : null }
-              </Box>
-            ) : fieldNames.includes(key) ? (
-              <Box sx={{ display: "flex" }}>
-                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
-                  {formatKey(key)}:
-                </Typography>
-                { value ? 
-                  ( <Tooltip title="View PDF">
-                      <IconButton onClick={() => window.open(`http://localhost:4000/media/clinical/declaration/${value}`, '_blank')} color="error" >
-                        <PictureAsPdfIcon fontSize="large" />
-                      </IconButton>
-                    </Tooltip> ) : null }
-              </Box>
-            ) : key !== "email" ? (
-              <Box sx={{ display: "flex" }}>
-                <Typography sx={{ color: 'gray', fontWeight: 600, width: "200px" }}>
-                  {formatKey(key)}:
-                </Typography>
-                <Typography>{formatValue(value)}</Typography>
-              </Box>
-            ) : null} */}
             {
               key !== "email" ? (
               <Box sx={{ display: "flex" }}>
@@ -124,13 +92,15 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
     checkListData = []
   } = formData;
 
- const isPrincipal = r => r.role === 'principal' || r.type === 'principal';
+  const isPrincipal = r => r.role === 'principal' || r.type === 'principal';
   const isGuide = r => r.role === 'guide' || r.type === 'guide';
+  const isHOD = r => r.role === 'hod' || r.type === 'hod';
   const isCoInvestigator = r => r.role === 'co-investigator' || r.type === 'co-investigator';
 
   const principal = researchers.find(isPrincipal);
   const guide = researchers.find(isGuide);
   const coInvestigators = researchers.filter(isCoInvestigator);
+  const hod = researchers.find(isHOD);
 
 
   return (
@@ -160,6 +130,11 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
               <strong>Guide</strong>
             </Typography>
             {guide ? renderFields(guide) : <Typography>No Guide Provided</Typography>}
+            {/* HOD */}
+            <Typography variant="subtitle1" sx={{ mt: 3, mb: 1 }}>
+              <strong>HOD</strong>
+            </Typography>
+            {hod ? renderFields(hod) : <Typography>No Hod Provided</Typography>}
 
             {/* Co-Investigators */}
             {coInvestigators.length > 0 && (

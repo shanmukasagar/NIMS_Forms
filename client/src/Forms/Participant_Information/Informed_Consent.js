@@ -282,6 +282,8 @@ function Section6({selectedForm}) {
                    style={{ width: "100%", minHeight: "100px", padding: "10px", fontSize: "14px", borderRadius: "5px", border: "1px solid #ccc" }} />
             </>
           )}
+          {seeking_waiver_of_consent_type === "No" && (
+            <>
           <div className="h">
             <div className="form-group">
               <h3 className="h2">Specify details of english consent document</h3>
@@ -292,7 +294,8 @@ function Section6({selectedForm}) {
               </label>
             </div>
             <div className="form-group">
-              <h3 className="h2">Date of Participant Information Sheet(PIS)</h3>
+              <h3 className="h2">Date of Participant Information Sheet(PIS)  and Informed Consent Form
+                 (ICF): </h3>
               <input type="date" placeholder="YYYY/MM/DD" value={date} onChange={(e) => setDate(e.target.value)} className="name" required/>
             </div>
           </div>
@@ -422,6 +425,8 @@ function Section6({selectedForm}) {
             )}
           </div>
     </div>
+    </>
+  )}
     <br></br>
     <button type="submit" className="name">
     Preview

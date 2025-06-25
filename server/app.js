@@ -36,6 +36,7 @@ app.use('/media/clinical/payment_compensation/', express.static(path.join(__dirn
 app.use('/media/research/checklist/', express.static(path.join(__dirname, 'media/research/checklist')));
 app.use('/media/clinical/checklist/', express.static(path.join(__dirname, 'media/clinical/checklist')));
 app.use('/media/clinical/projects/', express.static(path.join(__dirname, 'media/clinical/projects')));
+app.use('/media/research/projects/', express.static(path.join(__dirname, 'media/research/projects')));
 
 
 //Clinical Routes

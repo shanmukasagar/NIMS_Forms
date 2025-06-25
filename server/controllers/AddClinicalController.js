@@ -40,9 +40,10 @@ const addClinical = async (req, res) => {
     // 3. Assign full checklist (including those without files)
     data.checklist = checklist;
     const result = (isEdit)? await updateClinicalService(data) : await addClinicalService(data);
-    if (result) {
+    if (result.isSuccess) {
       const fileName = `project_clinical_${Date.now()}`;
-      const pdfPath = await generateConsentPdf(data, fileName);
+      const pdfPath = await generateConsentPdf(data, fileName, result.project_ref);
+
       return res.status(200).json("success");
     } 
     res.status(400).json("Form submission failed");

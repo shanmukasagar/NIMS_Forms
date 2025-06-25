@@ -44,6 +44,7 @@ const TableComponent2 = ({ data, setOpenTable, setEditableData }) => {
   const principal = data.find((inv) => inv.investigator_type === "Principal_Investigator");
   const guide = data.find((inv) => inv.investigator_type === "Guide");
   const coInvestigators = data.filter((inv) => inv.investigator_type === "Co-investigator");
+  const hod = data.find((inv) => inv.investigator_type === "hod");
 
   return (
     <div className="investigator-details">
@@ -51,6 +52,7 @@ const TableComponent2 = ({ data, setOpenTable, setEditableData }) => {
 
       {principal && <InvestigatorCard title="Principal Investigator" investigator={principal} />}
       {guide && <InvestigatorCard title="Guide" investigator={guide} />}
+      {hod && <InvestigatorCard title="HOD" investigator={hod} />}
       {coInvestigators.length > 0 && (
         <>
           {coInvestigators.map((co, index) => (

@@ -132,133 +132,138 @@ const ConsentDetails = ({ consentData, setConsentData }) => {
                         border: "1px solid #ccc" }} />
                 </Grid>
             )}
-            <Grid item size = {12}>
-                <Typography>Specify details of english Consent document </Typography>
-            </Grid>
-            {/* English Consent Document */}
-            <Grid item size={4}>
-                <TextField
-                    fullWidth
-                    label="Version number"
-                    variant="outlined"
-                    name="english_version_number"
-                    value={consentData.english_version_number || ''}
-                    onChange={handleChange}
-                />
-            </Grid>
-
-            <Grid item size={4}>
-                <TextField fullWidth label="Date of Participant Information Sheet (PIS)" variant="outlined" name="english_date"
-                    value={consentData.english_date || ''} onChange={handleChange} />
-            </Grid>
-
-            {/* Translated Languages - Plain Checkboxes */}
-            <Grid item size={12}>
-                <InputLabel sx={{ mb: 1 }}>Languages of Translated PIS/ICF</InputLabel>
-
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-                    {languageOptions.map((item, index) => (
-                    <label key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px',
-                        borderRadius: '6px', border: '1px solid #ccc', cursor: 'pointer', backgroundColor: '#f9f9f9',
-                        transition: 'background-color 0.3s', }}
-                        onMouseEnter={(e) =>
-                            (e.currentTarget.style.backgroundColor = 'rgba(25,118,210,0.08)')
-                        }
-                        onMouseLeave={(e) =>
-                            (e.currentTarget.style.backgroundColor = '#f9f9f9')
-                        }
-                    >
-                        <input type="checkbox" checked={consentData.translated_languages?.includes(item)} 
-                            onChange={() => handleCheckboxChange(item)} /> {item} </label>
-                    ))}
-                </Box>
-
-                {/* Show input fields for selected languages */}
-                {consentData.translated_languages?.map((lang) => (
-                    <Box key={lang} sx={{ mt: 2 }}>
-                        <Typography variant="subtitle2" sx={{ mb: 1 }}>{lang} Informed Consent Form Details: </Typography>
-                        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                            <TextField label={`Version Number`} size="small"
-                                value={consentData.languageDetails?.[lang]?.version || ''}
-                                onChange={(e) => handleLanguageDetailChange(lang, 'version', e.target.value) } />
-                            <TextField   label={`Date`}   type="text"   size="small" 
-                              value={consentData.languageDetails?.[lang]?.date || ''}
-                                onChange={(e) => handleLanguageDetailChange(lang, 'date', e.target.value)}/>
-                        </Box>
-                    </Box>
-                ))}
-            </Grid>
-
-
-            {/* Translation Certificates */}
-            <Grid item size={4}>
-                <FormControl fullWidth required>
-                    <InputLabel>Are certificate(s) of translations provided?</InputLabel>
-                    <Select
-                        label="Are certificate(s) of translations provided?"
-                        name="translation_cert_provided"
-                        value={consentData.translation_cert_provided || ''}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="Yes">Yes</MenuItem>
-                        <MenuItem value="No">No</MenuItem>
-                    </Select>
-                </FormControl>
-            </Grid>
-            {/* Subject Understanding Tools */}
-            <Grid item size={8}>
-                <FormControl fullWidth required>
-                    <InputLabel>Will Any tools be used to determine whether the subject understood the study </InputLabel>
-                    <Select
-                        label="Will Any tools be used to determine whether the subject understood the study "
-                        name="understanding_tools"
-                        value={consentData.understanding_tools || ''}
-                        onChange={handleChange}
-                    >
-                        <MenuItem value="Yes">Yes</MenuItem>
-                        <MenuItem value="No">No</MenuItem>
-                    </Select>
-                </FormControl>
-            </Grid>
-            {consentData.understanding_tools === 'Yes' && (
-                <Grid item size={12}>
+            {consentData.waiver_consent === "No" && (
+                <React.Fragment>
+                <Grid item size = {12}>
+                    <Typography>Specify details of english Consent document </Typography>
+                </Grid>
+                {/* English Consent Document */}
+                <Grid item size={4}>
                     <TextField
                         fullWidth
-                        label="If yes, specify (e.g. Questionnaire, Feedback, Others)"
-                        name="understanding_tools_specify"
-                        value={consentData.understanding_tools_specify || ''}
+                        label="Version number"
+                        variant="outlined"
+                        name="english_version_number"
+                        value={consentData.english_version_number || ''}
                         onChange={handleChange}
                     />
                 </Grid>
-            )}
 
-            {/* PIS/ICF Elements - Plain Checkboxes */}
-            <Grid item size={12}>
-                <Typography sx={{ mb: 1 }}>Tick the elements contained in the Participant Information Sheet (PIS) and 
-                    Informed Consent Form </Typography>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", }} > 
-                    {pisElementsList.map((element, index) => (
-                        <label key={index} style={{ display: "flex", alignItems: "center", gap: "10px",
-                        padding: "6px 10px", borderRadius: "6px", border: "1px solid #ccc",
-                        cursor: "pointer", backgroundColor: "#f9f9f9",  transition: "background-color 0.3s",}}
-                            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(25,118,210,0.08)") }
-                            onMouseLeave={(e) =>     (e.currentTarget.style.backgroundColor = "#f9f9f9") } >
-                        <input
-                        type="checkbox"
-                        checked={consentData.pis_elements?.includes(element)}
-                        onChange={() => handlePISElementsList(element)}
-                        style={{
-                            width: "18px",
-                            height: "18px",
-                            accentColor: "#1976d2",
-                            cursor: "pointer",
-                        }}
-                        />
-                        {element}
-                    </label>
+                <Grid item size={4}>
+                    <TextField fullWidth label="Date of Participant Information Sheet (PIS)" variant="outlined" name="english_date"
+                        value={consentData.english_date || ''} onChange={handleChange} />
+                </Grid>
+
+                {/* Translated Languages - Plain Checkboxes */}
+                <Grid item size={12}>
+                    <InputLabel sx={{ mb: 1 }}>Languages of Translated PIS/ICF</InputLabel>
+
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                        {languageOptions.map((item, index) => (
+                        <label key={index} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 10px',
+                            borderRadius: '6px', border: '1px solid #ccc', cursor: 'pointer', backgroundColor: '#f9f9f9',
+                            transition: 'background-color 0.3s', }}
+                            onMouseEnter={(e) =>
+                                (e.currentTarget.style.backgroundColor = 'rgba(25,118,210,0.08)')
+                            }
+                            onMouseLeave={(e) =>
+                                (e.currentTarget.style.backgroundColor = '#f9f9f9')
+                            }
+                        >
+                            <input type="checkbox" checked={consentData.translated_languages?.includes(item)} 
+                                onChange={() => handleCheckboxChange(item)} /> {item} </label>
+                        ))}
+                    </Box>
+
+                    {/* Show input fields for selected languages */}
+                    {consentData.translated_languages?.map((lang) => (
+                        <Box key={lang} sx={{ mt: 2 }}>
+                            <Typography variant="subtitle2" sx={{ mb: 1 }}>{lang} Informed Consent Form Details: </Typography>
+                            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                                <TextField label={`Version Number`} size="small"
+                                    value={consentData.languageDetails?.[lang]?.version || ''}
+                                    onChange={(e) => handleLanguageDetailChange(lang, 'version', e.target.value) } />
+                                <TextField   label={`Date`}   type="text"   size="small" 
+                                value={consentData.languageDetails?.[lang]?.date || ''}
+                                    onChange={(e) => handleLanguageDetailChange(lang, 'date', e.target.value)}/>
+                            </Box>
+                        </Box>
                     ))}
-                </Box>
-            </Grid>
+                </Grid>
+
+
+                {/* Translation Certificates */}
+                <Grid item size={4}>
+                    <FormControl fullWidth required>
+                        <InputLabel>Are certificate(s) of translations provided?</InputLabel>
+                        <Select
+                            label="Are certificate(s) of translations provided?"
+                            name="translation_cert_provided"
+                            value={consentData.translation_cert_provided || ''}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="Yes">Yes</MenuItem>
+                            <MenuItem value="No">No</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                {/* Subject Understanding Tools */}
+                <Grid item size={8}>
+                    <FormControl fullWidth required>
+                        <InputLabel>Will Any tools be used to determine whether the subject understood the study </InputLabel>
+                        <Select
+                            label="Will Any tools be used to determine whether the subject understood the study "
+                            name="understanding_tools"
+                            value={consentData.understanding_tools || ''}
+                            onChange={handleChange}
+                        >
+                            <MenuItem value="Yes">Yes</MenuItem>
+                            <MenuItem value="No">No</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Grid>
+                {consentData.understanding_tools === 'Yes' && (
+                    <Grid item size={12}>
+                        <TextField
+                            fullWidth
+                            label="If yes, specify (e.g. Questionnaire, Feedback, Others)"
+                            name="understanding_tools_specify"
+                            value={consentData.understanding_tools_specify || ''}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                )}
+
+                {/* PIS/ICF Elements - Plain Checkboxes */}
+                <Grid item size={12}>
+                    <Typography sx={{ mb: 1 }}>Tick the elements contained in the Participant Information Sheet (PIS) and 
+                        Informed Consent Form </Typography>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", }} > 
+                        {pisElementsList.map((element, index) => (
+                            <label key={index} style={{ display: "flex", alignItems: "center", gap: "10px",
+                            padding: "6px 10px", borderRadius: "6px", border: "1px solid #ccc",
+                            cursor: "pointer", backgroundColor: "#f9f9f9",  transition: "background-color 0.3s",}}
+                                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(25,118,210,0.08)") }
+                                onMouseLeave={(e) =>     (e.currentTarget.style.backgroundColor = "#f9f9f9") } >
+                            <input
+                            type="checkbox"
+                            checked={consentData.pis_elements?.includes(element)}
+                            onChange={() => handlePISElementsList(element)}
+                            style={{
+                                width: "18px",
+                                height: "18px",
+                                accentColor: "#1976d2",
+                                cursor: "pointer",
+                            }}
+                            />
+                            {element}
+                        </label>
+                        ))}
+                    </Box>
+                </Grid>
+            </React.Fragment>
+            )}
+           
         </Grid>
     );
 };

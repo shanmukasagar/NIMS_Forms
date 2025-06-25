@@ -1,8 +1,9 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
+const {connectToMongo, getDB} = require("../models/db");
 
-async function generateConsentPdf(data, fileName) {
+async function generateConsentPdf(data, fileName, project_ref) {
   const outputPath = path.join(__dirname, '../media/clinical/projects', `${fileName}.pdf`);
 
   const browser = await puppeteer.launch({ headless: true });
@@ -210,6 +211,36 @@ async function generateConsentPdf(data, fileName) {
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
   await page.pdf({ path: outputPath, format: 'A4', printBackground: true });
   await browser.close();
+
+  try{
+    await connectToMongo();
+    const projectsCollection = getDB().collection("Projects");
+    const projectData = await projectsCollection.findOne({project_ref : project_ref});
+    const previousFileName = projectData.project_pdf;
+    if(previousFileName !== "") {
+      const previousName = previousFileName.split("/").at(-1);
+      const filePath = path.join(__dirname, "media/clinical/projects", previousName);
+      if (fs.existsSync(filePath)) {
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error("Error deleting file:", err);
+          } else {
+            console.log("File deleted successfully.");
+          }
+        });
+      } 
+    }
+    
+    const result = await projectsCollection.updateOne({project_ref : project_ref},
+      { $set : { project_pdf : `media/clinical/projects/${fileName}` }
+    });
+
+    return true;
+  }
+  catch(error) {
+    console.log("Error occured while updating project_pdf", error.message);
+    throw error;
+  }
 
   return outputPath;
 }

@@ -212,6 +212,8 @@ const addClinicalService = async(formData) => {
             "comments" : "",
             "project_title" : administration.study_title,
             "reviewer_id" : "",
+            "reviewer_name" : "",
+            "project_pdf" : "",
             type : "clinical",
             form_type : "Principal/CoInvestigator",
             investigator_name : administration.name,
@@ -220,9 +222,9 @@ const addClinicalService = async(formData) => {
 
         const result = await projectsCollection.insertOne(newProjectData);
         if(result.acknowledged) {
-            return true;
+            return {"isSuccess" : true, "project_ref" : project_ref};
         }
-        return false;
+        return {"isSuccess" : false, "project_ref" : project_ref};
     }
     catch(error) {
         await client.query("ROLLBACK");
@@ -290,10 +292,10 @@ const updateClinicalService = async (formData) => {
 
             const result = await client.query(
             `INSERT INTO clinical_investigators (name, designation, qualification, department,
-                role, gmail, contact, approved, approval_token, email, form_id
+                role , gmail, contact, approved, approval_token, email, form_id
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
             [
-                name, designation, qualification, department, role, gmail, contact, approved, token, email, formId
+                name, designation, qualification, department, role , gmail, contact, approved, token, email, formId
             ]
             );
         }
@@ -415,7 +417,6 @@ const updateClinicalService = async (formData) => {
             { project_ref: submittedFormInfo.project_ref },
             {
                 $set: {
-                    sub_date: administration.submission_date,
                     project_title: administration.study_title,
                     updated_at: new Date()
                 }
@@ -423,7 +424,7 @@ const updateClinicalService = async (formData) => {
         );
 
         await client.query("COMMIT");
-        return true;
+       return {"isSuccess" : true, "project_ref" : submittedFormInfo.project_ref};
     } catch (error) {
         await client.query("ROLLBACK");
         console.error("Update Error:", error.message);

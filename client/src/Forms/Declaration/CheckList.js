@@ -15,10 +15,10 @@ const UploadChecklist = ({selectedForm}) => {
     { id: 6, label: "Copy of the detailed protocol (clearly identified numbered and dated) and synopsis", file: null, required: true },
     { id: 7, label: "Participant Information Sheet (PIS) and Informed Consent Form (ICF)", file: null, required: true },
     { id: 8, label: "Assent form for minors (12-18 years)", file: null, required: false },
-    { id: 9, label: "Application for waiver of consent if applicable", file: null, required: false },
-    { id: 10, label: "CRF / Interview guides / FGDs (English and translated)", file: null, required: true },
-    { id: 11, label: "Advertisement / material to recruit participants", file: null, required: false },
-    { id: 12, label: "Insurance policy / participant coverage details", file: null, required: false }
+    
+    { id: 9, label: "CRF / Interview guides / Focused Group Discussions (English and translated)", file: null, required: true },
+    { id: 10, label: "Advertisement / material to recruit participants", file: null, required: false },
+    { id: 11, label: "Insurance policy / participant coverage details", file: null, required: false }
   ]);
 
   
@@ -38,8 +38,18 @@ const UploadChecklist = ({selectedForm}) => {
           }
         });
         if (response.data.length > 0) {
+          const existingUploads = [];
+          for(let item of uploads) {
+            for(let existingItem of response.data) {
+              if(Number(item.id) === Number(existingItem.label_id)) {
+                existingUploads.push({...existingItem, required : item.required});
+                break;
+              }
+            }
+          }
+
           setFormId(response.data[0].form_id);
-          setUploads(response.data); // You probably meant setExistData, not setExistData
+          setUploads(existingUploads); // You probably meant setExistData, not setExistData
           setShowPreview(true);
           setIsEdit(true);
         }
@@ -58,7 +68,7 @@ const UploadChecklist = ({selectedForm}) => {
     if(isEdit) {
       setUploads(prev =>
         prev.map(item =>
-          Number(item.label_id) === id ? { ...item, file } : item
+          Number(item.label_id) === Number(id) ? { ...item, file } : item
         )
       );
     }
@@ -88,10 +98,15 @@ const UploadChecklist = ({selectedForm}) => {
       const id = isEdit ? Number(item.label_id) : item.id;
       const label = isEdit ? item.label_name : item.label;
 
+      // Append the label name to the form data
       formData.append(`label_name_${id}`, label || "");
 
+      // Append the file only if a new one is present
       if (item.file) {
         formData.append(`file_${id}`, item.file);
+      } else if (isEdit && item.file_name) {
+        // Optionally include the existing filename if editing and no new file
+        formData.append(`existingFile_${id}`, item.file_name);
       }
     });
 
@@ -128,8 +143,9 @@ const UploadChecklist = ({selectedForm}) => {
           <Box sx={{ display: "flex", flexDirection: "column", gap: "20px" }}>
             {uploads.map((item, index) => (
               <Box key={item.id} sx={{ display: "flex", alignItems: "center", gap: "20px", flexWrap: "wrap" }}>
-                <Typography sx={{ flex: 1, maxWidth: "700px" }}>{item.label || item.label_name}</Typography>
-                <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, index + 1)} required={item.required}
+                <Typography sx={{ flex: 1, maxWidth: "700px" }}>{item.label || item.label_name}
+                  {item.required && <span style={{ color: 'red' }}> *</span>} </Typography>
+                <input type="file" accept="application/pdf" onChange={(e) => handleFileChange(e, item.label_id || item.id)} required={item.required}
                   style={{
                     padding: "6px 16px",
                     border: "1px solid #ccc",

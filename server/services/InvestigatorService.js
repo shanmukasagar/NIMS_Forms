@@ -95,8 +95,8 @@ const getClinicalProjectData = async (project_ref) => {
 
 const generateAndSendHODApprovalEmails = async (investigators, principal, tableName) => {
     for (const inv of investigators) {
-        if ((inv.investigator_type === "hod" || inv.role === "hod") && inv.Email) {
-            const hodToken = uuidv4();
+        if ((inv.investigator_type === "hod" || inv.role === "hod") && inv.gmail) {
+            const hodToken = inv.approval_token;
 
             // (Optional) Store HOD token in DB for later validation
             await pool.query(
@@ -114,7 +114,7 @@ const generateAndSendHODApprovalEmails = async (investigators, principal, tableN
                 <p>If you did not expect this email, you can ignore it.</p>
             `;
 
-            await sendEmail(principal?.Email || "", inv.Email, "HOD Approval Request for Research Project", html);
+            await sendEmail(principal?.gmail || "", inv.gmail, "HOD Approval Request for Research Project", html);
         }
     }
 };
@@ -198,13 +198,20 @@ const approveHODService = async (token, tableName) => {
   const client = await pool.connect();
 
   try {
-    // 1. Approve HOD
-    const approvalRes = await client.query(
-      `UPDATE ${tableName} SET approved = true 
-       WHERE approval_token = $1 AND (investigator_type = 'hod' OR role = 'hod') 
-       RETURNING form_id`,
-      [token]
-    );
+    let approvalRes;
+
+    if(tableName === "clinical_investigators") {
+        approvalRes = await client.query(
+                `UPDATE clinical_investigators SET approved = true WHERE approval_token = $1 RETURNING form_id`,
+                [token]
+            );
+    }
+    else if(tableName === "investigatorss") {
+        approvalRes = await client.query(
+                `UPDATE investigatorss SET approved = true WHERE approval_token = $1 RETURNING form_id`,
+                [token]
+            );
+    }
 
     if (approvalRes.rowCount === 0) {
       throw new Error("Invalid or already approved token");

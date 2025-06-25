@@ -63,9 +63,9 @@ const Sidebar = ({selectedRole, selectedForm}) => {
         { id: 'Confidentiality', label: 'Storage and Confidentiality', path: '/participant/confidentiality' },
         { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' },
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
-        { id: 'CheckList', label: 'CheckList', path: '/checklist' },
-        { id: 'ExpeditedReview', label: 'Expedited Review', path: '/expedited' },
-        { id: 'WaiverOfConsent', label: 'Waiver Of Consent', path: '/waiver' }
+        { id: 'CheckList', label: 'CheckList', path: '/checklist' }
+        // { id: 'ExpeditedReview', label: 'Expedited Review', path: '/expedited' },
+        // { id: 'WaiverOfConsent', label: 'Waiver Of Consent', path: '/waiver' }
       ]
     },
     {

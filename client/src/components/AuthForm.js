@@ -23,9 +23,6 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
 
         const { username, email, password, confirmPassword, mobile } = formData;
 
-        if (!/\S+@\S+\.\S+/.test(email)) return setError('Valid email required');
-        if (!password || password.length < 6) return setError('Password too short');
-
         if (isRegistering) {
             if (!username.trim()) return setError('Username required');
             if (password !== confirmPassword) return setError('Passwords do not match');
@@ -112,7 +109,7 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                     )}
                     {!isRegistering && (
                     <React.Fragment>
-                        <TextField label="Email" name="email" type="email" fullWidth value={formData.email} 
+                        <TextField label="Email" name="email" fullWidth value={formData.email} 
                             onChange={handleChange} required />
                         <TextField label="Password" name="password" type={showPassword ? 'text' : 'password'} 
                             fullWidth value={formData.password} onChange={handleChange} required 
