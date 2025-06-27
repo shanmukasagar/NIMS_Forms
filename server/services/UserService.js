@@ -32,18 +32,24 @@ const userAuthentication = async(userData) => {
     try{
         await connectToMongo(); //connect to database
         const userCollection = getDB().collection("Users");
+        const employeeCollection = getDB().collection("Employees");
 
         // 1. Find user by email
-        const user = await userCollection.findOne({email : userData.email});
-        if (!user) {
+        const user1 = await userCollection.findOne({email : userData.email});
+        const user2 = await employeeCollection.findOne({emp_code : userData.email, emp_pwd : userData.password});
+        if(!user1 && !user2) {
             return {success : false, message : "Invalid Credentials"};
         }
+        if(user2) {
+            return {success : true, message : user2};
+        }
         // 2. Compare entered password with hashed password
-        const isMatch = await bcrypt.compare(userData.password, user.password);
+        const isMatch = await bcrypt.compare(userData.password, user1.password);
         if(!isMatch) {
             return {success : false, message : "Invalid Credentials"};
         }
-        return {success : true, message : user};
+
+        return {success : true, message : user1};
     }
     catch(error) {
         console.log("User registration failed");

@@ -66,9 +66,10 @@ const addClinicalService = async(formData) => {
         //Email sent to all filled co-investigators and guide
 
         const principal = modified_investigators.find(inv => inv.role === "principal" && inv.name);
+        const allowedEmployees = [];
 
         for (const inv of modified_investigators) {
-            const {name, designation, qualification, department, role,  contact = "", gmail, approved = false, approval_token = ""  } = inv;
+            const {name, designation, qualification, emp_code, department, role,  contact = "", gmail, approved = false, approval_token = ""  } = inv;
             const token = uuidv4(); // Or generate JWT if you want secure verification
             if (inv.role !== "principal" && inv.role !== "hod" && inv.gmail) {
 
@@ -87,14 +88,18 @@ const addClinicalService = async(formData) => {
                 await sendEmail(principal.gmail, inv.gmail, "Approval Request for Research Project", html);
             }
 
+            allowedEmployees.push(emp_code);
+
             const result = await client.query(
-            `INSERT INTO clinical_investigators (name, designation, qualification, department,
-                role, gmail, contact, approved, approval_token, email, form_id
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
-            [
-                name, designation, qualification, department, role, gmail, contact, approved, token, email, formId
-            ]
+                `INSERT INTO clinical_investigators (
+                    name, designation, qualification, department, emp_code,
+                    role, gmail, contact, approved, approval_token, email, form_id
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                RETURNING id`,
+                [ name, designation, qualification, department, emp_code, role, gmail,
+                    contact, approved, token, email, formId ]
             );
+
         }
 
         await client.query( //Insert investigator counts
@@ -120,10 +125,10 @@ const addClinicalService = async(formData) => {
               
         
         await client.query( //Insert participant details
-            `INSERT INTO clinical_participants (form_id, participant_type, vulnerable_groups, safeguards, reimbursement, 
+            `INSERT INTO clinical_participants (form_id, participant_type, vulnerable_groups, reimbursement, 
             reimbursement_details, email, other_participant, additional_safeguards, justification)
-             VALUES ($1,$2,$3,$4,$5,$6,$7, $8, $9, $10)`,
-            [ formId, participants.participant_type, participants.vulnerable_groups, participants.safeguards,
+             VALUES ($1,$2,$3,$4,$5,$6,$7, $8, $9)`,
+            [ formId, participants.participant_type, participants.vulnerable_groups,
               participants.reimbursement, participants.reimbursement_details, email, participants.other_participant, 
               participants.additional_safeguards, participants.justification]);
                 
@@ -217,7 +222,8 @@ const addClinicalService = async(formData) => {
             type : "clinical",
             form_type : "Principal/CoInvestigator",
             investigator_name : administration.name,
-            investigator_dep : administration.department
+            investigator_dep : administration.department,
+            "allowedEmployees" : allowedEmployees
         }
 
         const result = await projectsCollection.insertOne(newProjectData);
@@ -269,9 +275,10 @@ const updateClinicalService = async (formData) => {
         //Email sent to all filled co-investigators and guide
 
         const principal = modified_investigators.find(inv => inv.role === "principal" && inv.name);
+        const allowedEmployees = [];
 
         for (const inv of modified_investigators) {
-            const {name, designation, qualification, department, role,  contact = "", gmail, approved = false, approval_token = ""  } = inv;
+            const {name, designation, qualification, department, role, emp_code,  contact = "", gmail, approved = false, approval_token = ""  } = inv;
             const token = uuidv4(); // Or generate JWT if you want secure verification
             if (inv.role !== "principal" && inv.role !== "hod" && inv.gmail) {
 
@@ -290,13 +297,16 @@ const updateClinicalService = async (formData) => {
                 await sendEmail(principal.gmail, inv.gmail, "Approval Request for Research Project", html);
             }
 
+            allowedEmployees.push(emp_code);
+
             const result = await client.query(
-            `INSERT INTO clinical_investigators (name, designation, qualification, department,
-                role , gmail, contact, approved, approval_token, email, form_id
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
-            [
-                name, designation, qualification, department, role , gmail, contact, approved, token, email, formId
-            ]
+                `INSERT INTO clinical_investigators (
+                    name, designation, qualification, department, emp_code,
+                    role, gmail, contact, approved, approval_token, email, form_id
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+                [ name, designation, qualification, department, emp_code,
+                    role, gmail, contact, approved, token, email, formId
+                ]
             );
         }
 
@@ -325,10 +335,10 @@ const updateClinicalService = async (formData) => {
 
         // Update participants
         await client.query( `UPDATE clinical_participants
-            SET participant_type = $1, vulnerable_groups = $2, safeguards = $3,
-                reimbursement = $4, reimbursement_details = $5, email = $6, other_participant = $7, 
-                additional_safeguards = $8, justification = $9 WHERE form_id = $10`,
-            [ participants.participant_type, participants.vulnerable_groups, participants.safeguards,
+            SET participant_type = $1, vulnerable_groups = $2, 
+                reimbursement = $3, reimbursement_details = $4, email = $5, other_participant = $6, 
+                additional_safeguards = $7, justification = $8 WHERE form_id = $9`,
+            [ participants.participant_type, participants.vulnerable_groups, 
                 participants.reimbursement, participants.reimbursement_details, email, participants.other_participant, 
                 participants.additional_safeguards, participants.justification, formId ]
         );
@@ -418,7 +428,8 @@ const updateClinicalService = async (formData) => {
             {
                 $set: {
                     project_title: administration.study_title,
-                    updated_at: new Date()
+                    updated_at: new Date(),
+                    allowedEmployees : allowedEmployees
                 }
             }
         );

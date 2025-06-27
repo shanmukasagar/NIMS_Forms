@@ -11,10 +11,11 @@ const getProjectsService = async (email, type) => {
         const reviewersCollection = getDB().collection("AssignReviewers");
         let filteredObj = {};
         if(type === "investigators") {
-            filteredObj = {emp_code : email};
+            filteredObj = { $or: [ { emp_code: email }, { allowedEmployees: email } ] };
         }
         else if(type === "isrc_member") {
             // filteredObj = { project_id: { $nin: ["", null] }, emp_code : email };
+            filteredObj = {};
         }
         else if(type === "isrc_secretary") {
             // filteredObj = { project_id: { $ne: "" } };

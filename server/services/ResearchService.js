@@ -363,9 +363,11 @@ const saveInvestigatorDetails = async (investigators, email, form_type) => {
 
   const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
   
-
+  const allowedEmployees = [];
   for (const inv of investigators) {
-    const {name, designation, qualification, department, investigator_type, Email = "", contact = "", approved = false, approval_token = ""  } = inv;
+    const {name, designation, qualification, department, emp_code, investigator_type, Email = "", contact = "", approved = false, approval_token = ""  } = inv;
+
+    allowedEmployees.push(emp_code);
     const token = uuidv4(); // Or generate JWT if you want secure verification
     if (inv.investigator_type !== "Principal_Investigator" && inv.investigator_type !== "hod"  && inv.Email) {
 
@@ -386,14 +388,33 @@ const saveInvestigatorDetails = async (investigators, email, form_type) => {
 
     const result = await pool.query(
       `INSERT INTO investigatorss (name, designation, qualification, department,
-         investigator_type, gmail, contact, approved, approval_token, form_id, email
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
+         investigator_type, gmail, contact, emp_code, approved, approval_token, form_id, email
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
       [
-        name, designation, qualification, department, investigator_type, Email, contact, approved, token, formId, email
+        name, designation, qualification, department, investigator_type, Email, contact, emp_code,
+         approved, token, formId, email
       ]
     );
     results.push(result.rows[0]);
   }
+
+  const submittedProject = await pool.query( "SELECT project_ref FROM forms WHERE id = $1",
+    [formId] );
+
+  const submittedProject_ref = submittedProject.rows[0]?.project_ref;
+
+  await connectToMongo();
+  const projectsCollection = getDB().collection("Projects");
+
+  await projectsCollection.updateOne(
+      { project_ref: submittedProject_ref },
+      {
+          $set: {
+              updated_at: new Date(),
+              allowedEmployees : allowedEmployees
+          }
+      }
+  );
 
   return results;
 };
@@ -435,20 +456,13 @@ const updateInvestigators = async (investigators, email, numericFormId) => {
     const results = [];
     const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
 
+    const allowedEmployees = [];
     for (const inv of investigators) {
-      const {
-        name,
-        designation,
-        qualification,
-        department,
-        investigator_type,
-        Email = "",
-        contact = "",
-        approved = false,
-        approval_token = ""
-      } = inv;
+      const { name, designation, qualification, department, investigator_type, Email = "",
+        emp_code = "", contact = "", approved = false, approval_token = "" } = inv;
 
       const token = uuidv4();
+      allowedEmployees.push(emp_code);
       
       // Send approval email for non-PI investigators
       if (
@@ -478,9 +492,10 @@ const updateInvestigators = async (investigators, email, numericFormId) => {
         const result = await pool.query(
           `INSERT INTO investigatorss (
             name, designation, qualification, department,
-            investigator_type, gmail, contact, approved, approval_token, form_id, email
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING id`,
-          [name, designation, qualification, department, investigator_type, Email, contact, approved, token, numericFormId, email]
+            investigator_type, gmail, contact, emp_code, approved, approval_token, form_id, email
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+          [name, designation, qualification, department, investigator_type, Email, contact, emp_code, 
+            approved, token, numericFormId, email]
         );
         results.push(result.rows[0]);
       } catch (insertErr) {
@@ -488,6 +503,23 @@ const updateInvestigators = async (investigators, email, numericFormId) => {
       }
     }
 
+    const submittedProject = await pool.query( "SELECT project_ref FROM forms WHERE id = $1",
+    [numericFormId] );
+
+    const submittedProject_ref = submittedProject.rows[0]?.project_ref;
+
+    await connectToMongo();
+    const projectsCollection = getDB().collection("Projects");
+
+    await projectsCollection.updateOne(
+        { project_ref: submittedProject_ref },
+        {
+            $set: {
+                updated_at: new Date(),
+                allowedEmployees : allowedEmployees
+            }
+        }
+    );
 
     return true;
   } catch (err) {
