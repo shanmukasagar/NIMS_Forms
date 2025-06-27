@@ -19,6 +19,7 @@ const reviewerComments = async (data) => {
                 project_ref : data.project_ref,
                 project_title : data.project_title,
                 reviewer_id : data.reviewer_id,
+                reviewer_name : data.reviewer_name,
                 emp_code : data.email,
                 comments : data.comments,
                 status : data.status,
@@ -41,7 +42,8 @@ const assignReviewers = async (data) => {
     try{
         await connectToMongo(); //connect to database
         const projectsCollection = getDB().collection("Projects");
-        const result = await projectsCollection.updateOne( { project_ref: data.projectData?.project_ref }, { $set: { reviewer_name: data.reviewer_name } });
+        const result = await projectsCollection.updateOne( { project_ref: data.projectData?.project_ref }, 
+            { $set: { reviewer_id: data.reviewer_code, reviewer_name : data.reviewer_name  } });
 
         if(result.modifiedCount > 0) {
             return true;
