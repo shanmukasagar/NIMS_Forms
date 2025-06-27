@@ -33,6 +33,11 @@ const ProgressReport = lazy(() => import('./Forms/NIEC_Forms/ProgressReport'));
 const ProtocolDeviation = lazy(() => import('./Forms/NIEC_Forms/Protocol_Deviation'));
 const TerminationReport = lazy(() => import('./Forms/NIEC_Forms/TerminationReport'));
 
+//Funding
+const SelfFunding = lazy(() => import('./Forms/Funding_Forms/Self_Funding'));
+const IndustryFunding = lazy(() => import('./Forms/Funding_Forms/Industry_Funding'));
+const FundingAgency = lazy(() => import('./Forms/Funding_Forms/Funding_Studies'));
+
 // Roles
 const ISRC_Member = lazy(() => import('./Roles/ISRC/ISRC_Member'));
 const ClinicalFormFeedback = lazy(() => import('./Roles/Investigators/ClinicalTrailFeedback'));
@@ -118,6 +123,12 @@ const App = () => {
                   <Route path="/study/completion" element={<CompletionReport />} />
                   <Route path="/termination" element={<TerminationReport />} />
                   <Route path="/protocol/deviation" element={<ProtocolDeviation />} />
+
+                  {/* Funding */}
+                  <Route path="/self-funding" element={<SelfFunding />} />
+                  <Route path="/industry-funding" element={<IndustryFunding />} />
+                  <Route path="/funding-agency" element={<FundingAgency />} />
+
                   {/* Roles */}
                   <Route path="/isrc/commitee/member" element={<ISRC_Member user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/investigator/feedback" element={<ClinicalFormFeedback />} />
