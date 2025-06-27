@@ -66,21 +66,21 @@ const DetailsInvestigator = ({selectedForm}) => {
   const [editableData, setEditableData] = useState({});
 
   const [principal, setPrincipal] = useState({
-    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Principal_Investigator", 
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", emp_code : "", investigator_type: "Principal_Investigator", 
       approved : false, approval_token : ""});
 
   const [guide, setGuide] = useState({
-    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Guide", approved : false, approval_token : ""
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Guide", approved : false, approval_token : ""
   });
 
   const [hod, setHod] = useState({
-    name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "hod", approved : false, approval_token : ""
+    name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "hod", approved : false, approval_token : ""
   });
 
   const [coInvestigators, setCoInvestigators] = useState([
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator", approved : false, approval_token : ""},
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : ""},
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
+    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
   ]);
 
   useEffect(() => {
@@ -93,6 +93,7 @@ const DetailsInvestigator = ({selectedForm}) => {
           department: inv?.department || "",
           Email: inv?.gmail || "",
           contact: inv?.contact || "",
+          emp_code : inv?.emp_code || "",
           investigator_type: inv?.investigator_type || ""
         };
 
@@ -180,6 +181,8 @@ const DetailsInvestigator = ({selectedForm}) => {
         onChange={(e) => setData({ ...data, Email: e.target.value })} required={required} />
       <input style={styles.input} type="text" placeholder="Contact No" value={data.contact}
         onChange={(e) => setData({ ...data, contact: e.target.value })} required={required} />
+      <input style={styles.input} type="text" placeholder="Emp_code" value={data.emp_code}
+        onChange={(e) => setData({ ...data, emp_code: e.target.value })} required={required} />
     </div>
   );
 
@@ -214,7 +217,7 @@ const DetailsInvestigator = ({selectedForm}) => {
           <h2 style={styles.formTitle}>G. Details of Investigators / Researcher(s):</h2>
           {renderInvestigatorInput(principal, setPrincipal, "Principal Investigator", true)}
           {renderInvestigatorInput(guide, setGuide, "Guide", false)}
-          {renderInvestigatorInput(hod, setHod, "HOD", false)}
+          {renderInvestigatorInput(hod, setHod, "HOD", true)}
           {coInvestigators.map((coi, index) =>
             renderInvestigatorInput(coi, (newData) => {
               const updated = [...coInvestigators];

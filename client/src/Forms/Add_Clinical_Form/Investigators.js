@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Box, TextField, Typography, Grid } from '@mui/material';
 
 const Investigators = ({ researchers, setResearchers, investigatorsCount, setInvestigatorsCount}) => {
-  const fieldNames = ['name', 'designation', 'qualification', 'department', 'gmail', 'contact'];
+  const fieldNames = ['name', 'designation', 'qualification', 'department', 'gmail', 'contact', 'emp_code'];
 
   const normalizeType = (researcher) => researcher.type || researcher.role || '';
 
@@ -70,21 +70,25 @@ const Investigators = ({ researchers, setResearchers, investigatorsCount, setInv
         <Box key={type} sx={{ mb: 3 }}>
           <Typography sx={{ fontWeight: 600, mb: 1 }}>{getLabel(type)}</Typography>
           <Grid container spacing={2}>
-            {getGroupedResearchers(type).map((inv) =>
-              fieldNames.map((field, fieldIdx) => (
-                <Grid item size={2} md={4} key={`${type}-${inv._index}-${fieldIdx}`}>
-                  <TextField
-                    fullWidth
-                    required={normalizeType(inv) === 'principal'}
-                    variant="outlined"
-                    label={field.charAt(0).toUpperCase() + field.slice(1)}
-                    name={field}
-                    value={inv[field] || ''}
-                    onChange={(e) => handleChange(e, inv._index)}
-                  />
-                </Grid>
-              ))
-            )}
+            {getGroupedResearchers(type).map((inv) => (
+              <React.Fragment key={`group-${inv._index}`}>
+                {fieldNames.map((field, fieldIdx) => (
+                  <Grid item size={2} md={4} key={`${type}-${inv._index}-${fieldIdx}`}>
+                    <TextField
+                      fullWidth
+                      required={['principal', 'hod'].includes(normalizeType(inv))}
+                      variant="outlined"
+                      label={field.charAt(0).toUpperCase() + field.slice(1)}
+                      name={field}
+                      value={inv[field] || ''}
+                      onChange={(e) => handleChange(e, inv._index)}
+                    />
+                  </Grid>
+                ))}
+                {/* Force new line after each inv group */}
+                <Grid item size={12} />
+              </React.Fragment>
+            ))}
           </Grid>
         </Box>
       ))}

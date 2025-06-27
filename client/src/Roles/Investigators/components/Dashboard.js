@@ -8,6 +8,7 @@ import { Visibility, Edit, Comment } from '@mui/icons-material';
 import { Dialog, DialogTitle, DialogContent, IconButton, Tooltip} from '@mui/material';
 import PreviewPopup from "../../../Forms/Add_Clinical_Form/Clinical_Preview";
 import AddClinicalTrails from '../../../components/AddClinicalTrails';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const Dashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
@@ -76,39 +77,45 @@ const Dashboard = ({user, setSelectedForm}) => {
     };
 
     const handleEditIcon = async (item) => { // Handle Edit icon
-        try {
-            if(item.form_type === "biomedical-1") {
-                setSelectedForm("biomedical-1");
-                navigate("/basic/administrative")
-            }
-            else if(item.form_type === "biomedical-2") {
-                setSelectedForm("biomedical-2");
-                navigate("/basic/administrative")
-            }
-            else{
-                const result = await handleGetProjectDetails(item.project_ref);
-                setProjectView(result);
-                const initialData = {
-                    administration: result?.administration,
-                    researchers: result?.researchers,
-                    participants: result?.participants,
-                    benefits: result?.benefits,
-                    paymentState: result?.paymentState,
-                    storage: result?.storage,
-                    additional: result?.additional,
-                    checkListData: result?.checkListData,
-                    submittedFormId : result?.administration?.form_id || "",
-                    investigatorsCount: result?.investigatorsCount,
-                    fundingData: result?.fundingData,
-                    overviewResearch: result?.overviewResearch,
-                    methodologyData: result?.methodologyData,
-                    consentData: result?.consentData,
-                    declaration: result?.declaration,
+        if(item.comments === "") {
+            alert("Editing is only allowed when comments are provided.");
+            return;
+        }
+        else{
+            try {
+                if(item.form_type === "biomedical-1") {
+                    setSelectedForm("biomedical-1");
+                    navigate("/basic/administrative")
                 }
-                navigate("/addclinicaltrails", { state: { initialData: initialData, user : user } });
+                else if(item.form_type === "biomedical-2") {
+                    setSelectedForm("biomedical-2");
+                    navigate("/basic/administrative")
+                }
+                else{
+                    const result = await handleGetProjectDetails(item.project_ref);
+                    setProjectView(result);
+                    const initialData = {
+                        administration: result?.administration,
+                        researchers: result?.researchers,
+                        participants: result?.participants,
+                        benefits: result?.benefits,
+                        paymentState: result?.paymentState,
+                        storage: result?.storage,
+                        additional: result?.additional,
+                        checkListData: result?.checkListData,
+                        submittedFormId : result?.administration?.form_id || "",
+                        investigatorsCount: result?.investigatorsCount,
+                        fundingData: result?.fundingData,
+                        overviewResearch: result?.overviewResearch,
+                        methodologyData: result?.methodologyData,
+                        consentData: result?.consentData,
+                        declaration: result?.declaration,
+                    }
+                    navigate("/addclinicaltrails", { state: { initialData: initialData, user : user } });
+                }
+            } catch (error) {
+                console.log("Error occurred while fetching project data", error.message);
             }
-        } catch (error) {
-            console.log("Error occurred while fetching project data", error.message);
         }
     };
 
@@ -146,8 +153,10 @@ const Dashboard = ({user, setSelectedForm}) => {
                                 <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{item.status}</Typography></Grid>
-                                <Grid item size={1}>
+                                <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
+                                    <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
+                                        onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
                                 </Grid>
                                 <Grid item size={1}>
                                     <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenComment(item.comments)}/>

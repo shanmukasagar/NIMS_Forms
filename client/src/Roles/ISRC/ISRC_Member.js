@@ -8,6 +8,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
 import axiosInstance from "../../components/AxiosInstance";
 import { useNavigate } from 'react-router-dom';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const ISRC_Member = ({setSelectedForm}) => {
   const fetchOnce = useRef(false);
@@ -73,6 +74,7 @@ const ISRC_Member = ({setSelectedForm}) => {
       project_ref : selectedData?.project_ref,
       project_title : selectedData?.project_title,
       reviewer_id : selectedData?.reviewer_id,
+      reviewer_name : selectedData?.reviewer_name,
       comments : comment,
       status : status,
       form_type : selectedData?.form_type,
@@ -124,8 +126,8 @@ const ISRC_Member = ({setSelectedForm}) => {
           <Grid item size={2}><Typography sx={commonTextStyle}>Submission Date</Typography></Grid>
           <Grid item size={2}><Typography sx={commonTextStyle}>Principal Investigator</Typography></Grid>
           <Grid item size={2}><Typography sx={commonTextStyle}>Department</Typography></Grid>
-          <Grid item size={2}><Typography sx={commonTextStyle}>Status</Typography></Grid>
-          <Grid item size={1}><Typography sx={commonTextStyle}>View</Typography></Grid>
+          <Grid item size={1}><Typography sx={commonTextStyle}>Status</Typography></Grid>
+          <Grid item size={2}><Typography sx={commonTextStyle}>View</Typography></Grid>
           <Grid item size={1}><Typography sx={commonTextStyle}>Comment</Typography></Grid>
         </Grid>
 
@@ -138,11 +140,13 @@ const ISRC_Member = ({setSelectedForm}) => {
                 <Grid item size={2}><Typography sx={commonTextStyle}>{formatSubmitDate(item.sub_date) || ""}</Typography></Grid>
                 <Grid item size={2}><Typography sx={commonTextStyle}>{item.investigator_name || ""}</Typography></Grid>
                 <Grid item size={2}><Typography sx={commonTextStyle}>{item.investigator_dep || ""}</Typography></Grid>
-                <Grid item size={2}><Typography sx={commonTextStyle}>{item.status || ""}</Typography></Grid>
-                <Grid item size={1}>
+                <Grid item size={1}><Typography sx={commonTextStyle}>{item.status || ""}</Typography></Grid>
+                <Grid item size={2} sx = {{display : "flex", gap : "25px", alignItems : "center"}}>
                   <IconButton onClick={() => handleViewIcon(item)}>
                     <VisibilityIcon sx={{ color: "rebeccapurple" }} />
                   </IconButton>
+                  <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
+                      onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
                 </Grid>
                 <Grid item size={1}>
                   <IconButton onClick={() => handleCommentClick(item)}>

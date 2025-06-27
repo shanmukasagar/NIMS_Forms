@@ -6,6 +6,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import axiosInstance from "../../components/AxiosInstance";
 import { useNavigate } from 'react-router-dom';
 import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const ProjectReviewGrid = ({setSelectedForm}) => {
     const [selectedData, setSelectedData] = useState({});
@@ -108,16 +109,18 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
         <Box>
             <Typography sx={{ fontSize: '22px', fontWeight: 'bold', mb: 2 }}>Project Review Grid</Typography>
             <Grid container spacing={2} sx={{ backgroundColor: '#4b1d77', color: 'white', p: 2, borderRadius: '5px 5px 0 0' }}>
-                <Grid item size={5}><Typography>Project Title</Typography></Grid>
-                <Grid item size={3}><Typography>Reviewer ID</Typography></Grid>
+                <Grid item size={4}><Typography>Project Title</Typography></Grid>
+                <Grid item size={2}><Typography>Reviewer ID</Typography></Grid>
+                <Grid item size={2}><Typography>Reviewer Name</Typography></Grid>
                 <Grid item size={2}><Typography>Reviewer Comments</Typography></Grid>
                 <Grid item size={1}><Typography>Comments</Typography></Grid>
                 <Grid item size={1}><Typography>View</Typography></Grid>
             </Grid>
             {projectsData.map((proj, idx) => (
                 <Grid container spacing={2} key={idx} alignItems="center" sx={{ borderBottom: '1px solid #ccc', p: 2 }}>
-                    <Grid item size={5}><Typography>{proj.project_title}</Typography></Grid>
-                    <Grid item size={3}><Typography>{proj.reviewer_id}</Typography></Grid>
+                    <Grid item size={4}><Typography>{proj.project_title}</Typography></Grid>
+                    <Grid item size={2}><Typography>{proj.reviewer_id}</Typography></Grid>
+                    <Grid item size={2}><Typography>{proj.reviewer_name}</Typography></Grid>
                     <Grid item size={2}>
                         <IconButton onClick = {() => handleViewReviewerMessage(proj)}>
                             <CommentIcon sx={{ color: "rebeccapurple" }} />
@@ -128,11 +131,13 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
                             <CommentIcon sx={{ color: "rebeccapurple" }} />
                         </IconButton>
                     </Grid>
-                    <Grid item size={1}>
+                    <Grid item size={1} sx = {{display : "flex", gap : "25px", alignItems : "center"}}>
                         <IconButton onClick = {() => handleViewIcon(proj)}>
                             <VisibilityIcon sx={{ color: "rebeccapurple" }} />
                         </IconButton>
-                    </Grid>
+                        <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
+                            onClick={() => window.open(`http://localhost:4000/${proj.project_pdf}.pdf`, "_blank")} />
+                        </Grid>
                 </Grid>
             ))}
 

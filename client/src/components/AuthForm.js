@@ -52,7 +52,7 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                     return ;
                 }
                 else if(selectedRole === "ISRC Committee Chair"){
-                    navigate('/isrc/chair/assignreviewers');
+                    navigate('/isrc/chair/decision');
                     return ;
                 }
                 navigate('/basic/administrative');

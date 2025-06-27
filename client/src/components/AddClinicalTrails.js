@@ -39,12 +39,12 @@ const MainContent = ({user}) => {
 
   //Investigators State
   const [researchers, setResearchers] = useState([ 
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "principal" }, 
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "guide" }, 
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "hod" }, 
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator" },
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator" }, 
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator" } 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "principal", emp_code : "" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "guide", emp_code : "" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "hod", emp_code : "" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" },
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" }, 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" } 
   ]);
 
   const [investigatorsCount, setInvestigatorsCount] = useState({
@@ -61,7 +61,7 @@ const MainContent = ({user}) => {
   const [methodologyData, setMethodologyData] = useState({ total_sample_size: '', site_participants: '', lab_outsourcing: '', lab_details: '' });
 
   //Participants State
-  const [participants, setParticipants] = useState({ participant_type: "", vulnerable_groups: [], safeguards: "", other_participant : "",
+  const [participants, setParticipants] = useState({ participant_type: "", vulnerable_groups: [], other_participant : "",
     reimbursement: "", reimbursement_details: "", additional_safeguards : "", justification : "" }); 
 
 

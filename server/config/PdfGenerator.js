@@ -140,7 +140,6 @@ async function generateConsentPdf(data, fileName, project_ref) {
         <div class="section">
           <div><span class="label">Type:</span> ${data.participants.participant_type}</div>
           <div><span class="label">Vulnerable Groups:</span> ${data.participants.vulnerable_groups.join(', ')}</div>
-          <div><span class="label">Safeguards:</span> ${data.participants.safeguards}</div>
           <div><span class="label">Other Participant:</span> ${data.participants.other_participant}</div>
           <div><span class="label">Reimbursement:</span> ${data.participants.reimbursement}</div>
           <div><span class="label">Details:</span> ${data.participants.reimbursement_details}</div>

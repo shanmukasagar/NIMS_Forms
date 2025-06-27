@@ -31,6 +31,7 @@ const InvestigatorCard = ({ title, investigator }) => (
     {renderField("Department", investigator.department)}
     {renderField("Email", investigator.gmail)}
     {renderField("Contact", investigator.contact)}
+    {renderField("Emp_code", investigator.emp_code)}
   </div>
 );
 

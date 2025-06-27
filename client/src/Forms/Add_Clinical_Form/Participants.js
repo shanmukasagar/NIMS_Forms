@@ -60,8 +60,6 @@ const Participants = ({participants, setParticipants}) => {
       {participants.participant_type === "Vulnerable person" && ( 
         <React.Fragment>
           <Grid item size={12}>
-            <TextField fullWidth label="Additional Safeguards for vulnerable population" required variant="outlined" name='safeguards' 
-              value={participants.safeguards} onChange={handleChange} />
           </Grid>
           <Grid item size = {12}>
             <Box sx={{ display: "flex", flexDirection: "column", gap: "8px",  }} >

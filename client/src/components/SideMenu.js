@@ -41,6 +41,15 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'Final Decision',
       label: 'Final Decision',
       hasSubMenu: false,
+      role: "ISRC Member Secretary",
+      subItems: [
+        { id: 'Final Decision', label: 'Final Decision', path: '/isrc/chair/decision' },
+      ]
+    },
+    {
+      id: 'Final Decision',
+      label: 'Final Decision',
+      hasSubMenu: false,
       role: "ISRC Committee Chair",
       subItems: [
         { id: 'Final Decision', label: 'Final Decision', path: '/isrc/chair/decision' },
