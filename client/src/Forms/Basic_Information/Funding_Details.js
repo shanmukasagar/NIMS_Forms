@@ -76,6 +76,30 @@ const FundingDetails = ({selectedForm}) => {
     setShowPreview(false);
   };
 
+  const checkFundingFormFilled = async() => {
+    try {
+      
+      } catch (err) {
+        console.error("Fetch error:", err);
+      }
+  }
+
+  // Handle change of selected funding option
+  const handleFundingOption = (e) => {
+    const selectedOption = e.target.value;
+    if(selectedOption === "self-funding") {
+      navigate("/self-funding");
+    }
+    else if(selectedOption === "agency") {
+      navigate("/funding-agency");
+    }
+    else if(selectedOption === "institutional") {
+      navigate("/industry-funding");
+    }
+    setFundingSource(selectedOption);
+
+  }
+
   if (showPreview) {
     return (
       <div className="form-container">
@@ -103,7 +127,7 @@ const FundingDetails = ({selectedForm}) => {
         
         <h2 className="h2">b. Funding source:</h2>
         <select
-          name="fundingSource" value={funding_source} onChange={(e) => setFundingSource(e.target.value)}  
+          name="fundingSource" value={funding_source} onChange={handleFundingOption}  
           className="name" required >
           <option value="" disabled>Select Funding Type</option>
           <option value="self-funding">Self-funding</option>
@@ -111,7 +135,7 @@ const FundingDetails = ({selectedForm}) => {
           <option value="agency">Funding agency</option>
         </select>
         <br />
-        <br></br>
+
         <button onClick={handlePreview} className="name">
           Preview
         </button>

@@ -72,9 +72,12 @@ const Sidebar = ({selectedRole, selectedForm}) => {
         { id: 'Confidentiality', label: 'Storage and Confidentiality', path: '/participant/confidentiality' },
         { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' },
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
-        { id: 'CheckList', label: 'CheckList', path: '/checklist' }
+        { id: 'CheckList', label: 'CheckList', path: '/checklist' },
         // { id: 'ExpeditedReview', label: 'Expedited Review', path: '/expedited' },
         // { id: 'WaiverOfConsent', label: 'Waiver Of Consent', path: '/waiver' }
+        { id: 'Self Funding', label: 'Self Funding', path: '/self-funding' },
+        { id: 'Funding Agency', label: 'Funding Agency', path: '/funding-agency' },
+        { id: 'Industry Funding', label: 'Industry Funding', path: '/industry-funding' },
       ]
     },
     {
