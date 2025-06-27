@@ -78,6 +78,7 @@ const ISRC_Member = ({setSelectedForm}) => {
       comments : comment,
       status : status,
       form_type : selectedData?.form_type,
+      project_pdf : selectedData?.project_pdf,
     };
     try{
       const response = await axiosInstance.post('/api/isrc/committee/comment', data);

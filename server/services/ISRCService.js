@@ -9,7 +9,13 @@ const reviewerComments = async (data) => {
         const result = await reviewersCollection.findOne({project_ref : data.project_ref});
         if(result) {
             const result = await reviewersCollection.updateOne( { project_ref: data.project_ref },
-                { $set: { comments: data.comments, status : data.status } }
+                { $set: { comments: data.comments, 
+                    status : data.status, 
+                    project_pdf : data.project_pdf,
+                    project_title : data.project_title,
+                    reviewer_id : data.reviewer_id,
+                    reviewer_name : data.reviewer_name,
+                } }
             );
             return true;
         }
@@ -19,10 +25,12 @@ const reviewerComments = async (data) => {
                 project_ref : data.project_ref,
                 project_title : data.project_title,
                 reviewer_id : data.reviewer_id,
+                reviewer_name : data.reviewer_name,
                 emp_code : data.email,
                 comments : data.comments,
                 status : data.status,
-                form_type : data.form_type
+                form_type : data.form_type,
+                project_pdf : data.project_pdf
             });
             if(result.acknowledged) {
                 return true;
@@ -58,9 +66,9 @@ const assignReviewers = async (data) => {
 const getReviewedProjectsService = async () => { 
     try{
         await connectToMongo(); //connect to database
-        const projectsCollection = getDB().collection("Reviewers");
+        const ProjectReviewCollection = getDB().collection("Reviewers");
         let filteredObj = {};
-        const projectsData = await projectsCollection.find(filteredObj).sort({ created_at: -1 }).toArray();
+        const projectsData = await ProjectReviewCollection.find(filteredObj).sort({ created_at: -1 }).toArray();
         return projectsData;
     }
     catch(error) {
