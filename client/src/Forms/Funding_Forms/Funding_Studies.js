@@ -1,96 +1,151 @@
-import React,{useState, useEffect, useRef} from 'react';
-import NewFormComponent from './Main_Funding_Component';
-import {getSubmittedData} from "./Funded_Config";
-import FUNDED_Form_Preview from './Funding_Preview';
+import React from 'react';
+import {
+  Typography, TextField, Table, TableHead, TableRow,
+  TableCell, TableBody, Button, Box, IconButton, RadioGroup,
+  FormControlLabel, Radio
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const formFields = [
-    {name: 'name', label: 'Name of the funding Agency :', type: 'text' ,required:true},
-    {name: 'budget', label: 'Proposed Budget', type: 'text' ,required:true},  
-    {name: 'study', label: 'No of Study patients/Participants planned to be recruited:', type: 'text' ,required:true}, 
-    { name: 'grant_patient', label: 'Expected grant per completed Patient ', type: 'text' ,required:true },
-    {name: 'manpower', label: 'Expected Man-Power grant Per completed Patient (PI _Co-PI _study_ coordinator_ other personnel)', type: 'text' ,required:true},
-    {name: 'invest', label: 'Investigations to be done in NIMS', type: 'text' ,required:true},
-    {name: 'name_invest_1', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_1',label:'Unit Cost', type:'text', required: false},
-    {name: 'name_invest_2', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_2',label:'Unit Cost', type:'text', required: false},
-    {name: 'name_invest_3', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_3',label:'Unit Cost', type:'text', required: false},
-    {name: 'total_grant', label: 'Total Grant allotted to the study', type: 'text' ,required:true},
+const FundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
+  const {
+    fundingAgency, grantPerPatient, manpowerGrant, totalGrant,
+    nimsInvestigations, isOutsourced, outsourcedInvestigations
+  } = funding_FormData;
 
-    //above good//
-    {name: 'out_investigation', label: 'C. Are any study specific investigations being outsourced?', type: 'radio',
-    options: ['Yes', 'No'],   required: true,},
+  const handleChange = (field, value) => {
+    setFundingFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-    {
-    type: 'heading', text: 'List the Investigations being outsourced if any:',
-    conditional: { field: 'out_investigation', value: 'Yes' }
-    },
-    { name: 'invest_name_1',
-    label: 'Name of Investigation', type: 'text',  required: true,   conditional: {  field: 'out_investigation', 
-        value: 'Yes' }},
-    {
-    name: 'unit_cost_1',  label: 'Unit Cost',
-    type: 'text',   required: true,  conditional: {  field: 'out_investigation',  value: 'Yes' }
-    },
-    {
-    name: 'lab_name_1',label: 'Name of the Laboratory', type: 'text', required: true,
-    conditional: {  field: 'out_investigation',  value: 'Yes'}
-    },
-    {
-    name: 'address_1',
-    label: 'Address of the Laboratory',
-    type: 'textarea', required: true, conditional: { field: 'out_investigation', value: 'Yes' }
-    },
-    {
-    name: 'nabl_1',
-    label: 'NABL Accredited', type: 'radio', options: ['Yes', 'No'], required: true,
-    conditional: {field: 'out_investigation',value: 'Yes' }
-    },
+  const handleNimsChange = (index, field, value) => {
+    const updated = [...nimsInvestigations];
+    updated[index][field] = value;
+    handleChange('nimsInvestigations', updated);
+  };
 
-    {
-    name: 'invest_name_2', label: 'Name of Investigation', type: 'text',
-    required: true, conditional: { field: 'out_investigation', value: 'Yes' }},
+  const addNimsRow = () => {
+    handleChange('nimsInvestigations', [...nimsInvestigations, { name: '', cost: '' }]);
+  };
 
-    {
-    name: 'unit_cost_2',  label: 'Unit Cost',  type: 'text',  required: true,
-    conditional: { field: 'out_investigation', value: 'Yes' }
-    },
-    {
-    name: 'lab_name_2', label: 'Name of the Laboratory', type: 'text', required: true,
-    conditional: { field: 'out_investigation', value: 'Yes' }
-    },
-    {
-    name: 'address_2', label: 'Address of the Laboratory', type: 'textarea',  required: true,
-    conditional: { field: 'out_investigation', value: 'Yes' }
-    },
-    {
-    name: 'nabl_2', label: 'NABL Accredited',type: 'radio',  options: ['Yes', 'No'],
-    required: true, conditional: { field: 'out_investigation', value: 'Yes' }},
-  ];  
-   
-const FundedStudies = () => {
-    const [data, setData] = useState({});
-    const fetchOnce = useRef(false);
+  const deleteNimsRow = (index) => {
+    if (nimsInvestigations.length > 1) {
+      const updated = [...nimsInvestigations];
+      updated.splice(index, 1);
+      handleChange('nimsInvestigations', updated);
+    }
+  };
 
-    useEffect(() => {
-        if(!fetchOnce.current) {
-            fetchOnce.current = true;
-            getSubmittedData("funded_studies", setData);
-        }
-    }, [])
+  const handleOutsourcedChange = (index, field, value) => {
+    const updated = [...outsourcedInvestigations];
+    updated[index][field] = value;
+    handleChange('outsourcedInvestigations', updated);
+  };
 
-    return (
-        <React.Fragment>
-        {
-            data?.formsResult?.length > 0 ?
-                (<FUNDED_Form_Preview formData={data.formsResult[0]} imagePreview={""} 
-                    fields={formFields} isSubmitted = {true} />) :
-                ( <div>
-                    <NewFormComponent formTitle="FundedStudies" fields={formFields} formName = {"funded_studies"}/>
-                </div>)
-        }
-        </React.Fragment>
-    )
-}
-export default React.memo(FundedStudies);
+  const addOutsourcedRow = () => {
+    handleChange('outsourcedInvestigations', [
+      ...outsourcedInvestigations,
+      { name: '', cost: '', lab: '', nabl: '' }
+    ]);
+  };
+
+  const deleteOutsourcedRow = (index) => {
+    if (outsourcedInvestigations.length > 1) {
+      const updated = [...outsourcedInvestigations];
+      updated.splice(index, 1);
+      handleChange('outsourcedInvestigations', updated);
+    }
+  };
+
+  return (
+    <Box sx={{ py: 4 }}>
+      <Typography variant="h5" gutterBottom>
+        Budget Proposal Submission Form for Funded Studies
+      </Typography>
+
+      <Typography variant="h6" sx={{ mt: 3 }}>A. Name of the Funding Agency:</Typography>
+      <TextField required fullWidth size="small" sx={{ mt: 2, mb: 4 }} placeholder="Enter funding agency name" value={fundingAgency} onChange={(e) => handleChange('fundingAgency', e.target.value)} />
+
+      <Typography variant="h6">B. Proposed Budget</Typography>
+      <TextField required fullWidth label="1. Expected Grant per Completed Patient" size="small" sx={{ mb: 2 }} value={grantPerPatient} onChange={(e) => handleChange('grantPerPatient', e.target.value)} />
+      <TextField required fullWidth label="2. Expected Man-Power Grant per Completed Patient" size="small" sx={{ mb: 3 }} value={manpowerGrant} onChange={(e) => handleChange('manpowerGrant', e.target.value)} />
+
+      <Typography variant="subtitle1">3. Investigations to be done in NIMS</Typography>
+      <Table size="small" sx={{ mt: 1 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Name of Investigation</TableCell>
+            <TableCell>Unit Cost</TableCell>
+            <TableCell />
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {nimsInvestigations.map((row, i) => (
+            <TableRow key={i}>
+              <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleNimsChange(i, 'name', e.target.value)} /></TableCell>
+              <TableCell><TextField required fullWidth size="small" value={row.cost} onChange={(e) => handleNimsChange(i, 'cost', e.target.value)} /></TableCell>
+              <TableCell>
+                {nimsInvestigations.length > 1 && (
+                  <IconButton onClick={() => deleteNimsRow(i)}>
+                    <DeleteIcon color="error" />
+                  </IconButton>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Button variant="outlined" sx={{ mt: 2 }} onClick={addNimsRow}>+ Add Row</Button>
+
+      <TextField required fullWidth label="Total Grant Allotted to the Study" size="small" sx={{ mt: 4 }} value={totalGrant} onChange={(e) => handleChange('totalGrant', e.target.value)} />
+
+      <Typography variant="h6" sx={{ mt: 5 }}>
+        C. Are any study specific investigations being outsourced?
+      </Typography>
+
+      <RadioGroup row value={isOutsourced} onChange={(e) => handleChange('isOutsourced', e.target.value)}>
+        <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+        <FormControlLabel value="no" control={<Radio />} label="No" />
+      </RadioGroup>
+
+      {isOutsourced === 'yes' && (
+        <>
+          <Typography variant="subtitle1" sx={{ mt: 2 }}>
+            List the Investigations being Outsourced
+          </Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name of Investigation</TableCell>
+                <TableCell>Unit Cost</TableCell>
+                <TableCell>Lab Name & Address</TableCell>
+                <TableCell>NABL Accredited (Y/N)</TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {outsourcedInvestigations.map((row, i) => (
+                <TableRow key={i}>
+                  <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleOutsourcedChange(i, 'name', e.target.value)} /></TableCell>
+                  <TableCell><TextField required fullWidth size="small" value={row.cost} onChange={(e) => handleOutsourcedChange(i, 'cost', e.target.value)} /></TableCell>
+                  <TableCell><TextField required fullWidth size="small" value={row.lab} onChange={(e) => handleOutsourcedChange(i, 'lab', e.target.value)} /></TableCell>
+                  <TableCell><TextField required fullWidth size="small" value={row.nabl} onChange={(e) => handleOutsourcedChange(i, 'nabl', e.target.value)} /></TableCell>
+                  <TableCell>
+                    {outsourcedInvestigations.length > 1 && (
+                      <IconButton onClick={() => deleteOutsourcedRow(i)}>
+                        <DeleteIcon color="error" />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Button onClick={addOutsourcedRow} variant="outlined" sx={{ mt: 2 }}>
+            + Add Row
+          </Button>
+        </>
+      )}
+    </Box>
+  );
+};
+
+export default FundedStudyForm;

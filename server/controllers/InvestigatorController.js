@@ -1,4 +1,6 @@
-const {getProjectsService, getClinicalProjectData, approvalService, approveHODService} = require("../services/InvestigatorService");
+const {getProjectsService, getClinicalProjectData, approvalService, approveHODService, projectChanges
+
+} = require("../services/InvestigatorService");
 
 //Get all projects
 const getProjectsController = async (req, res) => {
@@ -57,4 +59,18 @@ const approveHOD = async (req, res) => {
     }
 };
 
-module.exports = {getProjectsController, getOverallProjectController, checkInvestigatorApproval, approveHOD};
+//Project changes controller
+const projectChangesController = async (req, res) => {
+    const data = req.body;
+    try {
+        const result = await projectChanges(data);
+        res.status(200).json({ message: result });
+    } catch (err) {
+        console.error('Project changes Error:', err.message);
+        res.status(500).json({ message: err.message || "Server error" });
+    }
+};
+
+
+module.exports = {getProjectsController, getOverallProjectController, checkInvestigatorApproval, 
+    approveHOD, projectChangesController};

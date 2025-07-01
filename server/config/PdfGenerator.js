@@ -76,6 +76,11 @@ async function generateConsentPdf(data, fileName, project_ref) {
           a:hover {
             text-decoration: underline;
           }
+
+          .investigations{
+            display : flex;
+            gap : 30px;
+          }
         </style>
 
       </head>
@@ -118,7 +123,122 @@ async function generateConsentPdf(data, fileName, project_ref) {
         <div class="section">
           <div><span class="label">Estimated Budget:</span> ${data.fundingData.estimated_budget}</div>
           <div><span class="label">Funding Source:</span> ${data.fundingData.funding_source}</div>
-          <div><span class="label">Other Details:</span> ${data.fundingData.other_funding_details}</div>
+          ${ data.fundingData.funding_source === "Others" && (
+            `<div><span class="label">Other Details:</span> ${data.fundingData.other_funding_details}</div>`
+          )}
+
+          ${data.fundingData.funding_source === "Self-funding" && data.funding_FormData && (
+            `<>
+              <div><span className="label">Proposed Budget:</span> ₹ ${data.funding_FormData.proposedBudget}</div>
+              <div><span className="label">Cost Per Patient:</span> ₹ ${data.funding_FormData.costPerPatient}</div>
+              <div><span className="label">Total Project Cost:</span> ₹ ${data.funding_FormData.totalProjectCost}</div>
+              <div><span className="label">NIMS Investigations:</span>
+                <ul>
+                  ${data.funding_FormData.nimsInvestigations?.map((item, index) => (
+                    `<div>
+                      <div><span class="label">Name:</span> ${item.name}</div>
+                      <div><span class="label">Cost:</span> ${item.cost}</div>
+                    </div>`
+                  ))}
+                </ul>
+              </div>
+              <div><span className="label">Is Outsourced:</span> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
+              <div><span className="label">Outsourced Investigations:</span>
+                <ul>
+                  ${data.funding_FormData.outsourcedInvestigations?.map((item, index) => (
+                    `<div>
+                      <div><span class="label">Name:</span> ${item.name}</div>
+                      <div><span class="label">Cost:</span> ${item.cost}</div>
+                      <div><span class="label">Lab:</span> ${item.lab}</div>
+                      <div><span class="label">NABL:</span> ${item.nabl}</div>
+                    </div>`
+                  ))}
+                </ul>
+              </div>
+            </>`
+            )}
+
+            ${data.fundingData.funding_source === "Institutional funding" && data.funding_FormData && (
+              `<>
+                <div><span className="label">Funding Agency:</span> ${data.funding_FormData.fundingAgency}</div>
+                <div><span className="label">Grant Per Patient:</span> ₹${data.funding_FormData.grantPerPatient}</div>
+                <div><span className="label">Manpower Grant:</span> ₹${data.funding_FormData.manpowerGrant}</div>
+                <div><span className="label">Total Grant:</span> ₹${data.funding_FormData.totalGrant}</div>
+                <div><span className="label">NIMS Investigations:</span>
+                  <ul>
+                    ${data.funding_FormData.nimsInvestigations?.map((item, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Cost:</span> ${item.cost}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">Is Outsourced:</span> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
+                <div><span className="label">Outsourced Investigations:</span>
+                  <ul>
+                    ${data.funding_FormData.outsourcedInvestigations?.map((item, index) => (
+                      `<div>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Cost:</span> ${item.cost}</div>
+                        <div><span class="label">Lab:</span> ${item.lab}</div>
+                        <div><span class="label">NABL:</span> ${item.nabl}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+              </>`
+            )}
+
+            ${data.fundingData.funding_source === "Funding agency" && data.funding_FormData && (
+              `<>
+                <div><span className="label">Sponsor Name:</span> ${data.funding_FormData.sponsorName}</div>
+                <div><span className="label">Sponsor PAN:</span> ${data.funding_FormData.sponsorPAN}</div>
+                <div><span className="label">Sponsor GST:</span> ${data.funding_FormData.sponsorGST}</div>
+                <div><span className="label">Total Grant:</span> ₹ ${data.funding_FormData.totalGrant}</div>
+                <div><span className="label">Budget Items:</span>
+                  <ul>
+                    ${data.funding_FormData.budgetItems?.map((item, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">${item.label}:</span> ${item.value}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">NIMS Investigations:</span>
+                  <ul>
+                    ${data.funding_FormData.nimsInvestigations?.map((item, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Cost:</span> ${item.cost}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">Personnel:</span>
+                  <ul>
+                    ${data.funding_FormData.personnel?.map((person, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">Designation:</span> ${item.designation}</div>
+                        <div><span class="label">Fees:</span> ${item.fees}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">Is Outsourced:</span> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
+                <div><span className="label">Outsourced Investigations:</span>
+                  <ul>
+                    ${data.funding_FormData.outsourcedInvestigations?.map((item, index) => (
+                      `<div>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Lab:</span> ${item.lab}</div>
+                        <div><span class="label">NABL:</span> ${item.nabl}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+              </>`
+            )}
         </div>
 
         <h2>5. Overview Research</h2>

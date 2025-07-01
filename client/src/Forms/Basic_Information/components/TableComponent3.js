@@ -1,42 +1,64 @@
 import React from "react";
+import { Box, Typography, Button, Divider, Paper } from "@mui/material";
+import SelfFundingPreview from "../../Funding_Forms/Self_Funding_Preview";
+import FundingStudyPreview from "../../Funding_Forms/Funding_Studies_Preview";
+import IndustryFundingPreview from "../../Funding_Forms/Industry_Funding_Preview";
 
-
-const TableComponent3 = ({ data, setOpenTable, setEditableData }) => {
-
+const FundingSummaryCard = ({ data, setOpenTable, setEditableData }) => {
   const handleEdit = () => {
     setOpenTable(false);
     setEditableData(data[0]);
-  }
+  };
+
+  if (!data?.length) return null;
+  const entry = data[0];
 
   return (
-    <div className="table-container">
-      <h2>Funding Details data</h2>
-      <table className="custom-table">
-        <thead>
-          <tr>
-            <th>Total Estimated Budget (₹)</th>
-            <th>Funding Source</th>
-            <th>email</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((entry, index) => (
-            <tr key={index}>
-              <td>{entry.total_estimated_budget}</td>
-              <td>{entry.funding_source}</td>
-              <td>{entry.email}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div style={{ display: "flex", justifyContent: "center", marginTop: "3rem" }}>
-        <button style={{ padding: "8px 16px", fontSize: "14px", cursor: "pointer" , width : "150px"}} onClick = {handleEdit}>
-          Edit
-        </button>
-      </div>
-    </div>
+    <Paper elevation={3} sx={{ p: 4, maxWidth: 800, mx: "auto", my: 4 }}>
+      <Typography variant="h5" gutterBottom color="primary">
+        Funding Details Summary
+      </Typography>
+
+      <Divider sx={{ my: 2 }} />
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="subtitle1" fontWeight={500}>Total Estimated Budget:</Typography>
+        <Typography variant="body1">₹ {entry.total_estimated_budget || "—"}</Typography>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="subtitle1" fontWeight={500}>Funding Source:</Typography>
+        <Typography variant="body1">{entry.funding_source || "—"}</Typography>
+      </Box>
+
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="subtitle1" fontWeight={500}>Email:</Typography>
+        <Typography variant="body1">{entry.email || "—"}</Typography>
+      </Box>
+
+      {/* Conditionally render preview based on source */}
+      {entry.funding_source === "self-funding" && (
+        <Box sx={{ mt: 4 }}>
+          <SelfFundingPreview data={entry.funding_FormData} />
+        </Box>
+      )}
+      {entry.funding_source === "institutional" && (
+        <Box sx={{ mt: 4 }}>
+          <FundingStudyPreview data={entry.funding_FormData} />
+        </Box>
+      )}
+      {entry.funding_source === "agency" && (
+        <Box sx={{ mt: 4 }}>
+          <IndustryFundingPreview data={entry.funding_FormData} />
+        </Box>
+      )}
+
+      {/* Edit Button */}
+      <Box sx={{ textAlign: "center", mt: 4 }}>
+        <Button variant="contained" color="secondary" onClick={handleEdit}>Edit</Button>
+      </Box>
+    </Paper>
   );
 };
-  
 
-export default TableComponent3;
+export default FundingSummaryCard;

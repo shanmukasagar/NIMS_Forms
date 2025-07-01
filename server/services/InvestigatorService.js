@@ -2,6 +2,7 @@ const {connectToMongo, getDB} = require("../models/db");
 const {pool} = require("../models/db");
 const { v4: uuidv4 } = require('uuid');
 const sendEmail = require("../config/SendEmail");
+const { convertToFrontendKeys} = require("../config/FundingTableConfig");
 
 //Get projects data
 const getProjectsService = async (email, type) => { 
@@ -69,6 +70,35 @@ const getClinicalProjectData = async (project_ref) => {
                 client.query("SELECT * FROM clinical_consent_details WHERE form_id = $1", [formId]),
                 client.query("SELECT * FROM clinical_declarations WHERE form_id = $1", [formId]),
             ]);
+        
+        let fundingDetails;
+        let frontendFormatted;
+        if (fundingRes.rows.length > 0) {
+            const source = fundingRes.rows[0].funding_source;
+
+            if (source === "Self-funding") {
+                fundingDetails = await client.query(
+                    "SELECT * FROM clinical_self_funding WHERE form_id = $1",
+                    [formId]
+                    );
+                const rawRow = fundingDetails.rows[0] || null;
+                frontendFormatted = convertToFrontendKeys(rawRow, "clinical_self_funding");
+            } else if (source === "Institutional funding") {
+                fundingDetails = await client.query(
+                    "SELECT * FROM clinical_funding_studies WHERE form_id = $1",
+                    [formId]
+                    );
+                const rawRow = fundingDetails.rows[0] || null;
+                frontendFormatted = convertToFrontendKeys(rawRow, "clinical_funding_studies");
+            } else if (source === "Funding agency") {
+                    fundingDetails = await client.query(
+                    "SELECT * FROM clinical_industry_funding WHERE form_id = $1",
+                    [formId]
+                    );
+                const rawRow = fundingDetails.rows[0] || null;
+                frontendFormatted = convertToFrontendKeys(rawRow, "clinical_industry_funding");
+            }
+        }
 
         return {
             administration: admin.rows[0],
@@ -85,6 +115,7 @@ const getClinicalProjectData = async (project_ref) => {
             methodologyData: methodologyRes.rows[0] || {},
             consentData: consentRes.rows[0] || {},
             declaration: declarationRes.rows[0] || {},
+            fundingDetails : frontendFormatted || {}
         };
     } catch (err) {
         console.error("Error fetching clinical project data:", err.message);
@@ -245,4 +276,24 @@ const approveHODService = async (token, tableName) => {
   }
 };
 
-module.exports = {getProjectsService, getClinicalProjectData, approvalService, approveHODService};
+const projectChanges = async(data) => {
+    try{
+        await connectToMongo(); //connect to database
+        const projectsCollection = getDB().collection("Projects");
+        const updateRes = await projectsCollection.updateOne(
+            { project_ref: data.projectId },
+            { $set: { inv_comments: data.projectChanges  } }
+        );
+        if (updateRes.modifiedCount === 0) {
+            throw new Error("Failed to update project changes");
+        }
+        return "Successfully added the project chnages message.";
+    }
+    catch(error) {
+        console.log("Error occured while adding project changes", error.message);
+        throw error;
+    }
+
+}
+
+module.exports = {getProjectsService, getClinicalProjectData, approvalService, approveHODService, projectChanges};

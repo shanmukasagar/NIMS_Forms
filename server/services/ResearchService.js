@@ -4,6 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const { tableFieldMap } = require("../config/Data");
 const sendEmail = require("../config/SendEmail");
 const generateResearchPDF = require("../config/ResearchPdGenerator");
+const {FundingTableInsertion, FundingTableUpdate} = require("../config/FundingTableConfig");
 
 const checkFormDetails = async (email, form_type, form_name = "") => {
   // Check if email exists in the "forms" table
@@ -84,10 +85,10 @@ const administrationDetails = async (formData, form_type) => {
 };
 
 
-const fundingBudgetDetails = async (formData, form_type) => {
+const fundingBudgetDetails = async (formData, form_type, fundingTableName) => {
   try {
     const formId = await checkFormDetails(formData.email, form_type);
-    const {total_estimated_budget,funding_source,email} = formData;
+    const {total_estimated_budget,funding_source, funding_FormData, email} = formData;
     // const adminId =   typeof administrativeDetailId === "object"? administrativeDetailId.adminId: administrativeDetailId;
     const newUser = await pool.query(
       `INSERT INTO funding_budgett_and_details (total_estimated_budget, funding_source, email, form_id) 
@@ -95,6 +96,8 @@ const fundingBudgetDetails = async (formData, form_type) => {
       RETURNING id`, // Returning only the id
       [total_estimated_budget, funding_source, email, formId]
     );
+
+    const result = await FundingTableInsertion(fundingTableName, formId, email, funding_FormData);
 
     return newUser; // Add this
   } catch (error) {
@@ -420,8 +423,18 @@ const saveInvestigatorDetails = async (investigators, email, form_type) => {
 };
 
 // Update research form table data.
-const updateResearchForms = async (tableName, fieldsObject, formId) => {
+const updateResearchForms = async (tableName, fieldsObject, formId, fundingTableName = '') => {
   try {
+    let data;
+    if(tableName === "funding_budgett_and_details") {
+      const filteredFields = Object.fromEntries(
+        Object.entries(fieldsObject).filter(([key]) => key !== "funding_FormData")
+      ); 
+      data = Object.fromEntries(
+        Object.entries(fieldsObject).filter(([key]) => key === "funding_FormData")
+      ); 
+      fieldsObject = filteredFields;
+    }
     const updates = [];
     const values = [];
     let i = 1;
@@ -437,6 +450,10 @@ const updateResearchForms = async (tableName, fieldsObject, formId) => {
     const query = `UPDATE ${tableName} SET ${updates.join(", ")} WHERE form_id = $${i}`;
 
     const result = await pool.query(query, values);
+
+    if(tableName === "funding_budgett_and_details") {
+      const result = await FundingTableUpdate(fundingTableName, formId, data.funding_FormData);
+    }
 
 
     return true;
@@ -595,6 +612,22 @@ const researchPDF = async (formID) => {
     const checklistResult = await pool.query(`SELECT * FROM administrative_requirements WHERE form_id = $1`, [formID]);
     data.checklist = checklistResult.rows;
 
+    const fundingSourceMap = {
+      "self-funding": "self_funded_studies",
+      "agency": "industry_sponsored_studies",
+      "institutional": "funding_studies"
+    };
+
+    const funding_source = data.fundingData?.funding_source;
+    const tableName = fundingSourceMap[funding_source];
+
+    if (tableName) {
+      const result = await pool.query(`SELECT * FROM ${tableName} WHERE form_id = $1 LIMIT 1`, [formID]);
+      data.fundingDetails = result.rows[0] || {};
+    } else {
+      data.fundingDetails = {};
+    }
+
     const fileName = `project_research_${Date.now()}`;
     const pdfPath = await generateResearchPDF(data, fileName);
     // Add pdf path to mongodb.
@@ -636,5 +669,5 @@ module.exports = {
   administrationDetails, saveInvestigatorDetails, fundingBudgetDetails,  overviewResearchDetails, participantRelatedInformationDetails, 
     benefitsAndRiskDetails,  paymentCompensationDetails, storageAndConfidentialityDetails, additionalInformationDetails,  
       administrativeRequirementsDetails, declarationDetails, expeditedReviewDetails, requestingWaiverDetails,insertInformedConsent, 
-      updateResearchForms, updateInvestigators, insertAdminFiles, updateAdminFiles
+      updateResearchForms, updateInvestigators, insertAdminFiles, updateAdminFiles, checkFormDetails
 };

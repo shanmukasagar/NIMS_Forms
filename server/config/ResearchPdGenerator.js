@@ -125,10 +125,123 @@ async function generateResearchPDF(data, fileName) {
 
           <div className="section">
             <h2>Funding Details</h2>
-            <div><span className="label">Funding Source:</span> ${data.fundingData.funding_source}</div>
-            <div><span className="label">Total Estimated Budget:</span> ₹${data.fundingData.total_estimated_budget}</div>
-          </div>
 
+            <div><span className="label">Funding Source:</span> ${data.fundingData.funding_source}</div>
+            <div><span className="label">Total Estimated Budget:</span> ₹ ${data.fundingData.total_estimated_budget}</div>
+
+            ${data.fundingData.funding_source === "self-funding" && data.fundingDetails && (
+            `<>
+              <div><span className="label">Proposed Budget:</span> ₹ ${data.fundingDetails.proposed_budget}</div>
+              <div><span className="label">Cost Per Patient:</span> ₹ ${data.fundingDetails.cost_per_patient}</div>
+              <div><span className="label">Total Project Cost:</span> ₹ ${data.fundingDetails.total_project_cost}</div>
+              <div><span className="label">NIMS Investigations:</span>
+                <ul>
+                  ${data.fundingDetails.nims_investigations?.map((item, index) => (
+                    `<div>
+                      <div><span class="label">Name:</span> ${item.name}</div>
+                      <div><span class="label">Cost:</span> ${item.cost}</div>
+                    </div>`
+                  ))}
+                </ul>
+              </div>
+              <div><span className="label">Is Outsourced:</span> ${data.fundingDetails.is_outsourced ? "Yes" : "No"}</div>
+              <div><span className="label">Outsourced Investigations:</span>
+                <ul>
+                  ${data.fundingDetails.outsourced_investigations?.map((item, index) => (
+                     `<div>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Cost:</span> ${item.cost}</div>
+                        <div><span class="label">Lab:</span> ${item.lab}</div>
+                        <div><span class="label">NABL:</span> ${item.nabl}</div>
+                      </div>`
+                  ))}
+                </ul>
+              </div>
+            </>`
+            )}
+
+            ${data.fundingData.funding_source === "institutional" && data.fundingDetails && (
+              `<>
+                <div><span className="label">Funding Agency:</span> ${data.fundingDetails.funding_agency}</div>
+                <div><span className="label">Grant Per Patient:</span> ₹${data.fundingDetails.grant_per_patient}</div>
+                <div><span className="label">Manpower Grant:</span> ₹${data.fundingDetails.manpower_grant}</div>
+                <div><span className="label">Total Grant:</span> ₹${data.fundingDetails.total_grant}</div>
+                <div><span className="label">NIMS Investigations:</span>
+                  <ul>
+                    ${data.fundingDetails.nims_investigations?.map((item, index) => (
+                       `<div key = ${index}>
+                          <div><span class="label">Name:</span> ${item.name}</div>
+                          <div><span class="label">Cost:</span> ${item.cost}</div>
+                        </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">Is Outsourced:</span> ${data.fundingDetails.is_outsourced ? "Yes" : "No"}</div>
+                <div><span className="label">Outsourced Investigations:</span>
+                  <ul>
+                    ${data.fundingDetails.outsourced_investigations?.map((item, index) => (
+                      `<div>
+                          <div><span class="label">Name:</span> ${item.name}</div>
+                          <div><span class="label">Cost:</span> ${item.cost}</div>
+                          <div><span class="label">Lab:</span> ${item.lab}</div>
+                          <div><span class="label">NABL:</span> ${item.nabl}</div>
+                        </div>`
+                    ))}
+                  </ul>
+                </div>
+              </>`
+            )}
+
+            ${data.fundingData.funding_source === "agency" && data.fundingDetails && (
+              `<>
+                <div><span className="label">Sponsor Name:</span> ${data.fundingDetails.sponsor_name}</div>
+                <div><span className="label">Sponsor PAN:</span> ${data.fundingDetails.sponsor_pan}</div>
+                <div><span className="label">Sponsor GST:</span> ${data.fundingDetails.sponsor_gst}</div>
+                <div><span className="label">Total Grant:</span> ₹ ${data.fundingDetails.total_grant}</div>
+                <div><span className="label">Budget Items:</span>
+                  <ul>
+                    ${data.fundingDetails.budget_items?.map((item, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">${item.label}:</span> ${item.value}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">NIMS Investigations:</span>
+                  <ul>
+                    ${data.fundingDetails.nims_investigations?.map((item, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Cost:</span> ${item.cost}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">Personnel:</span>
+                  <ul>
+                    ${data.fundingDetails.personnel?.map((person, index) => (
+                      `<div key = ${index}>
+                        <div><span class="label">Designation:</span> ${item.designation}</div>
+                        <div><span class="label">Fees:</span> ${item.fees}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+                <div><span className="label">Is Outsourced:</span> ${data.fundingDetails.is_outsourced ? "Yes" : "No"}</div>
+                <div><span className="label">Outsourced Investigations:</span>
+                  <ul>
+                    ${data.fundingDetails.outsourced_investigations?.map((item, index) => (
+                      `<div>
+                        <div><span class="label">Name:</span> ${item.name}</div>
+                        <div><span class="label">Lab:</span> ${item.lab}</div>
+                        <div><span class="label">NABL:</span> ${item.nabl}</div>
+                      </div>`
+                    ))}
+                  </ul>
+                </div>
+              </>`
+            )}
+          </div>
           <div className="section">
             <h2>Overview of the Research</h2>
             <div><span className="label">Summary:</span> ${data.overviewResearch.summary}</div>

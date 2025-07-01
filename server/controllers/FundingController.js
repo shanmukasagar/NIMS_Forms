@@ -1,36 +1,75 @@
-const { FundedFormDetails, FundedFormData } = require("../services/FundedService");
+const { saveSelfFundedStudy, saveIndustrySponsoredStudy, saveFundedStudy  } = require("../services/FundingService");
 
-const FundedFormController = async (req, res) => {
+const selfFundedStudyHandler = async (req, res) => {
   try {
-    const email = req.user.email;
-    const tableName = req.query.tableName;
     const formData = req.body;
+    formData.email = req.user.email;
 
-    const imageUrl = req.files?.[0]?.path || null;
+    const form_type = req.query.selectedForm;
+    
 
-    const result = await FundedFormDetails(formData, email, tableName, imageUrl);
+    const result = await saveSelfFundedStudy(formData, formId);
 
-    if (result) return res.status(200).json("Form submitted successfully");
-    return res.status(400).json("Error occurred while submitting form");
+    if (result) {
+      return res.status(200).json({ idd: result.rows[0].id });
+    }
+
+    res.status(400).json("Insert failed.");
   } catch (err) {
-    console.error("Form submission error:", err.message);
-    res.status(500).json("Internal server error");
+    console.error("❌ Self-funded study error:", err.message);
+    res.status(500).send("Server Error");
   }
 };
 
-const getFundedFormData = async (req, res) => {
-    try {
-        const email = req.user.email;
-        const tableName = req.query.tableName;
+const industrySponsoredHandler = async (req, res) => {
+  try {
+    const formData = req.body;
+    formData.email = req.user.email;
 
-        const result = await FundedFormData(email, tableName);
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === 'true';
+    const { tableName, formId } = req.query;
 
-        if (result) return res.status(200).json(result);
-        return res.status(400).json("Error occurred while fetching form data");
-    } catch (err) {
-        console.error("Fetching form data error:", err.message);
-        res.status(500).json("Internal server error");
+    const numericFormId = Number(formId);
+    
+
+    const result = await saveIndustrySponsoredStudy(formData, isEdit, tableName);
+    if (result) {
+      return res.status(200).json({ idd: result.rows[0].id });
     }
+
+    return res.status(400).json("Insert failed");
+  } catch (err) {
+    console.error("❌ Industry Sponsored error:", err.message);
+    res.status(500).send("Server Error");
+  }
 };
 
-module.exports = { FundedFormController, getFundedFormData };
+const fundedStudyHandler = async (req, res) => {
+  try {
+    const formData = req.body;
+    formData.email = req.user.email;
+
+    const form_type = req.query.selectedForm;
+    const isEdit = req.query.isEdit === "true";
+    const { tableName, formId } = req.query;
+ 
+
+    const result = await saveFundedStudy(formData, finalFormId, isEdit, tableName);
+
+    if (result) {
+      return res.status(200).json({ idd: result.rows[0].id });
+    }
+
+    return res.status(400).json("Insert failed");
+  } catch (err) {
+    console.error("❌ Funded Study Submission Error:", err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+
+module.exports = { selfFundedStudyHandler, industrySponsoredHandler, fundedStudyHandler
+};
+
+

@@ -2,6 +2,7 @@ const {pool} = require("../models/db");
 const {connectToMongo, getDB} = require("../models/db");
 const { v4: uuidv4 } = require('uuid');
 const sendEmail = require("../config/SendEmail");
+const {FundingTableInsertion, FundingTableUpdate} = require("../config/FundingTableConfig");
 
 const formatDateForPostgres = (dateStr) => {
     const [day, month, year] = dateStr.split('/');
@@ -42,7 +43,7 @@ async function flattenInvestigators(data, formId) {
 const addClinicalService = async(formData) => {
     try{
         const { administration, researchers, investigatorsCount, fundingData, overviewResearch, methodologyData, participants, benefits, consentData, 
-            paymentState, storage, additional, declaration, checklist, email } = formData;
+            paymentState, storage, additional, declaration, checklist, email, funding_FormData, fundingTableName } = formData;
         const client = await pool.connect();
 
         const project_ref = uuidv4(); //Generate project reference id
@@ -94,7 +95,7 @@ const addClinicalService = async(formData) => {
                 `INSERT INTO clinical_investigators (
                     name, designation, qualification, department, emp_code,
                     role, gmail, contact, approved, approval_token, email, form_id
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                 RETURNING id`,
                 [ name, designation, qualification, department, emp_code, role, gmail,
                     contact, approved, token, email, formId ]
@@ -111,6 +112,9 @@ const addClinicalService = async(formData) => {
             `INSERT INTO clinical_funding_details (form_id, estimated_budget, funding_source, other_funding_details, email)
              VALUES ($1,$2,$3,$4,$5)`,
             [ formId, fundingData.estimated_budget, fundingData.funding_source, fundingData.other_funding_details, email ]);
+        
+        //Funding details
+        const fundingResult = await FundingTableInsertion(formData.fundingTableName, formId, email, formData.funding_FormData);
 
         await client.query( //Insert research overview
             `INSERT INTO clinical_research_overview (form_id, overview_summary, study_type, other_study_type, email)
@@ -319,6 +323,11 @@ const updateClinicalService = async (formData) => {
                 SET estimated_budget = $1, funding_source = $2, other_funding_details = $3, email = $4 WHERE form_id = $5`,
             [ fundingData.estimated_budget, fundingData.funding_source, fundingData.other_funding_details, email, formId ]
         );
+
+        //Update funding details
+        const fundingResult = await FundingTableUpdate(formData.fundingTableName, formId, 
+            formData.funding_FormData);
+
         //Research overview
         await client.query( `UPDATE clinical_research_overview
             SET overview_summary = $1, study_type = $2, other_study_type = $3, email = $4 WHERE form_id = $5`,

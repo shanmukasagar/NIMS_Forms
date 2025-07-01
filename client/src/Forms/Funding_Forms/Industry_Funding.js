@@ -1,97 +1,133 @@
-import React,{useState, useEffect, useRef} from 'react';
-import NewFormComponent from './Main_Funding_Component';
-import {getSubmittedData} from "./Funded_Config";
-import INDUSTRY_Form_Preview from './Funding_Preview';
+import React from 'react';
+import {  Box, Button, Typography, TextField, Table, TableHead, TableRow,
+  TableCell, TableBody, IconButton, RadioGroup, FormControlLabel, Radio
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const formFields = [
-    {name: 'sponsor_name', label: 'Sponsor Name/ID :', type: 'text' ,required:true},
-    {name: 'sponosor_pan', label: 'Sponsor PAN', type: 'text' ,required:true},  
-    {name: 'sponsor_gst', label: 'Sponsor GST', type: 'text' ,required:true},
-    { type: 'heading', text: 'Proposed Budget by sponsor:' },
-    {name: 'patients', label: 'Per completed patients total sponsor grant', type: 'text' ,required:true},
-    {name: 'manpower', label: 'Per completed patients manpower sponsor grant(PI _Co-PI _study_ coordinator_ other personnel)', type: 'text' ,required:true},
+const Industry_Funding = ({ funding_FormData, setFundingFormData }) => {
+  const {
+    sponsorName, sponsorPAN, sponsorGST, totalGrant, budgetItems,
+    nimsInvestigations, personnel, isOutsourced, outsourcedInvestigations
+  } = funding_FormData;
 
-    {name:'overhead',label:'Per completed patients overhead', type:'text', required:true},
-    {name:'startup',label:'Startup fee', type:'text', required:true},
-    {name:'archival_fee',label:'Archival fee', type:'text', required:true},
-    {name:'invest_nims',label:'Investigations to be done in NIMS', type:'text', required:true},
-    {name: 'name_1', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_1',label:'Unit Cost', type:'text', required: false},
-    {name: 'name_2', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_2',label:'Unit Cost', type:'text', required: false},
-    {name: 'name_3', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_3',label:'Unit Cost', type:'text', required: false},
-    {name: 'name_4', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_4',label:'Unit Cost', type:'text', required: false},
-    {name: 'name_5', label: 'Name of Investigation', type: 'text' ,required:true},
-    {name:'unit_5',label:'Unit Cost', type:'text', required: false},
-    {name:'grant_alloted', label:'Total grant alloted to the proposed project', type:'text', required:true},
-    {type: 'heading', text: 'List of Personnel' },
-    {name: 'designation_1', label: 'Designation', type: 'text' ,required:true},
-    {name: 'proposed_1', label: 'Proposed fees per patient', type: 'text' ,required:true},
-    {name: 'designation_2', label: 'Designation', type: 'text' ,required:true},
-    {name: 'proposed_2', label: 'Proposed fees per patient', type: 'text' ,required:true},
-    {name: 'designation_3', label: 'Designation', type: 'text' ,required:true},
-    {name: 'proposed_4', label: 'Proposed fees per patient', type: 'text' ,required:true},
+  const handleChange = (field, value) => {
+    setFundingFormData(prev => ({ ...prev, [field]: value }));
+  };
 
-    //above good//
-    {name: 'out_investigation', label: 'C. Are any study specific investigations being outsourced?', type: 'radio',
-        options: ['Yes', 'No'],   required: true,},
-    {
-        type: 'heading',
-        text: 'List the Investigations being outsourced ',
-        conditional: {  field: 'out_investigation',value: 'Yes'    }},
-        {name: 'invest_name_1',
-        label: 'Name of Investigation', type: 'text',  required: true,   conditional: {  field: 'out_investigation', 
-        value: 'Yes' }},
+  const handleArrayChange = (arrayName, index, key, value) => {
+    const updated = [...funding_FormData[arrayName]];
+    updated[index][key] = value;
+    handleChange(arrayName, updated);
+  };
 
-        {name: 'name_lab_1',
-        label: 'Name of the Laboratory', type: 'text',  required: true,
-        conditional: { field: 'out_investigation', value: 'Yes' } },
-        {
-        name: 'address_1',label: 'Address of the Laboratory',type: 'textarea',
-        required: true,  conditional: { field: 'out_investigation',value: 'Yes' } },
-        {
-        name: 'nabl_1',label: 'NABL Accredited', type: 'radio', options: ['Yes', 'No'],  required: true,
-        conditional: { field: 'out_investigation', value: 'Yes'}},
-        
-        {name: 'invest_name_2', label: 'Name of Investigation', type: 'text',required: true,
-        conditional: { field: 'out_investigation', value: 'Yes' }},
-        {
-        name: 'name_lab_2',label: 'Name of the Laboratory', type: 'text',
-        required: true, conditional: { field: 'out_investigation', value: 'Yes' }
-        },
-        {name: 'address_2', label: 'Address of the Laboratory', type: 'textarea', required: true,
-        conditional: { field: 'out_investigation', value: 'Yes' } },
-        {
-        name: 'nabl_2',label: 'NABL Accredited', type: 'radio', options: ['Yes', 'No'],  required: true,
-        conditional: { field: 'out_investigation', value: 'Yes' }
-        },
-];  
-   
-const IndustrySponsored = () => {
-    const [data, setData] = useState({});
-    const fetchOnce = useRef(false);
-  
-    useEffect(() => {
-        if(!fetchOnce.current) {
-            fetchOnce.current = true;
-            getSubmittedData("industry_sponsor", setData);
-        }
-    }, [])
-    
-    return (
-        <React.Fragment>
-            {data?.formsResult?.length > 0 ?
-                (<INDUSTRY_Form_Preview formData={data.formsResult[0]} imagePreview={""} 
-                    fields={formFields} isSubmitted = {true} />) :
-                (
-            <div>
-                <NewFormComponent formTitle="Industry Sponsored " fields={formFields} formName = {"industry_sponsor"}/>
-            </div>
-            )}
-        </React.Fragment>
-    )
-}
+  const addArrayRow = (arrayName, defaultRow) => {
+    handleChange(arrayName, [...funding_FormData[arrayName], defaultRow]);
+  };
 
-export default React.memo(IndustrySponsored);
+  const deleteArrayRow = (arrayName, index) => {
+    if (funding_FormData[arrayName].length > 1) {
+      const updated = [...funding_FormData[arrayName]];
+      updated.splice(index, 1);
+      handleChange(arrayName, updated);
+    }
+  };
+
+  return (
+    <Box maxWidth="md">
+      <Typography variant="h5" gutterBottom>Budget Proposal Submission Form for Industry Sponsored Study</Typography>
+
+      <Typography variant="h6" sx={{ mt: 3 }}>A. Sponsor Details</Typography>
+      <TextField required fullWidth size="small" label="Sponsor Name / ID" value={sponsorName} onChange={(e) => handleChange('sponsorName', e.target.value)} sx={{ mt: 2, mb: 2 }} />
+      <TextField required fullWidth size="small" label="Sponsor PAN" value={sponsorPAN} onChange={(e) => handleChange('sponsorPAN', e.target.value)} sx={{ mb: 2 }} />
+      <TextField required fullWidth size="small" label="Sponsor GST" value={sponsorGST} onChange={(e) => handleChange('sponsorGST', e.target.value)} sx={{ mb: 4 }} />
+
+      <Typography variant="subtitle1" gutterBottom>Proposed Budget by Sponsor:</Typography>
+      {budgetItems.map((item, i) => (
+        <TextField required key={i} fullWidth size="small" label={item.label} value={item.value} onChange={(e) => {
+          const updated = [...budgetItems];
+          updated[i].value = e.target.value;
+          handleChange('budgetItems', updated);
+        }} sx={{ mb: 2 }} />
+      ))}
+
+      <Typography variant="subtitle1" sx={{ mt: 3 }}>Investigations to be done in NIMS</Typography>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Name of Investigation</TableCell>
+            <TableCell>Unit Cost (as per sponsor)</TableCell>
+            <TableCell>Delete</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {nimsInvestigations.map((row, i) => (
+            <TableRow key={i}>
+              <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleArrayChange('nimsInvestigations', i, 'name', e.target.value)} /></TableCell>
+              <TableCell><TextField required fullWidth size="small" value={row.cost} onChange={(e) => handleArrayChange('nimsInvestigations', i, 'cost', e.target.value)} /></TableCell>
+              <TableCell>{nimsInvestigations.length > 1 && <IconButton onClick={() => deleteArrayRow('nimsInvestigations', i)}><DeleteIcon color="error" /></IconButton>}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Button onClick={() => addArrayRow('nimsInvestigations', { name: '', cost: '' })} variant="outlined" sx={{ mt: 2 }}>+ Add Row</Button>
+
+      <TextField required fullWidth size="small" label="Total grant allotted to the proposed project" value={totalGrant} onChange={(e) => handleChange('totalGrant', e.target.value)} sx={{ mt: 4 }} />
+
+      <Typography variant="h6" sx={{ mt: 4 }}>B. i. List of Personnel</Typography>
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell>Designation</TableCell>
+            <TableCell>Proposed Fees per Patient</TableCell>
+            <TableCell>Delete</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {personnel.map((row, i) => (
+            <TableRow key={i}>
+              <TableCell><TextField required fullWidth size="small" value={row.designation} onChange={(e) => handleArrayChange('personnel', i, 'designation', e.target.value)} /></TableCell>
+              <TableCell><TextField required fullWidth size="small" value={row.fees} onChange={(e) => handleArrayChange('personnel', i, 'fees', e.target.value)} /></TableCell>
+              <TableCell>{personnel.length > 1 && <IconButton onClick={() => deleteArrayRow('personnel', i)}><DeleteIcon color="error" /></IconButton>}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Button onClick={() => addArrayRow('personnel', { designation: '', fees: '' })} variant="outlined" sx={{ mt: 2 }}>+ Add Row</Button>
+
+      <Typography variant="h6" sx={{ mt: 4 }}>C. Are any study specific investigations being outsourced?</Typography>
+      <RadioGroup required row value={isOutsourced} onChange={(e) => handleChange('isOutsourced', e.target.value)}>
+        <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+        <FormControlLabel value="no" control={<Radio />} label="No" />
+      </RadioGroup>
+
+      {isOutsourced === 'yes' && (
+        <>
+          <Typography variant="subtitle1" sx={{ mt: 2 }}>List of Investigations being Outsourced</Typography>
+          <Table size="small">
+            <TableHead>
+              <TableRow>
+                <TableCell>Name of Investigation</TableCell>
+                <TableCell>Lab Name & Address</TableCell>
+                <TableCell>NABL Accredited</TableCell>
+                <TableCell>Delete</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {outsourcedInvestigations.map((row, i) => (
+                <TableRow key={i}>
+                  <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleArrayChange('outsourcedInvestigations', i, 'name', e.target.value)} /></TableCell>
+                  <TableCell><TextField required fullWidth size="small" value={row.lab} onChange={(e) => handleArrayChange('outsourcedInvestigations', i, 'lab', e.target.value)} /></TableCell>
+                  <TableCell><TextField required fullWidth size="small" value={row.nabl} onChange={(e) => handleArrayChange('outsourcedInvestigations', i, 'nabl', e.target.value)} /></TableCell>
+                  <TableCell>{outsourcedInvestigations.length > 1 && <IconButton onClick={() => deleteArrayRow('outsourcedInvestigations', i)}><DeleteIcon color="error" /></IconButton>}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          <Button onClick={() => addArrayRow('outsourcedInvestigations', { name: '', lab: '', nabl: '' })} variant="outlined" sx={{ mt: 2 }}>+ Add Row</Button>
+        </>
+      )}
+    </Box>
+  );
+};
+
+export default Industry_Funding;

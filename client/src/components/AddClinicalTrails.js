@@ -16,6 +16,11 @@ import MethodologyDetails from '../Forms/Add_Clinical_Form/Methodology';
 import InformedConsent from '../Forms/Add_Clinical_Form/InformedConsent';
 import Declaration from "../Forms/Add_Clinical_Form/Declaration";
 
+//Funding
+import Self_Funding from "../Forms/Funding_Forms/Self_Funding.js";
+import Industry_Funding from "../Forms/Funding_Forms/Industry_Funding.js";
+import Funded_Studies from "../Forms/Funding_Forms/Funding_Studies.js";
+
 import "../styles/Forms/Add_Clinical.css";
 import {checklist} from "../data/Clinical_CheckList";
 import { investigators  } from "../data/Clinical_CheckList";
@@ -106,6 +111,10 @@ const MainContent = ({user}) => {
   //Check list state
   const [checkListData, setCheckListData] = useState(checklist);
 
+  //Funding form data
+  const [funding_FormData, setFundingFormData] = useState({});
+  const [fundingTableName, setFundingTableName] = useState("");
+
   const handleSubmit = async(e) => { //Handle Submit
     e.preventDefault();
     setShowConfirmDialog(true);
@@ -127,7 +136,8 @@ const MainContent = ({user}) => {
 
       // 2. Construct full object without files
       const submissionData = { administration, researchers, investigatorsCount, fundingData, overviewResearch, methodologyData, participants,
-        benefits, consentData, paymentState, storage, additional, declaration, email: user, submittedFormId, };
+        benefits, consentData, paymentState, storage, additional, declaration, 
+        email: user, submittedFormId, funding_FormData, fundingTableName };
 
       // 3. Append data JSON as a field
       formData.append("data", JSON.stringify(submissionData));
@@ -205,6 +215,16 @@ const mergeResearchers = (fetched = []) => {
       setFundingData(initialData.fundingData || {});
       setOverviewResearch(initialData.overviewResearch || {});
       setMethodologyData(initialData.methodologyData || {});
+      setFundingFormData(initialData.funding_FormData || {});
+      if(initialData?.fundingData?.funding_source === "Self-funding") {
+        setFundingTableName("clinical_self_funding");
+      }
+      else if(initialData?.fundingData?.funding_source === "Institutional funding") {
+        setFundingTableName("clinical_funding_studies");
+      }
+      else if(initialData?.fundingData?.funding_source === "Funding agency") {
+        setFundingTableName("clinical_industry_funding");
+      }
       if (initialData?.researchers) {
         const merged = mergeResearchers(initialData.researchers);
         setResearchers(merged);
@@ -228,7 +248,27 @@ const mergeResearchers = (fetched = []) => {
               </Grid>
               <Grid item size={12} className="content-box" id="Funding">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Funding Details and Budget</Typography>
-                  <FundingDetails fundingData = {fundingData} setFundingData = {setFundingData}/>
+                  <FundingDetails fundingData = {fundingData} setFundingData = {setFundingData}
+                    funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}
+                      fundingTableName = {fundingTableName} setFundingTableName = {setFundingTableName}/>
+              </Grid>
+              <Grid item size={12} className="content-box" id="research"> 
+                { 
+                  fundingData.funding_source === "Self-funding" && (
+                    <Self_Funding funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
+                  )
+                }
+                {
+                  fundingData.funding_source === "Funding agency" && (
+                    <Industry_Funding funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
+                  )
+                }
+                {
+                  fundingData.funding_source === "Institutional funding" && (
+                    <Funded_Studies funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
+                  )
+                }
+
               </Grid>
               <Grid item size={12} className="content-box" id="research">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Overview Research</Typography>
@@ -276,7 +316,7 @@ const mergeResearchers = (fetched = []) => {
               </Grid>
               <PreviewPopup open={openPreview} onClose={() => setOpenPreview(false)}
                 formData={{ administration, researchers, investigatorsCount, fundingData, overviewResearch, methodologyData, participants, benefits, consentData, 
-                    paymentState, storage, additional, declaration, checkListData }}
+                    paymentState, storage, additional, declaration, checkListData, funding_FormData }}
               />
           </Grid>
         </form>

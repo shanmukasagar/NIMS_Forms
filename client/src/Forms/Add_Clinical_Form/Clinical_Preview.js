@@ -2,6 +2,9 @@ import React from 'react';
 import { Dialog, DialogTitle, DialogContent, Typography, Grid, Divider, Box } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { IconButton, Tooltip } from '@mui/material';
+import SelfFundingPreview from "../../Forms/Funding_Forms/Self_Funding_Preview.js";
+import FundingStudiesPreview from "../../Forms/Funding_Forms/Funding_Studies_Preview.js";
+import IndustryFundingPreview from "../../Forms/Funding_Forms/Industry_Funding_Preview.js";
 
 const formatKey = (key) => {
   return key
@@ -162,6 +165,16 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
 
           {/* Funding Data */}
           {renderSection("3. Funding Details", fundingData)}
+
+          {fundingData?.funding_source === "Self-funding" && (
+            <SelfFundingPreview data = {formData?.funding_FormData}/>
+          )}
+          {fundingData?.funding_source === "Funding agency" && (
+            <IndustryFundingPreview data = {formData?.funding_FormData}/>
+          )}
+          {fundingData?.funding_source === "Institutional funding" && (
+            <FundingStudiesPreview data = {formData?.funding_FormData}/>
+          )}
 
           {/* Overview Research */}
           {renderSection("4. Overview Research", overviewResearch)}

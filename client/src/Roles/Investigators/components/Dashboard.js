@@ -1,11 +1,11 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {Box, Typography, Button} from "@mui/material";
+import {Box, Typography, Button, TextField, } from "@mui/material";
 import "../../../styles/Investigators/dashboard.css";
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from "../../../components/AxiosInstance";
 import { Visibility, Edit, Comment } from '@mui/icons-material';
-import { Dialog, DialogTitle, DialogContent, IconButton, Tooltip} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, IconButton, Tooltip, DialogActions} from '@mui/material';
 import PreviewPopup from "../../../Forms/Add_Clinical_Form/Clinical_Preview";
 import AddClinicalTrails from '../../../components/AddClinicalTrails';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
@@ -16,8 +16,9 @@ const Dashboard = ({user, setSelectedForm}) => {
     const [open, setOpen] = useState(false);
     const [projectView, setProjectView] = useState({});
     const [openPreview, setOpenPreview] = useState(false);
-    const [edit, setEdit] = useState(false);
-
+    const [openChangesComments, setOpenChangescomments] = useState(false);
+    const [projectChanges, setProjectChanges] = useState('');
+    const [projectId, setProjectId] = useState('');
 
     const navigate = useNavigate();
     const fetchOnce = useRef(false);
@@ -110,6 +111,7 @@ const Dashboard = ({user, setSelectedForm}) => {
                         methodologyData: result?.methodologyData,
                         consentData: result?.consentData,
                         declaration: result?.declaration,
+                        funding_FormData : result?.fundingDetails
                     }
                     navigate("/addclinicaltrails", { state: { initialData: initialData, user : user } });
                 }
@@ -131,6 +133,34 @@ const Dashboard = ({user, setSelectedForm}) => {
         }
     } 
 
+    // Handle investigator changes comments
+    const handlePIComments = async (item) => {
+        setOpenChangescomments(true);
+        setProjectId(item.project_ref)
+        setProjectChanges('');
+    }
+
+    // Send principal investigator project changes
+    const handleChangesSubmit = async () => {
+        if (!projectChanges) {
+            alert("Please enter project changes before sending");
+            return;
+        }
+        try{
+            const data = {
+                projectChanges : projectChanges,
+                projectId : projectId
+            }
+            const response = await axiosInstance.post('/api/investigator/changes', data);
+            alert(response?.data?.message);
+        }
+        catch(error) {
+            alert("project changes failed to send");
+        }
+        setOpenChangescomments(false);
+        return ;
+    };
+
     return (
         <React.Fragment>
             <Box className = "dashboard_main">
@@ -140,19 +170,23 @@ const Dashboard = ({user, setSelectedForm}) => {
                 </Box>
                 <Box>
                     <Grid container spacing={3} style={{ backgroundColor: '#4b1d77', color: 'white', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
+                        <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
+                        <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Change Log</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Submission Date</Typography></Grid>
-                        <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid>
+                        <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>View</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Comments</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Edit</Typography></Grid>
                     </Grid>
                     <Grid container spacing={3} style={{ backgroundColor: 'white', color: '#4b1d77', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        {projectsData.length > 0 ? projectsData.map((item, key) => (
-                            <React.Fragment>
-                                <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
+                        {projectsData.length > 0 ? projectsData.map((item, index) => (
+                            <React.Fragment key = {index}>
+                                <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
+                                <Grid item size={2}>
+                                    <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handlePIComments(item)}/>
+                                </Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
-                                <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{item.status}</Typography></Grid>
+                                <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>{item.status}</Typography></Grid>
                                 <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
                                     <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
@@ -191,8 +225,26 @@ const Dashboard = ({user, setSelectedForm}) => {
                     methodologyData: projectView.methodologyData,
                     consentData: projectView.consentData,
                     declaration: projectView.declaration,
+                    funding_FormData : projectView?.fundingDetails
                 }}/>
             )}
+            <Dialog open={openChangesComments} onClose={() => setOpenChangescomments(false)} 
+                maxWidth={false}
+                PaperProps={{
+                    sx: { width: '800px', maxWidth: '90%' }
+                }}
+             fullWidth>
+                <DialogTitle>Add Project Changes</DialogTitle>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <TextField label="Changes" multiline rows={4} value={projectChanges} onChange={(e) => setProjectChanges(e.target.value)}
+                        fullWidth
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenChangescomments(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={handleChangesSubmit}>Send</Button>
+                </DialogActions>
+            </Dialog>
         </React.Fragment>
     )
 }

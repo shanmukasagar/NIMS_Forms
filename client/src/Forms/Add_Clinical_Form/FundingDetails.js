@@ -1,10 +1,47 @@
 import React from 'react';
 import { Box, TextField, MenuItem, Select, InputLabel, FormControl, Grid } from '@mui/material';
 
-const FundingDetails = ({ fundingData, setFundingData }) => {
+const FundingDetails = ({ fundingData, setFundingData, funding_FormData, setFundingFormData, 
+    fundingTableName, setFundingTableName  }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        if(name === "funding_source") {
+            if(value === "Self-funding") {
+                setFundingFormData({
+                    proposedBudget: '', costPerPatient: '', totalProjectCost: '', isOutsourced: 'no',
+                    nimsInvestigations: [{ name: '', cost: '' }],
+                    outsourcedInvestigations: [{ name: '', cost: '', lab: '', nabl: '' }]
+                });
+                setFundingTableName("clinical_self_funding");
+            }
+            else if(value === "Funding agency") {
+                setFundingFormData({
+                    sponsorName: '', sponsorPAN: '', sponsorGST: '', totalGrant: '',
+                    budgetItems: [
+                    { label: 'Per completed patients total sponsor grant', value: '' },
+                    { label: 'Per completed patients manpower sponsor grant (PI, Co-PI, coordinator, others)', value: '' },
+                    { label: 'Per completed patients overhead', value: '' },
+                    { label: 'Startup fee', value: '' },
+                    { label: 'Archival fee', value: '' }
+                    ],
+                    nimsInvestigations: [{ name: '', cost: '' }],
+                    personnel: [{ designation: '', fees: '' }],
+                    isOutsourced: 'no',
+                    outsourcedInvestigations: [{ name: '', lab: '', nabl: '' }]
+                });
+                setFundingTableName("clinical_industry_funding");
+            }
+            else if(value === "Institutional funding") {
+                setFundingFormData({
+                    fundingAgency: '', grantPerPatient: '', manpowerGrant: '', totalGrant: '',
+                    nimsInvestigations: [{ name: '', cost: '' }],
+                    isOutsourced: 'no',
+                    outsourcedInvestigations: [{ name: '', cost: '', lab: '', nabl: '' }]
+                });
+                setFundingTableName("clinical_funding_studies");
+            }
+        }
         setFundingData({ ...fundingData, [name]: value });
     };
 

@@ -88,16 +88,16 @@ const fundingBudget = async (req, res) => {
     formData.email = req.user.email;
     const form_type = req.query.selectedForm;
     const isEdit = req.query.isEdit === 'true';
-    const { tableName, formId } = req.query;
+    const { tableName, formId, fundingTableName } = req.query;
     const numericFormId = Number(formId); 
     if(isEdit) {
-        const result = await updateResearchForms(tableName, formData, numericFormId);
+        const result = await updateResearchForms(tableName, formData, numericFormId, fundingTableName);
         if(result) {
           return res.status(200).json("Form successfully updated");
         }
     }
     else{
-      const result = await fundingBudgetDetails(formData, form_type);
+      const result = await fundingBudgetDetails(formData, form_type, fundingTableName);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }

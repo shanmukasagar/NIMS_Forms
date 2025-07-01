@@ -18,7 +18,8 @@ const ISRC_Member = ({setSelectedForm}) => {
   const [comment, setComment] = useState('');
   const [status, setStatus] = useState('');
   const [projectsData, setProjectsData] = useState([]);
-   const [projectView, setProjectView] = useState({});
+  const [projectView, setProjectView] = useState({});
+  const [changes, setChanges] = useState({projectChanges : '', open : false});
 
   const navigate = useNavigate();
 
@@ -56,6 +57,21 @@ const ISRC_Member = ({setSelectedForm}) => {
         console.log("Error occurred while fetching project data", error.message);
     }
   };
+
+  //Open project changes
+  const openProjectChanges = (item) => {
+    setChanges((prev) => ({
+    ...prev, projectChanges: item?.inv_comments || '', open: true,
+    }));
+  }
+
+  //Close project changes
+  const closeProjectChanges = () => {
+    setChanges((prev) => ({
+    ...prev, projectChanges: '', open: false,
+    }));
+  }
+
 
   const handleCommentClick = (item) => {
     setSelectedData(item);
@@ -109,7 +125,7 @@ const ISRC_Member = ({setSelectedForm}) => {
       const date = new Date(isoString);
       const formattedDate = date.toLocaleDateString('en-GB'); // e.g., 24/05/2025
       const formattedTime = date.toLocaleTimeString('en-GB'); // e.g., 09:12:00
-      return `${formattedDate} ${formattedTime}`;
+      return `${formattedDate}`;
   };
 
   useEffect(() => {
@@ -123,24 +139,27 @@ const ISRC_Member = ({setSelectedForm}) => {
       <Box>
         {/* Header */}
         <Grid container spacing={2} sx={{ backgroundColor: '#4b1d77', color: 'white', p: 2, borderRadius: "5px 5px 0 0" }}>
-          <Grid item size={2}><Typography sx={commonTextStyle}>Study Title</Typography></Grid>
+          <Grid item size={3}><Typography sx={commonTextStyle}>Study Title</Typography></Grid>
           <Grid item size={2}><Typography sx={commonTextStyle}>Submission Date</Typography></Grid>
-          <Grid item size={2}><Typography sx={commonTextStyle}>Principal Investigator</Typography></Grid>
-          <Grid item size={2}><Typography sx={commonTextStyle}>Department</Typography></Grid>
+          <Grid item size={2}><Typography sx={commonTextStyle}>Investigator</Typography></Grid>
+          <Grid item size={1}><Typography sx={commonTextStyle}>changes</Typography></Grid>
           <Grid item size={1}><Typography sx={commonTextStyle}>Status</Typography></Grid>
           <Grid item size={2}><Typography sx={commonTextStyle}>View</Typography></Grid>
           <Grid item size={1}><Typography sx={commonTextStyle}>Comment</Typography></Grid>
         </Grid>
+
 
         {/* Data Rows */}
         {projectsData.length > 0 ? (
           projectsData.map((item, index) => (
             <Paper key={index} elevation={2}>
               <Grid container spacing={2} alignItems="center" sx={{ p: 1.2, border: "0.5px solid #e3dddd" }}>
-                <Grid item size={2}><Typography sx={commonTextStyle}>{item.project_title || ""}</Typography></Grid>
+                <Grid item size={3}><Typography sx={commonTextStyle}>{item.project_title || ""}</Typography></Grid>
                 <Grid item size={2}><Typography sx={commonTextStyle}>{formatSubmitDate(item.sub_date) || ""}</Typography></Grid>
                 <Grid item size={2}><Typography sx={commonTextStyle}>{item.investigator_name || ""}</Typography></Grid>
-                <Grid item size={2}><Typography sx={commonTextStyle}>{item.investigator_dep || ""}</Typography></Grid>
+                <Grid item size={1}>
+                  <CommentIcon sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => openProjectChanges(item)}/>
+                </Grid>
                 <Grid item size={1}><Typography sx={commonTextStyle}>{item.status || ""}</Typography></Grid>
                 <Grid item size={2} sx = {{display : "flex", gap : "25px", alignItems : "center"}}>
                   <IconButton onClick={() => handleViewIcon(item)}>
@@ -201,6 +220,13 @@ const ISRC_Member = ({setSelectedForm}) => {
             <Button onClick={() => setCommentDialogOpen(false)}>Cancel</Button>
             <Button variant="contained" onClick={handleCommentSubmit}>Send</Button>
           </DialogActions>
+        </Dialog>
+        <Dialog open={changes.open} onClose={closeProjectChanges} maxWidth="md" fullWidth>
+          <DialogTitle>Project Changes</DialogTitle>
+          <DialogContent><Typography>
+            {(changes.projectChanges || '').split('\n').map((line, index) => (
+              <div key={index}>{line}</div>
+            ))}</Typography></DialogContent>
         </Dialog>
       </Box>
     </Box>

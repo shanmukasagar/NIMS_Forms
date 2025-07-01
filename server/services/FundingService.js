@@ -1,61 +1,181 @@
-const { pool } = require("../models/db");
+const {pool} =require("../models/db");
+const {checkFormDetails} = require("./ResearchService");
 
-const TABLE_CONFIGS = {
-    funded_studies: {
-        fields: [
-        "name", "budget", "study", "grant_patient", "manpower", "invest", "name_invest_1", "unit_1",
-        "name_invest_2", "unit_2", "name_invest_3", "unit_3", "total_grant", "out_investigation",
-        "invest_name_1", "unit_cost_1", "lab_name_1", "address_1", "nabl_1", "invest_name_2",
-        "unit_cost_2", "lab_name_2", "address_2", "nabl_2", "email"
-        ]
-    }
-};
-
-function coerceIntegerFields(data, fieldList) {
-  return fieldList.map((key) => {
-    const val = data[key];
-    return /^\d+$/.test(val) ? parseInt(val, 10) : val;
-  });
-}
-
-const FundedFormDetails = async (formData, email, tableName, imageUrl) => {
+const saveSelfFundedStudy = async (data, form_type) => {
   try {
-    const config = TABLE_CONFIGS[tableName];
-    if (!config) throw new Error(`Unsupported table: ${tableName}`);
+    const { proposed_budget, cost_per_patient, total_project_cost, is_outsourced, nims_investigations,
+      outsourced_investigations, email } = data;
 
-    const dataWithEmail = { ...formData, email };
-    const values = coerceIntegerFields(dataWithEmail, config.fields);
-    const placeholders = config.fields.map((_, idx) => `$${idx + 1}`).join(", ");
-    const columns = config.fields.join(", ");
+    const formId = await checkFormDetails(email, form_type, "administration");
 
-    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING id`;
+    const query = `
+      INSERT INTO self_funded_studies (
+        proposed_budget, cost_per_patient, total_project_cost,
+        is_outsourced, nims_investigations, outsourced_investigations,
+        email, form_id )
+      VALUES ($1, $2, $3, $4, $5::jsonb, $6::jsonb, $7, $8) RETURNING id `;
 
-    await pool.query(query, values);
-    return true;
+    const values = [
+      proposed_budget, cost_per_patient, total_project_cost, is_outsourced,
+      JSON.stringify(nims_investigations), JSON.stringify(outsourced_investigations), email,
+      formId, ];
+
+    const result = await pool.query(query, values);
+    return result;
   } catch (error) {
-    console.error(`Failed to insert into ${tableName}:`, error.message);
+    console.error("❌ Failed to insert self-funded study:", error.message);
     throw error;
   }
 };
 
-const FundedFormData = async (email, tableName) => {
-  let client;
-  try {
-    client = await pool.connect();
-    await client.query("BEGIN");
+const saveIndustrySponsoredStudy = async (data, isEdit, tableName) => {
 
-    const { rows } = await client.query(`SELECT * FROM ${tableName} WHERE email = $1`, [email]);
+  const {
+    sponsor_name,
+    sponsor_pan,
+    sponsor_gst,
+    total_grant,
+    budget_items,
+    nims_investigations,
+    personnel,
+    is_outsourced,
+    outsourced_investigations,
+    email
+  } = data;
 
-    await client.query("COMMIT");
+  const formId = await checkFormDetails(email, form_type, "administration");
 
-    return { formsResult: rows };
-  } catch (error) {
-    if (client) await client.query("ROLLBACK");
-    console.error("Error fetching form data:", error.message);
-    throw error;
-  } finally {
-    if (client) client.release();
+  if (isEdit) {
+    const updateQuery = `
+      UPDATE ${tableName} SET
+        sponsor_name = $1,
+        sponsor_pan = $2,
+        sponsor_gst = $3,
+        total_grant = $4,
+        budget_items = $5::jsonb,
+        nims_investigations = $6::jsonb,
+        personnel = $7::jsonb,
+        is_outsourced = $8,
+        outsourced_investigations = $9::jsonb
+      WHERE form_id = $10
+      RETURNING id
+    `;
+
+    const values = [
+      sponsor_name,
+      sponsor_pan,
+      sponsor_gst,
+      total_grant,
+      JSON.stringify(budget_items),
+      JSON.stringify(nims_investigations),
+      JSON.stringify(personnel),
+      is_outsourced,
+      JSON.stringify(outsourced_investigations),
+      formId
+    ];
+
+    const result = await pool.query(updateQuery, values);
+    return result;
   }
+
+  const insertQuery = `
+    INSERT INTO industry_sponsored_studies (
+      sponsor_name, sponsor_pan, sponsor_gst, total_grant,
+      budget_items, nims_investigations, personnel, is_outsourced,
+      outsourced_investigations, email, form_id
+    ) VALUES (
+      $1, $2, $3, $4,
+      $5::jsonb, $6::jsonb, $7::jsonb, $8,
+      $9::jsonb, $10, $11
+    ) RETURNING id
+  `;
+
+  const values = [
+    sponsor_name,
+    sponsor_pan,
+    sponsor_gst,
+    total_grant,
+    JSON.stringify(budget_items),
+    JSON.stringify(nims_investigations),
+    JSON.stringify(personnel),
+    is_outsourced,
+    JSON.stringify(outsourced_investigations),
+    email,
+    formId
+  ];
+
+  const result = await pool.query(insertQuery, values);
+  return result;
 };
 
-module.exports = { FundedFormDetails, FundedFormData };
+const saveFundedStudy = async (data, formId, isEdit, tableName) => {
+  const {
+    funding_agency,
+    grant_per_patient,
+    manpower_grant,
+    total_grant,
+    nims_investigations,
+    is_outsourced,
+    outsourced_investigations,
+    email
+  } = data;
+
+  
+
+  if (isEdit) {
+    const updateQuery = `
+      UPDATE ${tableName} SET
+        funding_agency = $1,
+        grant_per_patient = $2,
+        manpower_grant = $3,
+        total_grant = $4,
+        nims_investigations = $5::jsonb,
+        is_outsourced = $6,
+        outsourced_investigations = $7::jsonb
+      WHERE form_id = $8
+      RETURNING id
+    `;
+
+    const updateValues = [
+      funding_agency,
+      grant_per_patient,
+      manpower_grant,
+      total_grant,
+      JSON.stringify(nims_investigations),
+      is_outsourced,
+      JSON.stringify(outsourced_investigations),
+      formId
+    ];
+
+    return await pool.query(updateQuery, updateValues);
+  }
+
+  const insertQuery = `
+    INSERT INTO funded_studies (
+      funding_agency, grant_per_patient, manpower_grant, total_grant,
+      nims_investigations, is_outsourced, outsourced_investigations,
+      email, form_id
+    ) VALUES (
+      $1, $2, $3, $4,
+      $5::jsonb, $6, $7::jsonb,
+      $8, $9
+    )
+    RETURNING id
+  `;
+
+  const insertValues = [
+    funding_agency,
+    grant_per_patient,
+    manpower_grant,
+    total_grant,
+    JSON.stringify(nims_investigations),
+    is_outsourced,
+    JSON.stringify(outsourced_investigations),
+    email,
+    formId
+  ];
+
+  return await pool.query(insertQuery, insertValues);
+};
+
+module.exports = { saveSelfFundedStudy, saveIndustrySponsoredStudy, saveFundedStudy };
