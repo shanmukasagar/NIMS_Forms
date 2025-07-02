@@ -169,10 +169,13 @@ const PreviewPopup = ({ open, onClose, formData = {} }) => {
           {fundingData?.funding_source === "Self-funding" && (
             <SelfFundingPreview data = {formData?.funding_FormData}/>
           )}
-          {fundingData?.funding_source === "Funding agency" && (
+          {fundingData?.funding_source === "Pharmaceutical Industry sponsored" && (
             <IndustryFundingPreview data = {formData?.funding_FormData}/>
           )}
           {fundingData?.funding_source === "Institutional funding" && (
+            <FundingStudiesPreview data = {formData?.funding_FormData}/>
+          )}
+          {fundingData?.funding_source === "Funding agency" && (
             <FundingStudiesPreview data = {formData?.funding_FormData}/>
           )}
 

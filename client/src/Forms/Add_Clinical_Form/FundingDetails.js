@@ -15,7 +15,7 @@ const FundingDetails = ({ fundingData, setFundingData, funding_FormData, setFund
                 });
                 setFundingTableName("clinical_self_funding");
             }
-            else if(value === "Funding agency") {
+            else if(value === "Pharmaceutical Industry sponsored") {
                 setFundingFormData({
                     sponsorName: '', sponsorPAN: '', sponsorGST: '', totalGrant: '',
                     budgetItems: [
@@ -32,7 +32,7 @@ const FundingDetails = ({ fundingData, setFundingData, funding_FormData, setFund
                 });
                 setFundingTableName("clinical_industry_funding");
             }
-            else if(value === "Institutional funding") {
+            else if(value === "Institutional funding" || value === "Funding agency") {
                 setFundingFormData({
                     fundingAgency: '', grantPerPatient: '', manpowerGrant: '', totalGrant: '',
                     nimsInvestigations: [{ name: '', cost: '' }],

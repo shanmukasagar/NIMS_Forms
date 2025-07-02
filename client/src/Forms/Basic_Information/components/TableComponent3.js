@@ -42,12 +42,12 @@ const FundingSummaryCard = ({ data, setOpenTable, setEditableData }) => {
           <SelfFundingPreview data={entry.funding_FormData} />
         </Box>
       )}
-      {entry.funding_source === "institutional" && (
+      {(entry.funding_source === "institutional" || entry.funding_source === "agency") && (
         <Box sx={{ mt: 4 }}>
           <FundingStudyPreview data={entry.funding_FormData} />
         </Box>
       )}
-      {entry.funding_source === "agency" && (
+      {entry.funding_source === "Pharmaceutical Industry sponsored" && (
         <Box sx={{ mt: 4 }}>
           <IndustryFundingPreview data={entry.funding_FormData} />
         </Box>

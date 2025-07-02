@@ -23,6 +23,8 @@ const Dashboard = ({user, setSelectedForm}) => {
     const navigate = useNavigate();
     const fetchOnce = useRef(false);
 
+    const statusColors = { pending : "orange", reviewed : "blue", approved : "green", rejected : "red"};
+
     useEffect(() => {
         const handleGetProjects = async () => {
             try{
@@ -186,7 +188,7 @@ const Dashboard = ({user, setSelectedForm}) => {
                                     <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handlePIComments(item)}/>
                                 </Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
-                                <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>{item.status}</Typography></Grid>
+                                <Grid item size={1}><Typography sx={{ fontSize: "18px", color : `${statusColors[item.status]}` }}>{item.status}</Typography></Grid>
                                 <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
                                     <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}

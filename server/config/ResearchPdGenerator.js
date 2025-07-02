@@ -82,6 +82,11 @@ async function generateResearchPDF(data, fileName) {
         <body>
           <h1>Clinical Research Submission</h1>
 
+          <div style="font-size: 18px; font-family: Arial, sans-serif; color: #333;">
+            <span>Last Modified:</span>
+             <span>${new Date().toLocaleString()}</span>
+          </div>
+
           <h2>1. Administration</h2>
           <div className="section">
               <div><span className="label">Name of Research Principal:</span> ${data.administration.name_of_research_principal}</div>
@@ -160,7 +165,8 @@ async function generateResearchPDF(data, fileName) {
             </>`
             )}
 
-            ${data.fundingData.funding_source === "institutional" && data.fundingDetails && (
+            ${(data.fundingData.funding_source === "institutional" || data.fundingData.funding_source === "agency")
+               && data.fundingDetails && (
               `<>
                 <div><span className="label">Funding Agency:</span> ${data.fundingDetails.funding_agency}</div>
                 <div><span className="label">Grant Per Patient:</span> ₹${data.fundingDetails.grant_per_patient}</div>
@@ -192,7 +198,7 @@ async function generateResearchPDF(data, fileName) {
               </>`
             )}
 
-            ${data.fundingData.funding_source === "agency" && data.fundingDetails && (
+            ${data.fundingData.funding_source === "Pharmaceutical Industry sponsored" && data.fundingDetails && (
               `<>
                 <div><span className="label">Sponsor Name:</span> ${data.fundingDetails.sponsor_name}</div>
                 <div><span className="label">Sponsor PAN:</span> ${data.fundingDetails.sponsor_pan}</div>

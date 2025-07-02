@@ -59,10 +59,10 @@ const FundingDetails = ({selectedForm}) => {
       if(editableData?.funding_source === "self-funding") {
         setFundingTableName("self_funded_studies");
       }
-      else if(editableData?.funding_source === "agency") {
+      else if(editableData?.funding_source === "Pharmaceutical Industry sponsored") {
         setFundingTableName("industry_sponsored_studies");
       }
-      else if(editableData?.funding_source === "institutional") {
+      else if((editableData?.funding_source === "institutional" || editableData?.funding_source === "agency")) {
         setFundingTableName("funding_studies");
       }
     }
@@ -110,7 +110,7 @@ const FundingDetails = ({selectedForm}) => {
       });
       setFundingTableName("self_funded_studies");
     }
-    else if(selectedOption === "agency") {
+    else if(selectedOption === "Pharmaceutical Industry sponsored") {
       setFundingFormData({
         sponsorName: '', sponsorPAN: '', sponsorGST: '', totalGrant: '',
         budgetItems: [
@@ -127,7 +127,7 @@ const FundingDetails = ({selectedForm}) => {
       });
       setFundingTableName("industry_sponsored_studies");
     }
-    else if(selectedOption === "institutional") {
+    else if(selectedOption === "institutional" || selectedOption === "agency") {
       setFundingFormData({
         fundingAgency: '', grantPerPatient: '', manpowerGrant: '', totalGrant: '',
         nimsInvestigations: [{ name: '', cost: '' }],
@@ -150,10 +150,10 @@ const FundingDetails = ({selectedForm}) => {
           {funding_source === "self-funding" && (
             <SelfFundingPreview data = {funding_FormData}/>
           )}
-          {funding_source === "institutional" && (
+          {(funding_source === "institutional" || funding_source === "agency") && (
             <FundingStudiesPreview data = {funding_FormData}/>
           )}
-          {funding_source === "agency" && (
+          {funding_source === "Pharmaceutical Industry sponsored" && (
             <IndustryFundingPreview data = {funding_FormData}/>
           )}
         </div>
@@ -183,15 +183,16 @@ const FundingDetails = ({selectedForm}) => {
               <option value="self-funding">Self-funding</option>
               <option value="institutional">Institutional funding</option>
               <option value="agency">Funding agency</option>
+              <option value="Pharmaceutical Industry sponsored">Pharmaceutical Industry sponsored</option>
             </select>
             <br />
             {funding_source === "self-funding" && (
               <Self_Funding funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
             )}
-            {funding_source === "institutional" && (
+            {(funding_source === "institutional" || funding_source === "agency") && (
               <Funded_Studies funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
             )}
-            {funding_source === "agency" && (
+            {funding_source === "Pharmaceutical Industry sponsored" && (
               <Industry_Funding funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
             )}
 

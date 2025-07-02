@@ -87,6 +87,11 @@ async function generateConsentPdf(data, fileName, project_ref) {
       <body>
         <h1>Clinical Research Submission</h1>
 
+        <div style="font-size: 18px; font-family: Arial, sans-serif; color: #333;">
+          <span>Last Modified:</span>
+            <span>${new Date().toLocaleString()}</span>
+        </div>
+
         <h2>1. Administration</h2>
         <div class="section">
           <div><span class="label">Name:</span> ${data.administration.name}</div>
@@ -158,7 +163,8 @@ async function generateConsentPdf(data, fileName, project_ref) {
             </>`
             )}
 
-            ${data.fundingData.funding_source === "Institutional funding" && data.funding_FormData && (
+            ${(data.fundingData.funding_source === "Institutional funding" || 
+              data.fundingData.funding_source === "Funding agency") && data.funding_FormData && (
               `<>
                 <div><span className="label">Funding Agency:</span> ${data.funding_FormData.fundingAgency}</div>
                 <div><span className="label">Grant Per Patient:</span> ₹${data.funding_FormData.grantPerPatient}</div>
@@ -190,7 +196,7 @@ async function generateConsentPdf(data, fileName, project_ref) {
               </>`
             )}
 
-            ${data.fundingData.funding_source === "Funding agency" && data.funding_FormData && (
+            ${data.fundingData.funding_source === "Pharmaceutical Industry sponsored" && data.funding_FormData && (
               `<>
                 <div><span className="label">Sponsor Name:</span> ${data.funding_FormData.sponsorName}</div>
                 <div><span className="label">Sponsor PAN:</span> ${data.funding_FormData.sponsorPAN}</div>

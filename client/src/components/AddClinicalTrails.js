@@ -223,6 +223,9 @@ const mergeResearchers = (fetched = []) => {
         setFundingTableName("clinical_funding_studies");
       }
       else if(initialData?.fundingData?.funding_source === "Funding agency") {
+        setFundingTableName("clinical_funding_studies");
+      }
+      else if(initialData?.fundingData?.funding_source === "Pharmaceutical Industry sponsored") {
         setFundingTableName("clinical_industry_funding");
       }
       if (initialData?.researchers) {
@@ -259,12 +262,11 @@ const mergeResearchers = (fetched = []) => {
                   )
                 }
                 {
-                  fundingData.funding_source === "Funding agency" && (
+                  fundingData.funding_source === "Pharmaceutical Industry sponsored" && (
                     <Industry_Funding funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
                   )
                 }
-                {
-                  fundingData.funding_source === "Institutional funding" && (
+                {(fundingData.funding_source === "Institutional funding" || fundingData.funding_source === "Funding agency") && (
                     <Funded_Studies funding_FormData = {funding_FormData} setFundingFormData = {setFundingFormData}/>
                   )
                 }

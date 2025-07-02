@@ -111,7 +111,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'NIEC',
       label: 'NIEC',
       hasSubMenu: true,
-      role: "NIEC",
+      role: "",
       subItems: [
         { id: 'Amendment', label: 'Amendment', path: '/amendment' },
         { id: 'Amendment Template', label: 'Amendment Template', path: '/amendment/template' },

@@ -7,9 +7,9 @@ const inlineStyles = {
   container: { borderRadius: '8px', width: '100%', maxWidth: '800px' },
   field: { marginBottom: '18px',},
   label: { display: 'block', marginBottom: '5px', fontWeight: 'bold' },
-  input: { padding: '10px', width: '100%', borderRadius: '4px', border: '1px solid #ccc' },
+  input: { padding: '10px', fontSize : "18px", width: '100%', borderRadius: '4px', border: '1px solid #ccc' },
   radioGroup: { display: 'flex', gap: '15px' },
-  textarea: { padding: '8px', width: '100%', borderRadius: '4px', border: '1px solid #ccc' },
+  textarea: { padding: '8px', fontSize : "18px", width: '100%', borderRadius: '4px', border: '1px solid #ccc' },
   button: { padding: '10px 20px', border: 'none', borderRadius: '4px', backgroundColor: '#4b1d77', color: '#ffffff', cursor: 'pointer', fontSize: '15px',
     fontWeight: 500   },
   previewImage: { width: '100px', height: '100px', objectFit: 'cover', marginTop: '10px' }
