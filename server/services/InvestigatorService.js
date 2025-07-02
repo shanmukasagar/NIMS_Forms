@@ -280,10 +280,20 @@ const projectChanges = async(data) => {
     try{
         await connectToMongo(); //connect to database
         const projectsCollection = getDB().collection("Projects");
+        let keyName;
+        if (data.type === "NIEC") {
+            keyName = "inv_niec_comments";
+        } else if (data.type === "ISRC") {
+            keyName = "inv_isrc_comments";
+        } else if (data.type === "PBAC") {
+            keyName = "inv_pbac_comments";
+        }
+
         const updateRes = await projectsCollection.updateOne(
             { project_ref: data.projectId },
-            { $set: { inv_comments: data.projectChanges  } }
+            { $set: { [keyName]: data.projectChanges } }
         );
+
         if (updateRes.modifiedCount === 0) {
             throw new Error("Failed to update project changes");
         }

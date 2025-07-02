@@ -9,6 +9,7 @@ import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
 import axiosInstance from "../../components/AxiosInstance";
 import { useNavigate } from 'react-router-dom';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
 
 const ISRC_Member = ({setSelectedForm}) => {
   const fetchOnce = useRef(false);
@@ -19,7 +20,7 @@ const ISRC_Member = ({setSelectedForm}) => {
   const [status, setStatus] = useState('');
   const [projectsData, setProjectsData] = useState([]);
   const [projectView, setProjectView] = useState({});
-  const [changes, setChanges] = useState({projectChanges : '', open : false});
+  const [changes, setChanges] = useState({projectChanges : [], open : false});
 
   const navigate = useNavigate();
 
@@ -61,14 +62,14 @@ const ISRC_Member = ({setSelectedForm}) => {
   //Open project changes
   const openProjectChanges = (item) => {
     setChanges((prev) => ({
-    ...prev, projectChanges: item?.inv_comments || '', open: true,
+    ...prev, projectChanges: item?.inv_isrc_comments || '', open: true,
     }));
   }
 
   //Close project changes
   const closeProjectChanges = () => {
     setChanges((prev) => ({
-    ...prev, projectChanges: '', open: false,
+    ...prev, projectChanges: [], open: false,
     }));
   }
 
@@ -223,10 +224,28 @@ const ISRC_Member = ({setSelectedForm}) => {
         </Dialog>
         <Dialog open={changes.open} onClose={closeProjectChanges} maxWidth="md" fullWidth>
           <DialogTitle>Project Changes</DialogTitle>
-          <DialogContent><Typography>
-            {(changes.projectChanges || '').split('\n').map((line, index) => (
-              <div key={index}>{line}</div>
-            ))}</Typography></DialogContent>
+          <DialogContent>
+            {changes.projectChanges.length === 0 ? (
+              <Typography>No changes available.</Typography>
+            ) : (
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell><strong>Change</strong></TableCell>
+                    <TableCell><strong>Description</strong></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {changes.projectChanges.map((item, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{item.change}</TableCell>
+                      <TableCell>{item.description}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </DialogContent>
         </Dialog>
       </Box>
     </Box>

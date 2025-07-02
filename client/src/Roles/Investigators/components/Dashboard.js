@@ -9,6 +9,9 @@ import { Dialog, DialogTitle, DialogContent, IconButton, Tooltip, DialogActions}
 import PreviewPopup from "../../../Forms/Add_Clinical_Form/Clinical_Preview";
 import AddClinicalTrails from '../../../components/AddClinicalTrails';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import {  Table, TableHead, TableBody, TableRow, TableCell, 
+     Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Dashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
@@ -17,8 +20,10 @@ const Dashboard = ({user, setSelectedForm}) => {
     const [projectView, setProjectView] = useState({});
     const [openPreview, setOpenPreview] = useState(false);
     const [openChangesComments, setOpenChangescomments] = useState(false);
-    const [projectChanges, setProjectChanges] = useState('');
     const [projectId, setProjectId] = useState('');
+
+    const [projectChanges, setProjectChanges] = useState([{ change: '', description: '' }]);
+    const [selectedOption, setSelectedOption] = useState(''); // default option
 
     const navigate = useNavigate();
     const fetchOnce = useRef(false);
@@ -139,7 +144,7 @@ const Dashboard = ({user, setSelectedForm}) => {
     const handlePIComments = async (item) => {
         setOpenChangescomments(true);
         setProjectId(item.project_ref)
-        setProjectChanges('');
+        setProjectChanges([{ change: '', description: '' }]);
     }
 
     // Send principal investigator project changes
@@ -151,7 +156,8 @@ const Dashboard = ({user, setSelectedForm}) => {
         try{
             const data = {
                 projectChanges : projectChanges,
-                projectId : projectId
+                projectId : projectId,
+                type: selectedOption,
             }
             const response = await axiosInstance.post('/api/investigator/changes', data);
             alert(response?.data?.message);
@@ -162,6 +168,31 @@ const Dashboard = ({user, setSelectedForm}) => {
         setOpenChangescomments(false);
         return ;
     };
+
+    // 🔧 Handle field value changes
+    const handleChange = (index, field, value) => {
+        const updated = [...projectChanges];
+        updated[index][field] = value;
+        setProjectChanges(updated);
+    };
+
+    // ➕ Add a new row
+    const addRow = () => {
+        setProjectChanges([...projectChanges, { change: '', description: '' }]);
+    };
+
+    // ❌ Delete a row
+    const deleteRow = (index) => {
+        const updated = [...projectChanges];
+        updated.splice(index, 1);
+        setProjectChanges(updated);
+    };
+
+    // 🔄 Handle dropdown change
+    const handleDropdownChange = (e) => {
+        setSelectedOption(e.target.value);
+    };
+
 
     return (
         <React.Fragment>
@@ -230,21 +261,73 @@ const Dashboard = ({user, setSelectedForm}) => {
                     funding_FormData : projectView?.fundingDetails
                 }}/>
             )}
-            <Dialog open={openChangesComments} onClose={() => setOpenChangescomments(false)} 
-                maxWidth={false}
-                PaperProps={{
-                    sx: { width: '800px', maxWidth: '90%' }
-                }}
-             fullWidth>
-                <DialogTitle>Add Project Changes</DialogTitle>
-                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <TextField label="Changes" multiline rows={4} value={projectChanges} onChange={(e) => setProjectChanges(e.target.value)}
-                        fullWidth
-                    />
+            <Dialog open={openChangesComments} onClose={() => setOpenChangescomments(false)} maxWidth="md" fullWidth>
+                <DialogTitle>Project Changes</DialogTitle>
+                <DialogContent>
+
+                    {/* 🔽 Dropdown */}
+                    <FormControl fullWidth margin="normal">
+                    <InputLabel id="change-select-label">Select Change Type</InputLabel>
+                    <Select
+                        labelId="change-select-label"
+                        value={selectedOption}
+                        onChange={handleDropdownChange}
+                        label="Select Change Type"
+                    >
+                        <MenuItem value="NIEC">NIEC</MenuItem>
+                        <MenuItem value="ISRC">ISRC</MenuItem>
+                        <MenuItem value="PBAC">PBAC</MenuItem>
+                    </Select>
+                    </FormControl>
+
+                    {/* 📋 Editable Table */}
+                    <Table>
+                    <TableHead>
+                        <TableRow>
+                        <TableCell><strong>Change</strong></TableCell>
+                        <TableCell><strong>My Change Description</strong></TableCell>
+                        <TableCell><strong>Action</strong></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {projectChanges.map((change, index) => (
+                        <TableRow key={index}>
+                            <TableCell>
+                            <TextField
+                                value={change.change}
+                                onChange={(e) => handleChange(index, 'change', e.target.value)}
+                                placeholder="Enter change"
+                                fullWidth
+                            />
+                            </TableCell>
+                            <TableCell>
+                            <TextField
+                                value={change.description}
+                                onChange={(e) => handleChange(index, 'description', e.target.value)}
+                                placeholder="Enter description"
+                                fullWidth
+                            />
+                            </TableCell>
+                            <TableCell>
+                            <IconButton onClick={() => deleteRow(index)} color="error">
+                                <DeleteIcon color = "error"/>
+                            </IconButton>
+                            </TableCell>
+                        </TableRow>
+                        ))}
+                        <TableRow>
+                        <TableCell colSpan={3} align="right">
+                            <Button onClick={addRow} variant="contained" color="primary">
+                            Add Row
+                            </Button>
+                        </TableCell>
+                        </TableRow>
+                    </TableBody>
+                    </Table>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setOpenChangescomments(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={handleChangesSubmit}>Send</Button>
+                    <Button onClick={() => setOpenChangescomments(false)} color="secondary">Cancel</Button>
+                    <Button onClick={handleChangesSubmit} variant="contained" color="primary">Send</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>
