@@ -11,7 +11,6 @@ const checkAdminRoute=require("./routes/CheckAdminRoute");
 const NIECRoute = require("./routes/NIECRoute");
 const InvestigatorRoute = require("./routes/InvestigatorRoute");
 const ISRCRoute = require("./routes/ISRCRoute");
-const fundingRoute = require("./routes/FundingRoute");
 
 const app = express();
 
@@ -48,7 +47,6 @@ app.use("/api/research/check", checkAdminRoute);
 app.use("/api/niec", NIECRoute);
 app.use("/api/investigator", InvestigatorRoute);
 app.use("/api/isrc", ISRCRoute);
-app.use("/api/funding", fundingRoute);
 
 app.use('/', (req, res) => { 
     res.send('API is working');

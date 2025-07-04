@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import "../../App.css";
 import TableComponent3 from "./components/TableComponent3";
 import axiosInstance from "../../components/AxiosInstance.js";
@@ -12,6 +12,7 @@ import Funded_Studies from "../Funding_Forms/Funding_Studies.js";
 import SelfFundingPreview from "../Funding_Forms/Self_Funding_Preview.js";
 import FundingStudiesPreview from "../Funding_Forms/Funding_Studies_Preview.js";
 import IndustryFundingPreview from "../Funding_Forms/Industry_Funding_Preview.js";
+import {useProject} from "../../components/ResearchContext";
 
 const FundingDetails = ({selectedForm}) => {
 
@@ -24,6 +25,7 @@ const FundingDetails = ({selectedForm}) => {
   const[existData,setExistData]=useState(null)
   const [email]=useState("")
   const navigate = useNavigate();
+  const fetchOnce = useRef(false);
 
   const [openTable, setOpenTable] = useState(false);
   const [editableData, setEditableData] = useState({});
@@ -37,7 +39,8 @@ const FundingDetails = ({selectedForm}) => {
           { params : 
             { selectedForm : selectedForm, fundingTableName : fundingTableName,
              isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
-             tableName : "funding_budgett_and_details", formId : editableData?.form_id
+             tableName : "funding_budgett_and_details", 
+             formId: (editableData && Object.keys(editableData).length > 0 ) ? editableData?.form_id : projectId
           }}
       );
    
@@ -50,6 +53,19 @@ const FundingDetails = ({selectedForm}) => {
       );
     }
   };
+
+   //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if(editableData) {
@@ -74,7 +90,8 @@ const FundingDetails = ({selectedForm}) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"funding_budgett_and_details"
+            form_type:"funding_budgett_and_details",
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

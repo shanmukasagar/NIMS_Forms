@@ -3,6 +3,7 @@ import { Box, CssBaseline, CircularProgress } from '@mui/material';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import "./App.css";
 import axiosInstance from "./components/AxiosInstance";
+import { ProjectProvider } from './components/ResearchContext';
 
 // Lazy Load Components
 const Sidebar = lazy(() => import('./components/SideMenu'));
@@ -15,8 +16,6 @@ const DetailsInvestigator = lazy(() => import('./Forms/Basic_Information/Details
 const FundingDetails = lazy(() => import('./Forms/Basic_Information/Funding_Details'));
 const CheckList = lazy(() => import('./Forms/Declaration/CheckList'));
 const Declaration = lazy(() => import('./Forms/Declaration/Declaration'));
-const ExpeditedReview = lazy(() => import('./Forms/Declaration/Expedited_Review'));
-const WaiverOfConsent = lazy(() => import('./Forms/Declaration/Waiver_Of_Consent'));
 const AdditionalInformation = lazy(() => import('./Forms/Other_Issues/Additional_Information'));
 const Benefits = lazy(() => import('./Forms/Participant_Information/Benifits'));
 const Compensation = lazy(() => import('./Forms/Participant_Information/Compensation'));
@@ -109,8 +108,6 @@ const App = () => {
                   {/* Declaration */}
                   <Route path="/declaration" element={<Declaration selectedForm={selectedForm} />} />
                   <Route path="/checklist" element={<CheckList selectedForm={selectedForm} />} />
-                  <Route path="/expedited" element={<ExpeditedReview selectedForm={selectedForm} />} />
-                  <Route path="/waiver" element={<WaiverOfConsent selectedForm={selectedForm} />} />
                   {/* Clinical Trials */}
                   <Route path="/addclinicaltrails" element={<AddClinicalTrails user={user} />} />
                   <Route path="/clinicalpreview" element={<ClinicalPreview />} />

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Typography, Button, Tooltip, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import {useProject} from "../../components/ResearchContext";
 
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import axiosInstance from "../../components/AxiosInstance.js";
@@ -23,18 +24,33 @@ const UploadChecklist = ({selectedForm}) => {
 
   
   const fetchOnce = useRef(false);
+  const initialFetch = useRef(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [submittedData, setSubmittedData] =  useState([]);
   const [formId, setFormId] = useState(-1);
   const navigate = useNavigate();
 
+    //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!initialFetch.current) {
+      initialFetch.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"administrative_requirements"// or hardcoded for now
+            form_type:"administrative_requirements",// or hardcoded for now
+            formId : projectId
           }
         });
         if (response.data.length > 0) {
@@ -116,7 +132,7 @@ const UploadChecklist = ({selectedForm}) => {
         headers: { "Content-Type": "multipart/form-data" },
         params: {
           isEdit: isEdit,
-          formId: formId,
+          formId: isEdit ? formId : projectId,
           selectedForm : selectedForm
 
         }

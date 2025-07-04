@@ -7,6 +7,7 @@ import axiosInstance from "../../components/AxiosInstance";
 import { useNavigate } from 'react-router-dom';
 import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import {useProject} from "../../components/ResearchContext";
 
 const ProjectReviewGrid = ({setSelectedForm}) => {
     const [selectedData, setSelectedData] = useState({});
@@ -20,6 +21,9 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
     const [openPreview, setOpenPreview] = useState(false);
     const fetchOnce = useRef(false);
     const navigate = useNavigate();
+
+    // Context
+    const { setProjectId, setnewProject } = useProject();
 
     const fetchData = async () => {
         if (fetchOnce.current) return;
@@ -88,10 +92,14 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
         try {
             if(item.form_type === "biomedical-1") {
                 setSelectedForm("biomedical-1");
+                setProjectId(item.form_number);
+                setnewProject(null);
                 navigate("/basic/administrative");
             }
             else if(item.form_type === "biomedical-2") {
                 setSelectedForm("biomedical-2");
+                setProjectId(item.form_number);
+                setnewProject(null);
                 navigate("/basic/administrative");
             }
             else{
@@ -132,9 +140,11 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
                         </IconButton>
                     </Grid>
                     <Grid item size={1} sx = {{display : "flex", gap : "25px", alignItems : "center"}}>
-                        <IconButton onClick = {() => handleViewIcon(proj)}>
-                            <VisibilityIcon sx={{ color: "rebeccapurple" }} />
-                        </IconButton>
+                        {proj.form_type !== "biomedical-1" &&  proj.form_type !== "biomedical-2" && (
+                            <IconButton onClick = {() => handleViewIcon(proj)}>
+                                <VisibilityIcon sx={{ color: "rebeccapurple" }} />
+                            </IconButton>
+                        )}
                         <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
                             onClick={() => window.open(`http://localhost:4000/${proj.project_pdf}.pdf`, "_blank")} />
                         </Grid>

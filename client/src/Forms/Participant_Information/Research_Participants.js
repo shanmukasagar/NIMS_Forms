@@ -1,8 +1,10 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState ,useEffect, useRef} from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
 import TableComponent5 from  "./components/TableComponent5.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext";
+
 const Section4 = ({selectedForm}) => {
   const [type_of_participants, setTypeOfParticipant] = useState("");
   const [justification, setJustification] = useState("");
@@ -20,6 +22,7 @@ const Section4 = ({selectedForm}) => {
   const[existData,setExistData]=useState(null)
   const [email]=useState("")
   const navigate = useNavigate();
+  const fetchOnce = useRef(false);
 
   const vulnerableOptions = [
     "Economically and socially disadvantaged",
@@ -43,6 +46,19 @@ const Section4 = ({selectedForm}) => {
     });
   };
 
+  //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,7 +69,11 @@ const Section4 = ({selectedForm}) => {
           type_of_participants, justification, specifiy, additional_safeguards,  reimbursement_details,  vulnerableGroups,
           advertisement_type, advertisement_details, payment_type, email
 
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "participantt_related_information", formId : editableData?.form_id}}
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
+          tableName : "participantt_related_information", 
+          formId : (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId,
+        }}
       );
       console.log("User created:", userResponse.data);
       navigate("/participant/benefits");
@@ -81,7 +101,8 @@ const Section4 = ({selectedForm}) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:" participantt_related_information "// or hardcoded for now
+            form_type:" participantt_related_information ",   // or hardcoded for now
+            formId : projectId// or hardcoded for now
           }
         });  
         if (response.data.length > 0) {

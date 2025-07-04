@@ -9,6 +9,29 @@ async function generateConsentPdf(data, fileName, project_ref) {
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
 
+  const checkboxLabels = [
+    "I/We certify that the information provided in this application is complete and correct.",
+    "I/We confirm that all investigators have approved the submitted version of proposal / related documents.",
+    "I/We confirm that this study will be conducted in accordance with the latest NDCT RULES, ICMR National Ethical Guidelines for Biomedical and Health Research involving Human Participants and other applicable regulatory guidelines.",
+    "I/We will comply with all policies and guidelines of the institute and affiliated / collaborating institutions wherever applicable.",
+    "I/We will ensure that personnel performing this study are qualified, appropriately trained and will adhere to the provisions of the EC approved protocol.",
+    "I/We declare that the expenditure in case of injury related to the study will be taken care of.",
+    "I/We agree to inform all trial subject, that the drugs are being used for investigational purposes.",
+    "I/we ensure that the requirements relating to obtaining informed consent and ethics committee review and approval specified in the New Drugs and Clinical Trials Rules, 2019 and Good Clinical Practices guidelines are met.",
+    "I/We confirm that we shall submit any protocol amendments, serious adverse events report, significant deviations from protocols, regular progress reports and a final report and also participate in any audit of the study if needed.",
+    "I/We confirm that we will maintain accurate and complete records of all aspects of the study.",
+    "I/We will protect the privacy of participants and assure safety and confidentiality of study data and biological samples.",
+    "I/We hereby declare that I / any of the investigators, researchers and / or close relative(s), have no conflict of interest (Financial / Non-Financial) with the sponsor(s) and outcome of study.",
+    "If Conflict of interest is present, kindly declare and specify details",
+    "I/We declare / confirm that all necessary regulatory approvals will be obtained as per requirements wherever applicable.",
+  ];
+
+  const selectedDeclarations = Object.entries(data.declaration.declarations)
+    .filter(([_, value]) => value === true)
+    .map(([key], index) => checkboxLabels[parseInt(key.split('_')[1])]);
+
+  const templateData = { ...data, selectedDeclarations,  };
+
   const htmlContent = `
     <!DOCTYPE html>
     <html>
@@ -132,119 +155,104 @@ async function generateConsentPdf(data, fileName, project_ref) {
             `<div><span class="label">Other Details:</span> ${data.fundingData.other_funding_details}</div>`
           )}
 
-          ${data.fundingData.funding_source === "Self-funding" && data.funding_FormData && (
-            `<>
-              <div><span className="label">Proposed Budget:</span> ₹ ${data.funding_FormData.proposedBudget}</div>
-              <div><span className="label">Cost Per Patient:</span> ₹ ${data.funding_FormData.costPerPatient}</div>
-              <div><span className="label">Total Project Cost:</span> ₹ ${data.funding_FormData.totalProjectCost}</div>
-              <div><span className="label">NIMS Investigations:</span>
+          ${data.fundingData.funding_source === "Self-funding" && data.funding_FormData ? `
+            <div><strong>Proposed Budget:</strong> ₹ ${data.funding_FormData.proposedBudget}</div>
+            <div><strong>Cost Per Patient:</strong> ₹ ${data.funding_FormData.costPerPatient}</div>
+            <div><strong>Total Project Cost:</strong> ₹ ${data.funding_FormData.totalProjectCost}</div>
+            <div><strong>NIMS Investigations:</strong>
+              <ul>
+                ${data.funding_FormData.nimsInvestigations?.map(item => `
+                  <li>
+                    <div><strong>Name:</strong> ${item.name}</div>
+                    <div><strong>Cost:</strong> ${item.cost}</div>
+                  </li>`).join("")}
+              </ul>
+            </div>
+            <div><strong>Is Outsourced:</strong> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
+            <div><strong>Outsourced Investigations:</strong>
+              <ul>
+                ${data.funding_FormData.outsourcedInvestigations?.map(item => `
+                  <li>
+                    <div><strong>Name:</strong> ${item.name}</div>
+                    <div><strong>Cost:</strong> ${item.cost}</div>
+                    <div><strong>Lab:</strong> ${item.lab}</div>
+                    <div><strong>NABL:</strong> ${item.nabl}</div>
+                  </li>`).join("")}
+              </ul>
+            </div>
+                      ` : ""}
+
+            ${["Institutional funding", "Funding agency"].includes(data.fundingData.funding_source) && data.funding_FormData ? `
+              <div><strong>Funding Agency:</strong> ${data.funding_FormData.fundingAgency}</div>
+              <div><strong>Grant Per Patient:</strong> ₹${data.funding_FormData.grantPerPatient}</div>
+              <div><strong>Manpower Grant:</strong> ₹${data.funding_FormData.manpowerGrant}</div>
+              <div><strong>Total Grant:</strong> ₹${data.funding_FormData.totalGrant}</div>
+              <div><strong>NIMS Investigations:</strong>
                 <ul>
-                  ${data.funding_FormData.nimsInvestigations?.map((item, index) => (
-                    `<div>
-                      <div><span class="label">Name:</span> ${item.name}</div>
-                      <div><span class="label">Cost:</span> ${item.cost}</div>
-                    </div>`
-                  ))}
+                  ${data.funding_FormData.nimsInvestigations?.map(item => `
+                    <li>
+                      <div><strong>Name:</strong> ${item.name}</div>
+                      <div><strong>Cost:</strong> ${item.cost}</div>
+                    </li>`).join("")}
                 </ul>
               </div>
-              <div><span className="label">Is Outsourced:</span> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
-              <div><span className="label">Outsourced Investigations:</span>
+              <div><strong>Is Outsourced:</strong> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
+              <div><strong>Outsourced Investigations:</strong>
                 <ul>
-                  ${data.funding_FormData.outsourcedInvestigations?.map((item, index) => (
-                    `<div>
-                      <div><span class="label">Name:</span> ${item.name}</div>
-                      <div><span class="label">Cost:</span> ${item.cost}</div>
-                      <div><span class="label">Lab:</span> ${item.lab}</div>
-                      <div><span class="label">NABL:</span> ${item.nabl}</div>
-                    </div>`
-                  ))}
+                  ${data.funding_FormData.outsourcedInvestigations?.map(item => `
+                    <li>
+                      <div><strong>Name:</strong> ${item.name}</div>
+                      <div><strong>Cost:</strong> ${item.cost}</div>
+                      <div><strong>Lab:</strong> ${item.lab}</div>
+                      <div><strong>NABL:</strong> ${item.nabl}</div>
+                    </li>`).join("")}
                 </ul>
               </div>
-            </>`
-            )}
+            ` : ""}
 
-            ${(data.fundingData.funding_source === "Institutional funding" || 
-              data.fundingData.funding_source === "Funding agency") && data.funding_FormData && (
-              `<>
-                <div><span className="label">Funding Agency:</span> ${data.funding_FormData.fundingAgency}</div>
-                <div><span className="label">Grant Per Patient:</span> ₹${data.funding_FormData.grantPerPatient}</div>
-                <div><span className="label">Manpower Grant:</span> ₹${data.funding_FormData.manpowerGrant}</div>
-                <div><span className="label">Total Grant:</span> ₹${data.funding_FormData.totalGrant}</div>
-                <div><span className="label">NIMS Investigations:</span>
-                  <ul>
-                    ${data.funding_FormData.nimsInvestigations?.map((item, index) => (
-                      `<div key = ${index}>
-                        <div><span class="label">Name:</span> ${item.name}</div>
-                        <div><span class="label">Cost:</span> ${item.cost}</div>
-                      </div>`
-                    ))}
-                  </ul>
-                </div>
-                <div><span className="label">Is Outsourced:</span> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
-                <div><span className="label">Outsourced Investigations:</span>
-                  <ul>
-                    ${data.funding_FormData.outsourcedInvestigations?.map((item, index) => (
-                      `<div>
-                        <div><span class="label">Name:</span> ${item.name}</div>
-                        <div><span class="label">Cost:</span> ${item.cost}</div>
-                        <div><span class="label">Lab:</span> ${item.lab}</div>
-                        <div><span class="label">NABL:</span> ${item.nabl}</div>
-                      </div>`
-                    ))}
-                  </ul>
-                </div>
-              </>`
-            )}
-
-            ${data.fundingData.funding_source === "Pharmaceutical Industry sponsored" && data.funding_FormData && (
-              `<>
-                <div><span className="label">Sponsor Name:</span> ${data.funding_FormData.sponsorName}</div>
-                <div><span className="label">Sponsor PAN:</span> ${data.funding_FormData.sponsorPAN}</div>
-                <div><span className="label">Sponsor GST:</span> ${data.funding_FormData.sponsorGST}</div>
-                <div><span className="label">Total Grant:</span> ₹ ${data.funding_FormData.totalGrant}</div>
-                <div><span className="label">Budget Items:</span>
-                  <ul>
-                    ${data.funding_FormData.budgetItems?.map((item, index) => (
-                      `<div key = ${index}>
-                        <div><span class="label">${item.label}:</span> ${item.value}</div>
-                      </div>`
-                    ))}
-                  </ul>
-                </div>
-                <div><span className="label">NIMS Investigations:</span>
-                  <ul>
-                    ${data.funding_FormData.nimsInvestigations?.map((item, index) => (
-                      `<div key = ${index}>
-                        <div><span class="label">Name:</span> ${item.name}</div>
-                        <div><span class="label">Cost:</span> ${item.cost}</div>
-                      </div>`
-                    ))}
-                  </ul>
-                </div>
-                <div><span className="label">Personnel:</span>
-                  <ul>
-                    ${data.funding_FormData.personnel?.map((person, index) => (
-                      `<div key = ${index}>
-                        <div><span class="label">Designation:</span> ${item.designation}</div>
-                        <div><span class="label">Fees:</span> ${item.fees}</div>
-                      </div>`
-                    ))}
-                  </ul>
-                </div>
-                <div><span className="label">Is Outsourced:</span> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
-                <div><span className="label">Outsourced Investigations:</span>
-                  <ul>
-                    ${data.funding_FormData.outsourcedInvestigations?.map((item, index) => (
-                      `<div>
-                        <div><span class="label">Name:</span> ${item.name}</div>
-                        <div><span class="label">Lab:</span> ${item.lab}</div>
-                        <div><span class="label">NABL:</span> ${item.nabl}</div>
-                      </div>`
-                    ))}
-                  </ul>
-                </div>
-              </>`
-            )}
+            ${data.fundingData.funding_source === "Pharmaceutical Industry sponsored" && data.funding_FormData ? `
+              <div><strong>Sponsor Name:</strong> ${data.funding_FormData.sponsorName}</div>
+              <div><strong>Sponsor PAN:</strong> ${data.funding_FormData.sponsorPAN}</div>
+              <div><strong>Sponsor GST:</strong> ${data.funding_FormData.sponsorGST}</div>
+              <div><strong>Total Grant:</strong> ₹ ${data.funding_FormData.totalGrant}</div>
+              <div><strong>Budget Items:</strong>
+                <ul>
+                  ${data.funding_FormData.budgetItems?.map(item => `
+                    <li>
+                      <div><strong>${item.label}:</strong> ${item.value}</div>
+                    </li>`).join("")}
+                </ul>
+              </div>
+              <div><strong>NIMS Investigations:</strong>
+                <ul>
+                  ${data.funding_FormData.nimsInvestigations?.map(item => `
+                    <li>
+                      <div><strong>Name:</strong> ${item.name}</div>
+                      <div><strong>Cost:</strong> ${item.cost}</div>
+                    </li>`).join("")}
+                </ul>
+              </div>
+              <div><strong>Personnel:</strong>
+                <ul>
+                  ${data.funding_FormData.personnel?.map(item => `
+                    <li>
+                      <div><strong>Designation:</strong> ${item.designation}</div>
+                      <div><strong>Fees:</strong> ${item.fees}</div>
+                    </li>`).join("")}
+                </ul>
+              </div>
+              <div><strong>Is Outsourced:</strong> ${data.funding_FormData.isOutsourced ? "Yes" : "No"}</div>
+              <div><strong>Outsourced Investigations:</strong>
+                <ul>
+                  ${data.funding_FormData.outsourcedInvestigations?.map(item => `
+                    <li>
+                      <div><strong>Name:</strong> ${item.name}</div>
+                      <div><strong>Lab:</strong> ${item.lab}</div>
+                      <div><strong>NABL:</strong> ${item.nabl}</div>
+                    </li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
         </div>
 
         <h2>5. Overview Research</h2>
@@ -265,7 +273,14 @@ async function generateConsentPdf(data, fileName, project_ref) {
         <h2>7. Participants</h2>
         <div class="section">
           <div><span class="label">Type:</span> ${data.participants.participant_type}</div>
-          <div><span class="label">Vulnerable Groups:</span> ${data.participants.vulnerable_groups.join(', ')}</div>
+          <div>
+            <span class="label">Vulnerable Groups:</span>
+            <ul>
+              ${data.participants.vulnerable_groups?.map((group) => (
+                `<li>${group}</li>`
+              )).join('')}
+            </ul>
+          </div>
           <div><span class="label">Other Participant:</span> ${data.participants.other_participant}</div>
           <div><span class="label">Reimbursement:</span> ${data.participants.reimbursement}</div>
           <div><span class="label">Details:</span> ${data.participants.reimbursement_details}</div>
@@ -309,11 +324,34 @@ async function generateConsentPdf(data, fileName, project_ref) {
         </div>
 
         <h2>13. Declaration</h2>
-        <div class="section">
-          <div><span class="label">PI Name:</span> ${data.declaration.pi_name}</div>
-          <div><span class="label">Guide Name:</span> ${data.declaration.guide_name}</div>
-          <div><span class="label">HOD Name:</span> ${data.declaration.hod_name}</div>
-        </div>
+        <ul>
+          ${selectedDeclarations.map(label => `<li>${label}</li>`).join('')}
+        </ul>
+
+        <h4>Principal Investigator</h4>
+        <div><strong>Name:</strong> ${data.declaration.pi_name}</div>
+        <div><strong>Signature:</strong> ${data.declaration.pi_signature}</div>
+        <div><strong>Date:</strong> ${data.declaration.pi_date || "N/A"}</div>
+
+        <h4>Guide</h4>
+        <div><strong>Name:</strong> ${data.declaration.guide_name}</div>
+        <div><strong>Signature:</strong> ${data.declaration.guide_signature}</div>
+        <div><strong>Date:</strong> ${data.declaration.guide_date || "N/A"}</div>
+
+        <h4>Head of Department</h4>
+        <div><strong>Name:</strong> ${data.declaration.hod_name}</div>
+        <div><strong>Signature:</strong> ${data.declaration.hod_signature}</div>
+        <div><strong>Date:</strong> ${data.declaration.hod_date || "N/A"}</div>
+
+        <h4>Co-Investigator 1</h4>
+        <div><strong>Name:</strong> ${data.declaration.co1_name}</div>
+        <div><strong>Signature:</strong> ${data.declaration.co1_signature}</div>
+        <div><strong>Date:</strong> ${data.declaration.co1_date || "N/A"}</div>
+
+        <h4>Co-Investigator 2</h4>
+        <div><strong>Name:</strong> ${data.declaration.co2_name}</div>
+        <div><strong>Signature:</strong> ${data.declaration.co2_signature}</div>
+        <div><strong>Date:</strong> ${data.declaration.co2_date || "N/A"}</div>
 
         <h2>14. Checklist</h2>
         <div class="section" style = "margin-bottom : 20px;">

@@ -1,11 +1,11 @@
-import { useState,useEffect } from "react";
+import React, { useState,useEffect, useRef } from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
 
 import TableComponent12 from  "./components/TableComponent12.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { IconButton, Tooltip } from '@mui/material';
+
+import {useProject} from "../../components/ResearchContext";
 
 const Section10 = ({selectedForm}) => {
   const [name_of_pi_research, setNameOfPiResearch] = useState("");
@@ -13,6 +13,7 @@ const Section10 = ({selectedForm}) => {
   const [date_pi, setDatePi] = useState(new Date().toISOString().split("T")[0]);
 
   const [selectedElements, setSelectedElements] = useState([]);
+  const fetchOnce = useRef(false);
 
   const [name_of_co_pi_guide, setNameOfCoPiGuide] = useState("");
   const [sign_2, setSign2] = useState("");
@@ -49,6 +50,19 @@ const Section10 = ({selectedForm}) => {
     "I/We confirm that we will maintain accurate and complete records of all aspects of the study.",
     " I/We will protect the privacy of participants and assure safety and confidentiality of study data and biological samples.",
   ];
+
+    //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (editableData) {
@@ -114,13 +128,21 @@ const Section10 = ({selectedForm}) => {
   const confirmSubmit = async () => {
       const userResponse = await axiosInstance.post( "/api/research/declaration",
         {
-          selectedElements: selectedElements, 
+          selected_elements: selectedElements, 
           name_of_pi_research, date_pi, sign_1, 
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
           name_of_co_investigator_1,  date_co_inv_1, sign_3, 
           name_of_co_investigator_2, date_co_inv_2, sign_4, email
         }, 
+        {
+          params: {
+            selectedForm: selectedForm,
+            isEdit: editableData && Object.keys(editableData).length > 0 ? "true" : "false",
+            tableName: "declaration",
+            formId: (editableData && Object.keys(editableData).length > 0 ) ? editableData?.form_id : projectId
+          },
+        }
       );
      
       console.log("User created:", userResponse.data); 
@@ -138,7 +160,8 @@ const Section10 = ({selectedForm}) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"declaration"// or hardcoded for now
+            form_type:"declaration",              // or hardcoded for now
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

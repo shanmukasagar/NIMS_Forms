@@ -32,7 +32,7 @@ const administartion = async (req, res) => {
     else{
       const result = await administrationDetails(formData, form_type);
       if (result) {
-        return res.status(200).json({ idd: result.rows[0].idd });
+        return res.status(200).json({ formId: result});
       }
     }
     return res.status(400).json("Error occured");
@@ -72,7 +72,7 @@ const submitInvestigators = async (req, res) => {
         }
     }
     else{
-      const result = await saveInvestigatorDetails(validInvestigators, email, form_type);
+      const result = await saveInvestigatorDetails(validInvestigators, email, form_type, numericFormId);
       return res.status(200).json({ message: "Investigators saved successfully", ids: result.map(r => r.id) });
     }
     return res.status(400).json("Error occured");
@@ -97,7 +97,7 @@ const fundingBudget = async (req, res) => {
         }
     }
     else{
-      const result = await fundingBudgetDetails(formData, form_type, fundingTableName);
+      const result = await fundingBudgetDetails(formData, form_type, fundingTableName, numericFormId);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }
@@ -124,7 +124,7 @@ const overviewResearch = async (req, res) => {
         }
     }
     else{
-      const result = await overviewResearchDetails(formData, form_type);
+      const result = await overviewResearchDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }
@@ -151,7 +151,7 @@ const participantRelatedInformation = async (req, res) => {
         }
     }
     else{
-      const result = await participantRelatedInformationDetails(formData, form_type);
+      const result = await participantRelatedInformationDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ idd: result.rows[0].idd });
       }
@@ -178,7 +178,7 @@ const benefitsAndRisk = async (req, res) => {
         }
     }
     else{
-      const result = await benefitsAndRiskDetails(formData, form_type);
+      const result = await benefitsAndRiskDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ idd: result.rows[0].idd });
       }
@@ -206,7 +206,7 @@ const paymentCompensation = async (req, res) => {
         }
     }
     else{
-      const result = await paymentCompensationDetails(formData, form_type);
+      const result = await paymentCompensationDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }
@@ -233,7 +233,7 @@ const storageAndConfidentiality= async (req, res) => {
         }
     }
     else{
-      const result = await storageAndConfidentialityDetails(formData, form_type);
+      const result = await storageAndConfidentialityDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }
@@ -262,7 +262,7 @@ const additionalInformation= async (req, res) => {
         }
     }
     else{
-      const result = await additionalInformationDetails(formData, form_type);
+      const result = await additionalInformationDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }
@@ -323,7 +323,7 @@ const administrativeRequirements = async (req, res) => {
       const updated = await updateAdminFiles(parsedFiles, numericFormId);
       return res.status(200).json({ message: "Updated modified files.", updatedCount: updated });
     } else {
-      const inserted = await insertAdminFiles(parsedFiles, email, form_type);
+      const inserted = await insertAdminFiles(parsedFiles, email, form_type, numericFormId);
       return res.status(200).json({ message: "All files uploaded.", insertedCount: inserted });
     }
   } catch (err) {
@@ -348,7 +348,7 @@ const declaration= async (req, res) => {
         }
     }
     else{
-      const result = await declarationDetails(formData, form_type);
+      const result = await declarationDetails(formData, form_type, numericFormId);
       if (result) {
         return res.status(200).json({ id: result.rows[0].id });
       }
@@ -426,7 +426,7 @@ const informedConsent = async (req, res) => {
         }
     }
     else{
-      const result = await insertInformedConsent(formData, form_type);
+      const result = await insertInformedConsent(formData, form_type, numericFormId);
       return res.status(200).json({ id: result.rows[0].id });
     }
     
@@ -435,12 +435,10 @@ const informedConsent = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
   
 
 module.exports = {
   administartion,fundingBudget,overviewResearch,administrativeRequirements, participantRelatedInformation,benefitsAndRisk,  
     paymentCompensation, storageAndConfidentiality,additionalInformation,declaration,expeditedReview,  requestingWaiver, 
-    informedConsent,submitInvestigators
+    informedConsent, submitInvestigators
 };

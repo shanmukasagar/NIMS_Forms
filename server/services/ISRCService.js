@@ -84,7 +84,7 @@ const chairMemberComments = async (data) => {
         await connectToMongo(); //connect to database
         const projectsCollection = getDB().collection("Projects");
         const result = await projectsCollection.updateOne( { project_ref: data.project_ref },
-            { $set: { comments: data.comments, status : data.status } }
+            { $set: { isrc_inv_comments: data.comments, status : data.status } }
         );
         if(result.modifiedCount >= 0) {
             return true;

@@ -1,9 +1,12 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect, useRef } from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
 
 import TableComponent6 from  "./components/TableComponent6.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext";
+
+
 const Section5 = ({selectedForm}) => {
   const [anticipated_type, setAnticipatedType] = useState("");
   const [reimbursement_details, setReimbursementDetails] = useState("");
@@ -17,7 +20,22 @@ const Section5 = ({selectedForm}) => {
   const [openTable, setOpenTable] = useState(false);
   const [editableData, setEditableData] = useState({});
   const [email]=useState("");
+
   const navigate = useNavigate();
+  const fetchOnce = useRef(false);
+
+    //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
 
   const handlePreview = (e) => {
     e.preventDefault();
@@ -45,7 +63,11 @@ const Section5 = ({selectedForm}) => {
         {
           improvement_benefits, reimbursement_details,
           management_strategy, participant_benefits, anticipated_type, society_benefits, email,
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "benefits_and_risk", formId : editableData?.form_id}}
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
+          tableName : "benefits_and_risk", 
+          formId : (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId, 
+        }}
       );
       console.log("User created:", userResponse.data);
       navigate("/participant/informedconsent");
@@ -61,7 +83,8 @@ const Section5 = ({selectedForm}) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"benefits_and_risk"// or hardcoded for now
+            form_type:"benefits_and_risk",  // or hardcoded for now
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

@@ -1,17 +1,9 @@
 import React, { useState } from "react";
-import {
-    Typography,
-    Radio,
-    RadioGroup,
-    FormControlLabel,
-    Button,
-    TextField,
-    Paper,
-    Box
-} from "@mui/material";
+import { Typography, Radio, RadioGroup, FormControlLabel, Button, TextField, Paper, Box } from "@mui/material";
 
 import "../../../styles/Investigators/studylist.css";
 import { useNavigate } from "react-router-dom";
+import {useProject} from "../../../components/ResearchContext";
 
 const studyOptions = [
   { key: "a", label: "Regulatory clinical trial" },
@@ -34,15 +26,22 @@ export default function StudyList({setSelectedForm}) {
   const [otherText, setOtherText] = useState("");
   const navigate = useNavigate();
 
+  // Context
+    const { setProjectId, newProject, setnewProject } = useProject();
+
   const handleProceed = () => {
     if (["a", "b", "c"].includes(selected)) {
         setSelectedForm('');
        navigate("/addclinicaltrails")
     } else if (["d", "e", "f", "g", "h", "i", "j"].includes(selected)) {
         setSelectedForm('biomedical-1');
-       navigate("/basic/administrative")
+        setnewProject(true);
+        setProjectId(null);
+       navigate("/basic/administrative");
     } else if (["k", "l"].includes(selected)) {
         setSelectedForm('biomedical-2');
+        setnewProject(true);
+        setProjectId(null);
         navigate("/basic/administrative")
     } else if (selected === "m") {
         alert("For 'Any other', please discuss with SRC.\n" + otherText);

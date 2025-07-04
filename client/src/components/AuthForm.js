@@ -31,7 +31,7 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
             try {
                 const res = await axiosInstance.post('/api/user/register', formData,);
                 alert(res.data);
-                navigate('/investigator');
+                handleLoginRegister();
                 return ;
             } catch (err) {
                 setError(err.response?.data || 'Registration failed');
@@ -96,8 +96,8 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                         <React.Fragment>
                             <TextField label="Username" name="username" fullWidth value={formData.username} 
                                 onChange={handleChange} required />
-                            <TextField label="Email" name="email" type="email" fullWidth value={formData.email}
-                                onChange={handleChange} required />
+                            <TextField label="Employee Code" name="email" fullWidth value={formData.email}
+                                onChange={handleChange} required type = "number"/>
                             <TextField label="Mobile" name="mobile" fullWidth value={formData.mobile}
                                 onChange={handleChange} required inputProps={{ maxLength: 10 }} />
                             <TextField label="Password" name="password" type={showPassword ? 'text' : 'password'}
@@ -109,7 +109,7 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                     )}
                     {!isRegistering && (
                     <React.Fragment>
-                        <TextField label="Email" name="email" fullWidth value={formData.email} 
+                        <TextField label="Employee Code" name="email" fullWidth value={formData.email} 
                             onChange={handleChange} required />
                         <TextField label="Password" name="password" type={showPassword ? 'text' : 'password'} 
                             fullWidth value={formData.password} onChange={handleChange} required 

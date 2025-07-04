@@ -32,7 +32,7 @@ const FundingSummaryCard = ({ data, setOpenTable, setEditableData }) => {
       </Box>
 
       <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle1" fontWeight={500}>Email:</Typography>
+        <Typography variant="subtitle1" fontWeight={500}>Employee code:</Typography>
         <Typography variant="body1">{entry.email || "—"}</Typography>
       </Box>
 

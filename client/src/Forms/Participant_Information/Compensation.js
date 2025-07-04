@@ -1,8 +1,10 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../App.css";
 import TableComponent8 from  "./components/TableComponent8.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext";
+
 const Section7 = ({selectedForm}) => {
 
  const [waiver_consent_type, setWaiverConsentType] = useState("");
@@ -10,12 +12,27 @@ const Section7 = ({selectedForm}) => {
  const [specific, setSpecific] = useState("");
  const [compensation_research_of_type, setCompensationResearchOfType] =useState("");
 
+  const fetchOnce = useRef(false);
+
  const [showPreview, setShowPreview] = useState(false);
  const[existData,setExistData]=useState(null)
  const [email,]=useState("");
  const navigate = useNavigate();
  const [openTable, setOpenTable] = useState(false);
  const [editableData, setEditableData] = useState({});
+
+   //context
+   const { projectId } = useProject();
+ 
+   useEffect(() => {
+     if(!fetchOnce.current) {
+       fetchOnce.current = true;
+       if (!projectId) { // Redirect to dashboard if project id is not there filled
+         alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+         navigate('/investigator');
+       }
+     }
+   }, []);
  
  const handlePreview = (e) => {
     e.preventDefault();
@@ -29,7 +46,11 @@ const Section7 = ({selectedForm}) => {
       const userResponse = await axiosInstance.post("/api/research/payment_compensation",
         {
           waiver_consent_type, specify,compensation_research_of_type,  specific,email,
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "payment_compensation", formId : editableData?.form_id}}
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
+          tableName : "payment_compensation",
+          formId : (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId,
+        }}
       );
       console.log("User created:", userResponse.data);
       navigate("/participant/confidentiality");
@@ -55,7 +76,8 @@ const Section7 = ({selectedForm}) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"payment_compensation"// or hardcoded for now
+            form_type:"payment_compensation", // or hardcoded for now
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

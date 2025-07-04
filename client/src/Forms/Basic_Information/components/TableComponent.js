@@ -24,36 +24,40 @@ const TableComponent = ({ data, setOpenTable, setEditableData }) => {
           <p><strong>Name:</strong> {entry.name_of_research_principal}</p>
           <p><strong>Department:</strong> {entry.department}</p>
           <p><strong>Submission Date:</strong> {entry.date?.slice(0, 10)}</p>
-          <p><strong>Title:</strong> {entry.title}</p>
+          <p><strong>Study Title:</strong> {entry.title}</p>
           <p><strong>Review Requested:</strong> {entry.review_requested}</p>
           <p><strong>Protocol Number:</strong> {entry.protocol_number}</p>
           <p><strong>Version Number:</strong> {entry.version_number}</p>
           <p><strong>Email:</strong> {entry.email}</p>
           <p><strong>Dated:</strong> {entry.date_1}</p>
-          <p><strong>Summary:</strong> {entry.summary}</p>
-
-          <p><strong>Selected Elements:</strong></p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
-            {Array.isArray(entry.selected_elements) && entry.selected_elements.length > 0 ? (
-              entry.selected_elements.map((item, i) => (
-                <span
-                  key={i}
-                  style={{
-                    backgroundColor: "#e0f2f1",
-                    color: "#00796b",
-                    padding: "4px 10px",
-                    borderRadius: "20px",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                  }}
-                >
-                  {item}
-                </span>
-              ))
-            ) : (
-              <span style={{ fontStyle: "italic", color: "#777" }}>None</span>
-            )}
-          </div>
+          <p><strong>Brief Summary:</strong> {entry.summary}</p>
+          {entry.review_requested === "Expedited Review" && (
+            <>
+              <p><strong>Expedited review reasons:</strong></p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
+                {Array.isArray(entry.selected_elements) && entry.selected_elements.length > 0 ? (
+                  entry.selected_elements.map((item, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        backgroundColor: "#e0f2f1",
+                        color: "#00796b",
+                        padding: "4px 10px",
+                        borderRadius: "20px",
+                        fontSize: "13px",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {item}
+                    </span>
+                  ))
+                ) : (
+                  <span style={{ fontStyle: "italic", color: "#777" }}>None</span>
+                )}
+              </div>
+            </>
+          )}
+          
 
           <p><strong>Other Reason:</strong> {entry.other_reason}</p>
         </div>

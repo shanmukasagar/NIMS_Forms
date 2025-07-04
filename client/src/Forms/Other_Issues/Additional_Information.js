@@ -1,11 +1,14 @@
-import { useState ,useEffect} from "react";
+import { useState ,useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 import TableComponent10 from  "./components/TableComponent10.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext";
 
 const Section9 = ({selectedForm}) => {
 const [support_type, setSupportType] = useState("");
 const [additional, setAdditional] = useState("");
+
+const fetchOnce = useRef(false);
 
 const [preview, setPreview] = useState(false); 
 const navigate = useNavigate();
@@ -13,6 +16,19 @@ const[existData,setExistData]=useState(null)
 const [openTable, setOpenTable] = useState(false);
 const [editableData, setEditableData] = useState({});
 const [email]=useState("");
+
+ //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
 
 useEffect(() => {
   if (editableData) {
@@ -37,7 +53,11 @@ const handlePreview = (e) => {
           support_type,
           additional, 
           email,
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "additional_information", formId : editableData?.form_id}}
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
+          tableName : "additional_information", 
+          formId: (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId, 
+      }}
       );
       console.log("User created:", userResponse.data);
       navigate("/declaration");
@@ -53,7 +73,8 @@ useEffect(() => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"additional_information"// or hardcoded for now
+            form_type:"additional_information",// or hardcoded for now
+            formId : projectId
           }
         });
   

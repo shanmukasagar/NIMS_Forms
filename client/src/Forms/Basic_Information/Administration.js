@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import TableComponent from "./components/TableComponent.js"; 
 import "../../App.css";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext.js";
 
 function Administration({ setAdminId, selectedForm }) {
   const [name_of_research_principal, setNameOfResearchPrincipal] = useState("");
@@ -17,6 +18,11 @@ function Administration({ setAdminId, selectedForm }) {
   const [summary, setSummary] = useState("");
   const [selectedElements, setSelectedElements] = useState([]);
   const [otherReason, setOtherReason] = useState("");
+
+  const fetchOnce = useRef(false);
+
+  // Context
+  const { projectId, setProjectId, newProject, setnewProject } = useProject();
 
   const elementsList = [
     "No more than minimal risk to the trial participants",
@@ -63,10 +69,8 @@ function Administration({ setAdminId, selectedForm }) {
             },
           }
         );
-
-        const idd = userResponse.data.idd;
-        console.log("User created:", userResponse.data);
-        setAdminId(idd);
+        setProjectId(userResponse.data.formId);
+        setnewProject(false);
         navigate("/basic/details");
       } catch (error) {
         console.error(
@@ -76,12 +80,22 @@ function Administration({ setAdminId, selectedForm }) {
     }
 
   useEffect(() => {
+    if(!fetchOnce.current) {
+      if(!projectId && !newProject) {
+        navigate("/investigator");
+      }
+      fetchOnce.current = true;
+    }
+  },[])
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin",
           {
             params: {
               form_type: "administrativee_details", 
+              formId : newProject ? "" : projectId
             },
           }
         );
@@ -138,7 +152,7 @@ function Administration({ setAdminId, selectedForm }) {
           <p><strong>Name of Research principal:</strong> {name_of_research_principal}</p>
           <p><strong>Department:</strong> {department}</p>
           <p><strong>Submission Date:</strong> {date}</p>
-          <p><strong>Title:</strong> {title}</p>
+          <p><strong>Study Title:</strong> {title}</p>
           <p><strong>Review requested:</strong> {review_requested}</p>
           <p><strong>Protocol Number:</strong> {protocol_number}</p>
           <p><strong>Version Number:</strong> {version_number}</p>
@@ -146,7 +160,7 @@ function Administration({ setAdminId, selectedForm }) {
 
           {review_requested === "Expedited Review" && (
             <>
-              <p><strong>Summary:</strong> {summary}</p>
+              <p><strong>Brief Summary:</strong> {summary}</p>
               <p><strong>Expedited Review Reasons:</strong></p>
               <ul>
                 {selectedElements.map((item, index) => (

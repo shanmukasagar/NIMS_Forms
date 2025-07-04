@@ -1,7 +1,7 @@
 const {pool} = require("../models/db");
 const {connectToMongo, getDB} = require("../models/db");
 const { v4: uuidv4 } = require('uuid');
-const sendEmail = require("../config/SendEmail");
+const {sendEmail} = require("../config/SendEmail");
 const {FundingTableInsertion, FundingTableUpdate} = require("../config/FundingTableConfig");
 
 const formatDateForPostgres = (dateStr) => {
@@ -221,13 +221,14 @@ const addClinicalService = async(formData) => {
             "comments" : "",
             "project_title" : administration.study_title,
             "reviewer_id" : "",
-            "reviewer_name" : "",
+            "reviewer_name" : "", isrc_inv_comments: '', pbac_inv_comments: '', niec_inv_comments: '',
             "project_pdf" : "",
             type : "clinical",
             form_type : "Principal/CoInvestigator",
             investigator_name : administration.name,
             investigator_dep : administration.department,
-            "allowedEmployees" : allowedEmployees
+            "allowedEmployees" : allowedEmployees,
+            form_number : formId
         }
 
         const result = await projectsCollection.insertOne(newProjectData);

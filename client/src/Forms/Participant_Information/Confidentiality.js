@@ -1,10 +1,14 @@
-import React, { useState ,useEffect} from "react";
+import React, { useState ,useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../App.css";
 import TableComponent9 from  "./components/TableComponent9.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext";
+
 const Section8 = ({selectedForm}) => {
+
+  const fetchOnce = useRef(false);
 
  const[sample_access_type,setSampleAccessType]=useState("");
  const[sample_details,setSampleDetails]=useState("");
@@ -20,6 +24,19 @@ const Section8 = ({selectedForm}) => {
  const navigate = useNavigate();
  const [openTable, setOpenTable] = useState(false);
  const [editableData, setEditableData] = useState({});
+
+ //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
  
   const handlePreview = (e) => {
     e.preventDefault();
@@ -36,7 +53,11 @@ const Section8 = ({selectedForm}) => {
         {
           document_access_type, access_details,
           drugs_access_type,control_details, sample_access_type,  sample_details,  email,
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "storage_and_confidentiality", formId : editableData?.form_id}}
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
+          tableName : "storage_and_confidentiality", 
+          formId : (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId,
+        }}
       );
       console.log("User created:", userResponse.data);
       navigate("/issues/additional");
@@ -65,7 +86,8 @@ const Section8 = ({selectedForm}) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"storage_and_confidentiality"// or hardcoded for now
+            form_type:"storage_and_confidentiality",     // or hardcoded for now
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

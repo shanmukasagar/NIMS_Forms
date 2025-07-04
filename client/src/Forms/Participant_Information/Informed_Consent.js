@@ -1,12 +1,12 @@
-import { useState ,useEffect} from "react";
+import { useState ,useEffect, useRef} from "react";
 import "../../App.css";
 import { useNavigate } from "react-router-dom";
 import TableComponent7 from  "./components/TableComponent7.js";
 import axiosInstance from "../../components/AxiosInstance.js";
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { IconButton, Tooltip } from '@mui/material';
+import {useProject} from "../../components/ResearchContext";
 
 function Section6({selectedForm}) {
+
   const [seeking_waiver_of_consent_type, setSeekingWaiverOfConsentType] = useState("");
   const [version_number, setVersionNumber] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -21,6 +21,7 @@ function Section6({selectedForm}) {
   const [selectedElements, setSelectedElements] = useState([]);
   const [summary, setSummary] = useState("");
 
+  const fetchOnce = useRef(false);
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
   const [email]=useState("");
@@ -31,6 +32,19 @@ function Section6({selectedForm}) {
 
   const [previewURL, setPreviewURL] = useState(null);
   const [image, setImage] = useState(null);
+
+  //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (editableData) {
@@ -158,7 +172,11 @@ function Section6({selectedForm}) {
       const userResponse = await axiosInstance.post("/api/research/informedd_consent",
         {seeking_waiver_of_consent_type, version_number, date, selectedLanguages, languageDetails, otherLanguageName, 
           PISSelectedItems, PISOtherText, certificates, subject, specify, selected_elements : selectedElements, summary, email
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "informedd_consent", formId : editableData?.form_id}}
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
+          tableName : "informedd_consent", 
+          formId : (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId,
+        }}
       );
       console.log("User created:", userResponse.data);
       navigate("/participant/compensation");
@@ -175,7 +193,8 @@ function Section6({selectedForm}) {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"informedd_consent"// or hardcoded for now
+            form_type:"informedd_consent",   // or hardcoded for now
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

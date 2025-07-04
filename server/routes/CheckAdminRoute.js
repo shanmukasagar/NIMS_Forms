@@ -23,7 +23,8 @@ const VALID_TABLES = {
 const FUNDING_TABLES = {
   "self-funding": "self_funded_studies",
   "institutional": "funding_studies",
-  "agency": "industry_sponsored_studies"
+  "agency": "funding_studies",
+  "Pharmaceutical Industry sponsored" : "industry_sponsored_studies"
 };
 
 // Mapping of DB column names to frontend variable names
@@ -82,7 +83,7 @@ const convertToFrontendKeys = (row, table) => {
 
 // GET /admin route
 router.get("/admin", verifyToken, async (req, res) => {
-  const { form_type } = req.query;
+  const { form_type, formId } = req.query;
   const email = req.user?.email;
 
   if (!form_type || !email) {
@@ -95,17 +96,6 @@ router.get("/admin", verifyToken, async (req, res) => {
   }
 
   try {
-    const formResult = await pool.query(
-      `SELECT * FROM forms WHERE email = $1`,
-      [email]
-    );
-
-    if (formResult.rows.length === 0) {
-      return res.status(200).json([]);
-    }
-
-    const formId = formResult.rows[0].id;
-
     const result = await pool.query(
       `SELECT * FROM ${tableName} WHERE form_id = $1`,
       [formId]

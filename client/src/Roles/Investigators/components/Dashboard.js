@@ -12,6 +12,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {  Table, TableHead, TableBody, TableRow, TableCell, 
      Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useProject} from "../../../components/ResearchContext";
 
 const Dashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
@@ -20,13 +21,18 @@ const Dashboard = ({user, setSelectedForm}) => {
     const [projectView, setProjectView] = useState({});
     const [openPreview, setOpenPreview] = useState(false);
     const [openChangesComments, setOpenChangescomments] = useState(false);
-    const [projectId, setProjectId] = useState('');
+    const [projectId, setProjectRef] = useState('');
 
     const [projectChanges, setProjectChanges] = useState([{ change: '', description: '' }]);
     const [selectedOption, setSelectedOption] = useState(''); // default option
+    const [selectedOrg, setSelectedOrg] = useState('');
+    const [selectedProject, setSelectedProject] = useState({});
 
     const navigate = useNavigate();
     const fetchOnce = useRef(false);
+
+    // Context
+    const { setProjectId, setnewProject } = useProject();
 
     const statusColors = { pending : "orange", reviewed : "blue", approved : "green", rejected : "red"};
 
@@ -46,12 +52,17 @@ const Dashboard = ({user, setSelectedForm}) => {
         handleGetProjects();
     },[])
 
+    //Show comments of isrc, niec, pbac
+    const handleSelectChange = (event) => {
+        setSelectedOrg(event.target.value);
+    };
+
     const handleNewProject = () => { //Handle new project
         navigate("/investigator/studylist");
     }
 
-    const handleOpenComment = (comment) => { //Open comment
-        setSelectedComment(comment || 'No comments available.');
+    const handleOpenComment = (projectItem) => { //Open comment
+        setSelectedProject(projectItem);
         setOpen(true);
     };
 
@@ -68,10 +79,14 @@ const Dashboard = ({user, setSelectedForm}) => {
         try {
             if(item.form_type === "biomedical-1") {
                 setSelectedForm("biomedical-1");
+                setProjectId(item.form_number);
+                setnewProject(null);
                 navigate("/basic/administrative")
             }
             else if(item.form_type === "biomedical-2") {
                 setSelectedForm("biomedical-2");
+                setProjectId(item.form_number);
+                setnewProject(null);
                 navigate("/basic/administrative")
             }
             else{
@@ -85,18 +100,23 @@ const Dashboard = ({user, setSelectedForm}) => {
     };
 
     const handleEditIcon = async (item) => { // Handle Edit icon
-        if(item.comments === "") {
-            alert("Editing is only allowed when comments are provided.");
-            return;
+        if((item.isrc_inv_comments === "" && 
+            item.niec_inv_comments === "" && item.pbac_inv_comments === "") && item.project_id !== "") {
+                alert("Editing is only allowed when comments are provided.");
+                return;
         }
         else{
             try {
                 if(item.form_type === "biomedical-1") {
                     setSelectedForm("biomedical-1");
+                    setProjectId(item.form_number);
+                    setnewProject(null);
                     navigate("/basic/administrative")
                 }
                 else if(item.form_type === "biomedical-2") {
                     setSelectedForm("biomedical-2");
+                    setProjectId(item.form_number);
+                    setnewProject(null);
                     navigate("/basic/administrative")
                 }
                 else{
@@ -143,7 +163,7 @@ const Dashboard = ({user, setSelectedForm}) => {
     // Handle investigator changes comments
     const handlePIComments = async (item) => {
         setOpenChangescomments(true);
-        setProjectId(item.project_ref)
+        setProjectRef(item.project_ref)
         setProjectChanges([{ change: '', description: '' }]);
     }
 
@@ -222,11 +242,13 @@ const Dashboard = ({user, setSelectedForm}) => {
                                 <Grid item size={1}><Typography sx={{ fontSize: "18px", color : `${statusColors[item.status]}` }}>{item.status}</Typography></Grid>
                                 <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
-                                    <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
-                                        onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
+                                    {item.project_pdf !== "" && (
+                                        <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
+                                            onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
+                                    )}
                                 </Grid>
                                 <Grid item size={1}>
-                                    <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenComment(item.comments)}/>
+                                    <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenComment(item)}/>
                                 </Grid>
                                 <Grid item size={1}> 
                                     <Edit sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleEditIcon(item)} />
@@ -239,7 +261,26 @@ const Dashboard = ({user, setSelectedForm}) => {
             </Box>
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
                 <DialogTitle>Comment</DialogTitle>
-                <DialogContent><Typography>{selectedComment}</Typography></DialogContent>
+                <DialogContent>
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel id="org-select-label">Select Organization</InputLabel>
+                        <Select labelId="org-select-label" value={selectedOrg}
+                            label="Select Organization" onChange={handleSelectChange} >
+                            <MenuItem value="NIEC">NIEC</MenuItem>
+                            <MenuItem value="ISRC">ISRC</MenuItem>
+                            <MenuItem value="PBAC">PBAC</MenuItem>
+                        </Select>
+                    </FormControl>
+                    {selectedOrg &&  selectedOrg === "NIEC" && (
+                        <Typography variant="body1">{ selectedProject?.niec_inv_comments || 'No comment available.'} </Typography>
+                    )}
+                    {selectedOrg &&  selectedOrg === "ISRC" && (
+                        <Typography variant="body1">{ selectedProject?.isrc_inv_comments || 'No comment available.'} </Typography>
+                    )}
+                    {selectedOrg &&  selectedOrg === "PBAC" && (
+                        <Typography variant="body1">{ selectedProject?.pbac_inv_comments || 'No comment available.'} </Typography>
+                    )}
+                </DialogContent>
             </Dialog>
             {Object.keys(projectView).length > 0 && (
                 <PreviewPopup open={openPreview} onClose={() => setOpenPreview(false)}

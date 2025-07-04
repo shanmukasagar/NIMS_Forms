@@ -4,19 +4,17 @@ const bcrypt = require('bcryptjs');
 const userRegistration = async(userData) => {
     try{
         await connectToMongo(); //connect to database
-        const userCollection = getDB().collection("Users");
+        const employeeCollection = getDB().collection("Employees");
 
-        const isUserExist = await userCollection.findOne({email : userData.email});
+        const isUserExist = await employeeCollection.findOne({emp_code : Number(userData.email)});
         if (isUserExist) {
-            return {success : false, message : "Email Already Exist"};
+            return {success : false, message : "Employee code Already Exist"};
         }
-        const hashedPassword = await bcrypt.hash(userData.password, 10);
-        userData.password = hashedPassword;
 
-        const data = {username : userData.username, email: userData.email, password: userData.password, 
+        const data = {name : userData.username, emp_code: Number(userData.email), emp_pwd: userData.password, 
             mobile: userData.mobile};
 
-        const result = await userCollection.insertOne(data);
+        const result = await employeeCollection.insertOne(data);
         if (result.acknowledged) {
             return {success : true, message : "User registered successfully "};
         }
@@ -31,25 +29,13 @@ const userRegistration = async(userData) => {
 const userAuthentication = async(userData) => {
     try{
         await connectToMongo(); //connect to database
-        const userCollection = getDB().collection("Users");
         const employeeCollection = getDB().collection("Employees");
 
-        // 1. Find user by email
-        const user1 = await userCollection.findOne({email : userData.email});
-        const user2 = await employeeCollection.findOne({emp_code : userData.email, emp_pwd : userData.password});
-        if(!user1 && !user2) {
-            return {success : false, message : "Invalid Credentials"};
+        const user = await employeeCollection.findOne({emp_code : Number(userData.email), emp_pwd : userData.password});
+        if(user) {
+            return {success : true, message : user};
         }
-        if(user2) {
-            return {success : true, message : user2};
-        }
-        // 2. Compare entered password with hashed password
-        const isMatch = await bcrypt.compare(userData.password, user1.password);
-        if(!isMatch) {
-            return {success : false, message : "Invalid Credentials"};
-        }
-
-        return {success : true, message : user1};
+        return {success : false, message : "Invalid Credentials"};
     }
     catch(error) {
         console.log("User registration failed");

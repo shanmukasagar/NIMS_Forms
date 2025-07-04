@@ -163,9 +163,11 @@ const ISRC_Member = ({setSelectedForm}) => {
                 </Grid>
                 <Grid item size={1}><Typography sx={commonTextStyle}>{item.status || ""}</Typography></Grid>
                 <Grid item size={2} sx = {{display : "flex", gap : "25px", alignItems : "center"}}>
-                  <IconButton onClick={() => handleViewIcon(item)}>
-                    <VisibilityIcon sx={{ color: "rebeccapurple" }} />
-                  </IconButton>
+                  {item.form_type !== "biomedical-1" &&  item.form_type !== "biomedical-2" && (
+                    <IconButton onClick={() => handleViewIcon(item)}>
+                      <VisibilityIcon sx={{ color: "rebeccapurple" }} />
+                    </IconButton>
+                  )}
                   <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
                       onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
                 </Grid>

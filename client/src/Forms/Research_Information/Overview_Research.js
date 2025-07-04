@@ -1,9 +1,10 @@
-import { useState ,useEffect} from "react";
+import { useState ,useEffect, useRef} from "react";
 import { useNavigate } from "react-router-dom";
 
 import "../../App.css";
 import TableComponent4 from  "./TableComponent4.js";
 import axiosInstance from "../../components/AxiosInstance.js";
+import {useProject} from "../../components/ResearchContext";
 
 const OverviewResearch = ({selectedForm}) => {
 const [summary, setSummary] = useState("");
@@ -19,18 +20,36 @@ const[existData,setExistData]=useState(null)
 const [email]=useState("")
 const [showPreview, setShowPreview] = useState(false); 
 const navigate = useNavigate();
+const fetchOnce = useRef(false);
 
 const [openTable, setOpenTable] = useState(false);
 const [editableData, setEditableData] = useState({})
 const [previewURL, setPreviewURL] = useState(null);
 
-const Submit = async (e) => {
+  //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
+
+  const Submit = async (e) => {
     e.preventDefault();
     try {
       const userResponse = await axiosInstance.post("/api/research/overvieww_research",
         {
-          summary, type_of_study, external_laboratory, specify, otherStudyType, sampleSize, justification,  email,
-        }, { params : { selectedForm : selectedForm, isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", tableName : "overvieww_research", formId : editableData?.form_id}}
+          summary, type_of_study, external_laboratory, specify, otherStudyType, sample_size : sampleSize, justification,  email,
+        }, { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false",
+           tableName : "overvieww_research", 
+           formId : (editableData && Object.keys(editableData).length > 0 )? editableData?.form_id : projectId,
+        }}
       );
       const id = userResponse.data.id;
       console.log("User created:", userResponse.data);
@@ -75,7 +94,8 @@ const Submit = async (e) => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
-            form_type:"overvieww_research"
+            form_type:"overvieww_research",
+            formId : projectId
           }
         });
         if (response.data.length > 0) {

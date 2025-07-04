@@ -1,7 +1,7 @@
 const {connectToMongo, getDB} = require("../models/db");
 const {pool} = require("../models/db");
 const { v4: uuidv4 } = require('uuid');
-const sendEmail = require("../config/SendEmail");
+const {sendEmail, sendProjectSubmissionMail} = require("../config/SendEmail");
 const { convertToFrontendKeys} = require("../config/FundingTableConfig");
 
 //Get projects data
@@ -15,18 +15,18 @@ const getProjectsService = async (email, type) => {
             filteredObj = { $or: [ { emp_code: email }, { allowedEmployees: email } ] };
         }
         else if(type === "isrc_member") {
-            // filteredObj = { project_id: { $nin: ["", null] }, emp_code : email };
-            filteredObj = {};
+            filteredObj = { reviewer_id : email };
+            // filteredObj = {};
         }
         else if(type === "isrc_secretary") {
-            // filteredObj = { project_id: { $ne: "" } };
-            filteredObj = {};
+            filteredObj = { project_id: { $ne: "" } };
+            // filteredObj = {};
             const reviewersData = await reviewersCollection.find({}).toArray();
             const projectsData = await projectsCollection.find(filteredObj).sort({ created_at: -1 }).toArray();
             return {projects : projectsData, reviewers : reviewersData};
         }
         else if(type === "isrc_chair") {
-            filteredObj = {};
+            filteredObj = { project_id: { $ne: "" } };
         }
         const projectsData = await projectsCollection.find(filteredObj).sort({ created_at: -1 }).toArray();
         return projectsData;
@@ -83,14 +83,14 @@ const getClinicalProjectData = async (project_ref) => {
                     );
                 const rawRow = fundingDetails.rows[0] || null;
                 frontendFormatted = convertToFrontendKeys(rawRow, "clinical_self_funding");
-            } else if (source === "Institutional funding") {
+            } else if (source === "Institutional funding" || source === "Funding agency") {
                 fundingDetails = await client.query(
                     "SELECT * FROM clinical_funding_studies WHERE form_id = $1",
                     [formId]
                     );
                 const rawRow = fundingDetails.rows[0] || null;
                 frontendFormatted = convertToFrontendKeys(rawRow, "clinical_funding_studies");
-            } else if (source === "Funding agency") {
+            } else if (source === "Pharmaceutical Industry sponsored") {
                     fundingDetails = await client.query(
                     "SELECT * FROM clinical_industry_funding WHERE form_id = $1",
                     [formId]
@@ -227,53 +227,77 @@ const approvalService = async (token, tableName) => {
 
 //HOD approval service
 const approveHODService = async (token, tableName) => {
-  const client = await pool.connect();
+    const client = await pool.connect();
 
-  try {
-    let approvalRes;
+    try {
+        let approvalRes;
+        let principal_investigator;
+        let form_id;
 
-    if(tableName === "clinical_investigators") {
-        approvalRes = await client.query(
+        // 1. Update approval and get form_id
+        if (tableName === "clinical_investigators") {
+            approvalRes = await client.query(
                 `UPDATE clinical_investigators SET approved = true WHERE approval_token = $1 RETURNING form_id`,
                 [token]
             );
-    }
-    else if(tableName === "investigatorss") {
-        approvalRes = await client.query(
+        } else if (tableName === "investigatorss") {
+            approvalRes = await client.query(
                 `UPDATE investigatorss SET approved = true WHERE approval_token = $1 RETURNING form_id`,
                 [token]
             );
+        }
+
+        if (approvalRes.rowCount === 0) {
+            throw new Error("Invalid or already approved token");
+        }
+
+        form_id = approvalRes.rows[0].form_id;
+
+        // 2. Get Principal Investigator's email
+        if (tableName === "clinical_investigators") {
+            principal_investigator = await client.query(
+                `SELECT gmail FROM clinical_investigators WHERE role = 'principal' AND form_id = $1`,
+                [form_id]
+            );
+        } else if (tableName === "investigatorss") {
+            principal_investigator = await client.query(
+                `SELECT gmail FROM investigatorss WHERE form_id = $1 AND investigator_type = 'Principal_Investigator'`,
+                [form_id]
+            );
+        }
+
+        const piEmail = principal_investigator.rows[0]?.gmail;
+        if (!piEmail) throw new Error("Principal Investigator email not found");
+
+        // 3. Get project_ref from forms table
+        const formRes = await client.query(
+            `SELECT project_ref FROM forms WHERE id = $1`, [form_id]
+        );
+
+        const projectRef = formRes?.rows?.[0]?.project_ref;
+
+        if (!projectRef) throw new Error("Project reference not found");
+
+        // 4. Update MongoDB with generated project_id
+        await connectToMongo();
+        const projectsCollection = getDB().collection('Projects');
+
+        const updateRes = await projectsCollection.updateOne(
+            { project_ref: projectRef },
+            { $set: { project_id: uuidv4() } }
+        );
+
+        if (updateRes.modifiedCount === 0) {
+            throw new Error("Failed to update project_id in MongoDB");
+        }
+
+        // 5. Send email
+        await sendProjectSubmissionMail({ toEmail: piEmail, fromEmail: 'isrcnims@gmail.com', });
+
+        return "HOD approved and project_id updated successfully";
+    } finally {
+        client.release();
     }
-
-    if (approvalRes.rowCount === 0) {
-      throw new Error("Invalid or already approved token");
-    }
-
-    const { form_id } = approvalRes.rows[0];
-
-    // 2. Get project_ref from forms table
-    const formRes = await client.query(`SELECT project_ref FROM forms WHERE id = $1`, [form_id]);
-    const projectRef = formRes?.rows?.[0]?.project_ref;
-
-    if (!projectRef) throw new Error("Project reference not found");
-
-    // 3. Update MongoDB
-    await connectToMongo();
-    const projectsCollection = getDB().collection('Projects');
-
-    const updateRes = await projectsCollection.updateOne(
-      { project_ref: projectRef },
-      { $set: { project_id: uuidv4() } }
-    );
-
-    if (updateRes.modifiedCount === 0) {
-      throw new Error("Failed to update project_id in MongoDB");
-    }
-
-    return "HOD approved and project_id updated successfully";
-  } finally {
-    client.release();
-  }
 };
 
 const projectChanges = async(data) => {
@@ -297,7 +321,7 @@ const projectChanges = async(data) => {
         if (updateRes.modifiedCount === 0) {
             throw new Error("Failed to update project changes");
         }
-        return "Successfully added the project chnages message.";
+        return "Successfully added the project changes message.";
     }
     catch(error) {
         console.log("Error occured while adding project changes", error.message);

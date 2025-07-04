@@ -25,4 +25,34 @@ const sendEmail = async (fromEmail, toEmail, subject, htmlContent) => {
     }
 };
 
-module.exports = sendEmail;
+const sendProjectSubmissionMail = async ({ toEmail, fromEmail }) => {
+  try {
+    // Create a transporter
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: "shanmukasagar2019@gmail.com",
+        pass: 'yifn dqib iraq tcmm', // Use app password if 2FA is enabled
+      },
+    });
+
+    // Email content
+    const mailOptions = {
+        from: fromEmail,
+        to: toEmail,
+        subject: 'Project Submission Confirmation',
+        text: `Dear Principal Investigator,
+
+        Your project has been successfully submitted.`,
+    };
+
+    // Send the email
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ' + info.response);
+  } catch (error) {
+    console.error('Failed to send email:', error);
+  }
+};
+
+
+module.exports = {sendEmail, sendProjectSubmissionMail};

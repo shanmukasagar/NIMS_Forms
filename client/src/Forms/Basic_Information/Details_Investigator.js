@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import TableComponent2 from "./components/TableComponent2";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../components/AxiosInstance";
+import {useProject} from "../../components/ResearchContext";
 
 const styles = {
   formContainer: {
@@ -59,6 +60,7 @@ const styles = {
 
 const DetailsInvestigator = ({selectedForm}) => {
   const navigate = useNavigate();
+  const fetchOnce = useRef(false);
   const [existData, setExistData] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -82,6 +84,19 @@ const DetailsInvestigator = ({selectedForm}) => {
     { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
     { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
   ]);
+
+  //context
+  const { projectId } = useProject();
+
+  useEffect(() => {
+    if(!fetchOnce.current) {
+      fetchOnce.current = true;
+      if (!projectId) { // Redirect to dashboard if project id is not there filled
+        alert("Administrative Details must be filled first. The project reference is missing due to page refresh. To continue editing, please use the 'Edit' button from the dashboard.");
+        navigate('/investigator');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (Array.isArray(editableData) && editableData.length > 0) {
@@ -133,7 +148,11 @@ const DetailsInvestigator = ({selectedForm}) => {
     try {
       const allInvestigators = [principal, guide,hod, ...coInvestigators].filter(inv => inv.name);
       await axiosInstance.post("/api/research/investigatorss", allInvestigators, 
-        { params : { selectedForm : selectedForm, isEdit: (editableData && editableData.length > 0 )? "true" : "false", tableName : "investigatorss", formId: editableData?.[0]?.form_id}});
+        { params : { selectedForm : selectedForm, 
+          isEdit: (editableData && editableData.length > 0 )? "true" : "false", 
+          tableName : "investigatorss", 
+          formId: (editableData && editableData.length > 0 ) ? editableData?.[0]?.form_id : projectId
+      }});
       console.log("Investigators created");
       navigate("/basic/funding");
     } catch (error) {
@@ -152,7 +171,7 @@ const DetailsInvestigator = ({selectedForm}) => {
     const fetchData = async () => {
       try {
         const response = await axiosInstance.get("/api/research/check/admin", {
-          params: { form_type: "investigatorss" },
+          params: { form_type: "investigatorss", formId : projectId },
         });
         if (response.data.length > 0) {
           setExistData(response.data);

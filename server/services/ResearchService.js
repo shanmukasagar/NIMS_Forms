@@ -2,7 +2,7 @@ const {pool} =require("../models/db");
 const {connectToMongo, getDB} = require("../models/db");
 const { v4: uuidv4 } = require('uuid');
 const { tableFieldMap } = require("../config/Data");
-const sendEmail = require("../config/SendEmail");
+const {sendEmail} = require("../config/SendEmail");
 const generateResearchPDF = require("../config/ResearchPdGenerator");
 const {FundingTableInsertion, FundingTableUpdate} = require("../config/FundingTableConfig");
 
@@ -40,9 +40,34 @@ const checkFormDetails = async (email, form_type, form_name = "") => {
   
 };
 
+const createNewProjectForm = async(email, form_type) => {
+  const project_ref = uuidv4(); // Generate project reference ID
+
+  // Insert into "forms" table
+  const insertResult = await pool.query(
+    `INSERT INTO forms (form_type, created_at, email, status, project_ref) 
+      VALUES ($1, NOW(), $2, $3, $4) RETURNING id`,
+    ['research', email, 'pending', project_ref]
+  );
+  const formId = insertResult.rows[0].id;
+  // Insert into MongoDB
+  await connectToMongo();
+  const projectsCollection = getDB().collection('Projects');
+  const newProjectData = {
+    project_id: '', project_ref: project_ref, status: 'pending', emp_code: email, sub_date: '',
+    created_at: new Date(), isrc_inv_comments: '', pbac_inv_comments: '', niec_inv_comments: '',
+     project_title: '', reviewer_id: '', type : "research", form_type : form_type,
+    reviewer_name : "",
+    project_pdf : "",
+    form_number : formId
+  };
+  await projectsCollection.insertOne(newProjectData);
+  return formId;
+}
+
 const administrationDetails = async (formData, form_type) => {
   try {
-    const formId = await checkFormDetails(formData.email, form_type, "administration");
+    const formId = await createNewProjectForm(formData.email, form_type);
 
     const { name_of_research_principal, department, title, review_requested, protocol_number, version_number, date,
       email, date_1, summary, selectedElements, otherReason } = formData;
@@ -77,7 +102,7 @@ const administrationDetails = async (formData, form_type) => {
       }
     );
 
-    return newUser;
+    return formId;
   } catch (error) {
     console.log("Failed to insert administration", error.message);
     throw error;
@@ -85,9 +110,10 @@ const administrationDetails = async (formData, form_type) => {
 };
 
 
-const fundingBudgetDetails = async (formData, form_type, fundingTableName) => {
+const fundingBudgetDetails = async (formData, form_type, fundingTableName, numericFormId) => {
   try {
-    const formId = await checkFormDetails(formData.email, form_type);
+    // const formId = await checkFormDetails(formData.email, form_type);
+    const formId = numericFormId;
     const {total_estimated_budget,funding_source, funding_FormData, email} = formData;
     // const adminId =   typeof administrativeDetailId === "object"? administrativeDetailId.adminId: administrativeDetailId;
     const newUser = await pool.query(
@@ -106,18 +132,19 @@ const fundingBudgetDetails = async (formData, form_type, fundingTableName) => {
   }
 };
 
-const overviewResearchDetails = async (formData, form_type) => {
-  const formId = await checkFormDetails(formData.email, form_type);
+const overviewResearchDetails = async (formData, form_type, numericFormId) => {
+  // const formId = await checkFormDetails(formData.email, form_type);
+  const formId = numericFormId;
   try {
     const {
-      summary,  type_of_study, external_laboratory, specify, otherStudyType, sampleSize, justification,  email // camel‑case from front‑end
+      summary,  type_of_study, external_laboratory, specify, otherStudyType, sample_size, justification,  email // camel‑case from front‑end
     } = formData;
     // const adminId = typeof administrativeDetailId === "object"? administrativeDetailId.adminId : administrativeDetailId;
     const newUser = await pool.query(
       `INSERT INTO overvieww_research(  summary, type_of_study, external_laboratory, specify, otherStudyType, 
       sample_size, justification, email, form_id)VALUES 
       ($1, $2, $3,$4,$5, $6, $7, $8, $9)RETURNING id`,
-      [summary, type_of_study, external_laboratory, specify, otherStudyType, sampleSize, justification, email, formId]
+      [summary, type_of_study, external_laboratory, specify, otherStudyType, sample_size, justification, email, formId]
     );
 return newUser;
   } catch (error) {
@@ -126,8 +153,9 @@ return newUser;
   }
 };
 
-const participantRelatedInformationDetails = async (formData, form_type) => {
-  const formId = await checkFormDetails(formData.email, form_type);
+const participantRelatedInformationDetails = async (formData, form_type, numericFormId) => {
+  // const formId = await checkFormDetails(formData.email, form_type);
+  const formId = numericFormId;
   try {
     const {type_of_participants, justification, specifiy,  additional_safeguards, reimbursement_details,
       advertisement_type, advertisement_details,   payment_type, vulnerableGroups,
@@ -150,8 +178,8 @@ const participantRelatedInformationDetails = async (formData, form_type) => {
   }
 };
 
-const benefitsAndRiskDetails = async (formData, form_type) => {
-  const formId = await checkFormDetails(formData.email, form_type);
+const benefitsAndRiskDetails = async (formData, form_type, numericFormId) => {
+  const formId = numericFormId;
   try {
     const {improvement_benefits,  reimbursement_details,  management_strategy,  participant_benefits,  
       anticipated_type,  society_benefits,email,
@@ -172,8 +200,8 @@ return newUser;
   }
 };
 
-const paymentCompensationDetails = async (formData, form_type) => {
-  const formId = await checkFormDetails(formData.email, form_type);
+const paymentCompensationDetails = async (formData, form_type, numericFormId) => {
+  const formId = numericFormId;
   try {
     const {waiver_consent_type, specify,  compensation_research_of_type,   specific,email
       // camel‑case from front‑end
@@ -194,8 +222,8 @@ const paymentCompensationDetails = async (formData, form_type) => {
   }
 };
 
-const storageAndConfidentialityDetails = async (formData, form_type) => {
-  const formId = await checkFormDetails(formData.email, form_type);
+const storageAndConfidentialityDetails = async (formData, form_type, numericFormId) => {
+  const formId = numericFormId;
   try {
     const {
       document_access_type, access_details,  drugs_access_type, control_details,  sample_access_type, sample_details, 
@@ -214,9 +242,9 @@ const storageAndConfidentialityDetails = async (formData, form_type) => {
     throw error;
   }
 };
-const additionalInformationDetails = async (formData, form_type) => {
+const additionalInformationDetails = async (formData, form_type, numericFormId) => {
   try {
-     const formId = await checkFormDetails(formData.email, form_type);
+     const formId = numericFormId;
     const { support_type, additional,email} = formData;
 
     // const adminId =
@@ -267,11 +295,11 @@ module.exports = {
 };
 
 
-const declarationDetails = async (formData, form_type) => {
+const declarationDetails = async (formData, form_type, numericFormId) => {
   try {
-     const formId = await checkFormDetails(formData.email, form_type);
+     const formId = numericFormId;
     const {
-      selectedElements, name_of_pi_research, date_pi, sign_1, 
+      selected_elements, name_of_pi_research, date_pi, sign_1, 
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
           name_of_co_investigator_1,  date_co_inv_1, sign_3, 
@@ -287,7 +315,7 @@ const declarationDetails = async (formData, form_type) => {
           name_of_co_investigator_2, date_co_inv_2, sign_4, 
           email, form_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11, $12, $13, $14, $15, $16, $17, $18)RETURNING id`,
         [
-        selectedElements, name_of_pi_research, date_pi, sign_1, 
+        selected_elements, name_of_pi_research, date_pi, sign_1, 
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
           name_of_co_investigator_1,  date_co_inv_1, sign_3, 
@@ -337,8 +365,8 @@ const requestingWaiverDetails = async (formData, form_type) => {
 
   return result; // return the inserted data
 };
-const insertInformedConsent = async (formData, form_type) => {
-   const formId = await checkFormDetails(formData.email, form_type);
+const insertInformedConsent = async (formData, form_type, numericFormId) => {
+   const formId = numericFormId;
     try {
       const {
         seeking_waiver_of_consent_type, version_number, date, selectedLanguages, languageDetails, otherLanguageName, 
@@ -360,8 +388,9 @@ const insertInformedConsent = async (formData, form_type) => {
     }
 };
 
-const saveInvestigatorDetails = async (investigators, email, form_type) => {
-  const formId = await checkFormDetails(email, form_type); // Use the passed email
+const saveInvestigatorDetails = async (investigators, email, form_type, numericFormId) => {
+  // const formId = await checkFormDetails(email, form_type); // Use the passed email
+  const formId = numericFormId;
   const results = [];
 
   const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
@@ -455,6 +484,21 @@ const updateResearchForms = async (tableName, fieldsObject, formId, fundingTable
       const result = await FundingTableUpdate(fundingTableName, formId, data.funding_FormData);
     }
 
+    if(tableName === "administrativee_details") {
+      // Update MongoDB
+      await connectToMongo();
+      const projectsCollection = getDB().collection('Projects');
+      const formResult = await projectsCollection.updateOne(
+        { form_number: Number(formId) },
+        {
+          $set: {
+            project_title: fieldsObject?.title || "",
+            investigator_name: fieldsObject?.name_of_research_principal || "",
+            investigator_dep: fieldsObject?.department || ""
+          }
+        }
+      );
+    }
 
     return true;
   } catch (error) {
@@ -546,9 +590,9 @@ const updateInvestigators = async (investigators, email, numericFormId) => {
 };
 
 
-const insertAdminFiles = async (files, email, form_type) => {
+const insertAdminFiles = async (files, email, form_type, numericFormId) => {
   try {
-    const formId = await checkFormDetails(email, form_type); // Use the passed email
+    const formId = numericFormId; // Use the passed email
     const insertPromises = files.map(item =>
       pool.query(
         `INSERT INTO administrative_requirements (form_id, label_id, label_name, file_name, email)
@@ -614,8 +658,9 @@ const researchPDF = async (formID) => {
 
     const fundingSourceMap = {
       "self-funding": "self_funded_studies",
-      "agency": "industry_sponsored_studies",
-      "institutional": "funding_studies"
+      "Pharmaceutical Industry sponsored": "industry_sponsored_studies",
+      "institutional": "funding_studies",
+      "agency": "funding_studies"
     };
 
     const funding_source = data.fundingData?.funding_source;

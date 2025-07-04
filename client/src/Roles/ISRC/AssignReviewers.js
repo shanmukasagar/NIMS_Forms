@@ -5,6 +5,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
+import {useProject} from "../../components/ResearchContext";
 
 const ReviewerAssignmentGrid = ({setSelectedForm}) => {
   const fetchOnce = useRef(false);
@@ -14,6 +15,9 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
   const [openPreview, setOpenPreview] = useState(false);
 
   const navigate = useNavigate();
+
+  // Context
+  const { setProjectId, setnewProject } = useProject();
 
   const handleReviewerChange = (index, value) => { // Handle reviewer change
     setAssignedReviewers(prev => ({ ...prev, [index]: value }));
@@ -53,10 +57,14 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
         try {
             if(item.form_type === "biomedical-1") {
                 setSelectedForm("biomedical-1");
+                setProjectId(item.form_number);
+                setnewProject(null);
                 navigate("/basic/administrative")
             }
             else if(item.form_type === "biomedical-2") {
                 setSelectedForm("biomedical-2");
+                setProjectId(item.form_number);
+                setnewProject(null);
                 navigate("/basic/administrative")
             }
             else{
@@ -122,7 +130,9 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
           <Grid item size={1}><Typography>{index + 1}</Typography></Grid>
           <Grid item size={4}><Typography>{item.project_title}</Typography></Grid>
           <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
-            <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
+            {item.form_type !== "biomedical-1" &&  item.form_type !== "biomedical-2" && (
+              <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
+            )}
             <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
                   onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
           </Grid>
@@ -166,6 +176,7 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
             methodologyData: projectView.methodologyData,
             consentData: projectView.consentData,
             declaration: projectView.declaration,
+            funding_FormData : projectView.fundingDetails
         }}/>
         )}
     </Box>
