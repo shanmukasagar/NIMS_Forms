@@ -111,6 +111,8 @@ const MainContent = ({user}) => {
   //Check list state
   const [checkListData, setCheckListData] = useState(checklist);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   //Funding form data
   const [funding_FormData, setFundingFormData] = useState({});
   const [fundingTableName, setFundingTableName] = useState("");
@@ -133,6 +135,7 @@ const MainContent = ({user}) => {
   const handleConfirmSubmission = async () => { //Handle conform submission function
     try{
       const formData = new FormData();
+      setIsSubmitting(true); // Show loading
 
       // 2. Construct full object without files
       const submissionData = { administration, researchers, investigatorsCount, fundingData, overviewResearch, methodologyData, participants,
@@ -175,6 +178,9 @@ const MainContent = ({user}) => {
         alert("form submission failed");
         return;
       }
+    } 
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   }
 
@@ -331,8 +337,8 @@ const mergeResearchers = (fetched = []) => {
             <DialogTitle>Confirm Submission</DialogTitle>
             <DialogContent>Are you sure once submitted you can not modify or edit?</DialogContent>
             <DialogActions sx = {{ display : "flex", justifyContent : "space-around"}}>
-              <Button sx={buttonStyle} onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
-              <Button sx={buttonStyle} onClick={handleConfirmSubmission} autoFocus>Confirm</Button>
+              <Button sx={buttonStyle} onClick={() => setShowConfirmDialog(false)} disabled={isSubmitting} >Cancel</Button>
+              <Button sx={buttonStyle} onClick={handleConfirmSubmission} autoFocus disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Conform"}</Button>
             </DialogActions>
           </Dialog>
         </React.Fragment>

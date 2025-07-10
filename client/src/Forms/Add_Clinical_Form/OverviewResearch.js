@@ -1,7 +1,9 @@
 import React from 'react';
-import { Grid, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Grid, TextField, MenuItem, Select, InputLabel, FormControl, Typography } from '@mui/material';
 
 const ResearchProjectDetails = ({ overviewResearch, setOverviewResearch }) => {
+
+    const wordCount = overviewResearch.overview_summary.trim().split(/\s+/).filter(Boolean).length;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -11,9 +13,22 @@ const ResearchProjectDetails = ({ overviewResearch, setOverviewResearch }) => {
     return (
         <Grid container spacing={2}>
             <Grid item size={12}> 
-                <TextField fullWidth required multiline minRows={4} label="Summary of Research Project (within 300 words)" 
-                    variant="outlined" name="overview_summary" value={overviewResearch.overview_summary || ""} 
-                        onChange={handleChange} inputProps={{ maxLength: 300 }} />
+                <TextField
+                    fullWidth
+                    required
+                    multiline
+                    minRows={4}
+                    label="Summary of Research Project (within 300 words)"
+                    variant="outlined"
+                    name="overview_summary"
+                    value={overviewResearch.overview_summary}
+                    onChange={handleChange}
+                />
+            </Grid>
+            <Grid item size={12}> 
+                <Typography variant="caption" align="right" display="block">
+                    Word count: {wordCount}
+                </Typography>
             </Grid>
 
             <Grid item size={6}>

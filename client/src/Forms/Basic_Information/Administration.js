@@ -39,6 +39,9 @@ function Administration({ setAdminId, selectedForm }) {
   const [editableData, setEditableData] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
   //Handle type of review change
   const handleChange = async (e) => { 
     const value = e.target.value;
@@ -55,6 +58,8 @@ function Administration({ setAdminId, selectedForm }) {
 
   const handleFinalSubmit = async () => {
       try {
+        setIsSubmitting(true); 
+
         const userResponse = await axiosInstance.post( "/api/research/administrativee_details",
           {
             name_of_research_principal, department, title, review_requested, protocol_number,
@@ -76,7 +81,11 @@ function Administration({ setAdminId, selectedForm }) {
         console.error(
           "Error:",
           error.response ? error.response.data : error.message
-        );    }
+        );   
+      }
+      finally {
+        setIsSubmitting(false); // Hide loading
+      }
     }
 
   useEffect(() => {
@@ -173,7 +182,7 @@ function Administration({ setAdminId, selectedForm }) {
           )}
 
           <br />
-          <button className="name" onClick={handleFinalSubmit}>Submit</button>
+          <button className="name" onClick={handleFinalSubmit} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
           <br />
           <button className="name" onClick={handleEdit}>Edit</button>
         </div>

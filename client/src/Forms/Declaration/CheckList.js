@@ -31,6 +31,8 @@ const UploadChecklist = ({selectedForm}) => {
   const [formId, setFormId] = useState(-1);
   const navigate = useNavigate();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
     //context
   const { projectId } = useProject();
 
@@ -128,6 +130,7 @@ const UploadChecklist = ({selectedForm}) => {
 
 
     try {
+      setIsSubmitting(true); // Show loading
       const res = await axiosInstance.post("/api/research/administrative_requirements", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         params: {
@@ -145,6 +148,9 @@ const UploadChecklist = ({selectedForm}) => {
       console.error("Upload failed:", err);
       alert("checklist form failed");
       return;
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -245,7 +251,7 @@ const UploadChecklist = ({selectedForm}) => {
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 3 }}>
             <Button variant="outlined" color="secondary" onClick={() => setShowPreview(false)}>Edit</Button>
-            <Button variant="contained" color="success" onClick={handleSubmit}>Submit</Button>
+            <Button variant="contained" color="success" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</Button>
           </Box>
         </Box>
       )}

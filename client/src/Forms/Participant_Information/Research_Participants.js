@@ -16,6 +16,8 @@ const Section4 = ({selectedForm}) => {
   const [vulnerableGroups, setVulnerableGroups] = useState([]);
   const [payment_type, setPaymentType] = useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [openTable, setOpenTable] = useState(false);
   const [editableData, setEditableData] = useState({});
   const [isPreview, setIsPreview] = useState(false);
@@ -64,6 +66,7 @@ const Section4 = ({selectedForm}) => {
     e.preventDefault();
 
     try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post("/api/research/participantt_related_information",
         {
           type_of_participants, justification, specifiy, additional_safeguards,  reimbursement_details,  vulnerableGroups,
@@ -79,6 +82,8 @@ const Section4 = ({selectedForm}) => {
       navigate("/participant/benefits");
     } catch (error) {
       console.error("Error:", error.response ? error.response.data : error.message);
+    } finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -266,7 +271,7 @@ const Section4 = ({selectedForm}) => {
             <p><strong>Advertisement Details:</strong> {advertisement_details}</p>)}
         
           <button onClick={() => setIsPreview(false)} className="name">Edit</button>
-          <button onClick={handleSubmit} className="name">Submit</button>
+          <button onClick={handleSubmit} className="name" disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
         </div>
       )}
     </div>

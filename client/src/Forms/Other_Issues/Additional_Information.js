@@ -17,6 +17,8 @@ const [openTable, setOpenTable] = useState(false);
 const [editableData, setEditableData] = useState({});
 const [email]=useState("");
 
+const [isSubmitting, setIsSubmitting] = useState(false);
+
  //context
   const { projectId } = useProject();
 
@@ -38,15 +40,18 @@ useEffect(() => {
 }, [editableData]);
 
 
-const handlePreview = (e) => {
+  const handlePreview = (e) => {
     e.preventDefault();
     setPreview(true);
   };
+
   const handleEdit = () => {
     setPreview(false);
   };
+
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post(
         "/api/research/additional_information",
         {
@@ -67,7 +72,11 @@ const handlePreview = (e) => {
         error.response ? error.response.data : error.message
       );
     }
+    finally {
+      setIsSubmitting(false); // Hide loading
+    }
   };
+
 useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,12 +106,8 @@ useEffect(() => {
         <p><strong>Do you have any additional information to add?</strong> {support_type}</p>
         {support_type === "Yes" && (
           <p><strong>Details:</strong> {additional}</p>)}
-        <button className="name" onClick={handleSubmit}>
-          Submit
-        </button>
-        <button className="name" onClick={handleEdit}>
-          Edit
-        </button>
+        <button className="name" onClick={handleSubmit}  disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
+        <button className="name" onClick={handleEdit}>Edit </button>
       </div>
     );
   }

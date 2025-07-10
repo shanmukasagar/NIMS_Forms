@@ -21,6 +21,8 @@ const Section5 = ({selectedForm}) => {
   const [editableData, setEditableData] = useState({});
   const [email]=useState("");
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
   const fetchOnce = useRef(false);
 
@@ -58,6 +60,7 @@ const Section5 = ({selectedForm}) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // Show loading
     try {
       const userResponse = await axiosInstance.post( "/api/research/benefits_and_risk",
         {
@@ -76,6 +79,9 @@ const Section5 = ({selectedForm}) => {
         "Error:",
         error.response ? error.response.data : error.message
       );
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
   useEffect(() => {
@@ -223,7 +229,7 @@ const Section5 = ({selectedForm}) => {
      <p><strong>Scientific Benefits:</strong> {improvement_benefits}</p>
 
      <button onClick={handleEdit} className="name">Edit</button>
-     <button onClick={handleSubmit} className="name">Submit</button>
+     <button onClick={handleSubmit} className="name"  disabled={isSubmitting}>  {isSubmitting ? "Submitting..." : "Submit"}</button>
     </div>
 )}
 </div>

@@ -193,6 +193,7 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
                     methodologyData: projectView.methodologyData,
                     consentData: projectView.consentData,
                     declaration: projectView.declaration,
+                    funding_FormData : projectView?.fundingDetails
                 }}/>
             )}
             

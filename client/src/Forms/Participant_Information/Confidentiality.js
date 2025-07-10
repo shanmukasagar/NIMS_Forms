@@ -25,6 +25,8 @@ const Section8 = ({selectedForm}) => {
  const [openTable, setOpenTable] = useState(false);
  const [editableData, setEditableData] = useState({});
 
+ const [isSubmitting, setIsSubmitting] = useState(false);
+
  //context
   const { projectId } = useProject();
 
@@ -49,6 +51,7 @@ const Section8 = ({selectedForm}) => {
 
   const handleSubmit = async () => {
     try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post("/api/research/storage_and_confidentiality",
         {
           document_access_type, access_details,
@@ -66,6 +69,8 @@ const Section8 = ({selectedForm}) => {
         "Error:",
         error.response ? error.response.data : error.message
       );
+    } finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -121,12 +126,8 @@ const Section8 = ({selectedForm}) => {
         <p><strong>Drugs Access Type:</strong> {drugs_access_type}</p>
         {drugs_access_type === "Yes" && (
           <p><strong>Access Details:</strong> {access_details}</p>)}
-        <button className="name" onClick={handleSubmit}>
-          Submit
-        </button>
-        <button className="name" onClick={handleEdit}>
-          Edit
-        </button>
+        <button className="name" onClick={handleSubmit}  disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"} </button>
+        <button className="name" onClick={handleEdit}>Edit </button>
       </div>
     );
   }

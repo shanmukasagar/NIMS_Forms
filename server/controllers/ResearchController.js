@@ -26,7 +26,7 @@ const administartion = async (req, res) => {
     if(isEdit) {
         const result = await updateResearchForms(tableName, formData, numericFormId);
         if(result) {
-          return res.status(200).json("Form successfully updated");
+          return res.status(200).json({ formId: numericFormId});
         }
     }
     else{

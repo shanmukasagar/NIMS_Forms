@@ -39,6 +39,8 @@ const Section10 = ({selectedForm}) => {
   const [editableData, setEditableData] = useState({});
   const [previewURL, setPreviewURL] = useState({"image1" : null, "image2" : null, "image3" : null, "image4" : null});
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const elementsList = [
     "I/We certify that the information provided in this application is complete and correct.",
     "I/We confirm that all investigators have approved the submitted version of proposal /related documents",
@@ -126,6 +128,8 @@ const Section10 = ({selectedForm}) => {
   };
 
   const confirmSubmit = async () => {
+    try{
+      setIsSubmitting(true);
       const userResponse = await axiosInstance.post( "/api/research/declaration",
         {
           selected_elements: selectedElements, 
@@ -144,15 +148,15 @@ const Section10 = ({selectedForm}) => {
           },
         }
       );
-     
       console.log("User created:", userResponse.data); 
       navigate("/checklist");
-  //   } catch (error) {
-  //     console.error(
-  //       "Error:",
-  //       error.response ? error.response.data : error.message
-  //     );
-  //   }
+    }
+    catch (error) {
+      console.error("Error:", error.response ? error.response.data : error.message );
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
+    }
   };
 
   useEffect(() => {
@@ -238,7 +242,7 @@ const Section10 = ({selectedForm}) => {
           </li>
         </ul>
         <button onClick={() => setShowPreview(false)} className="name"> Edit</button>
-        <button onClick={confirmSubmit} className="name"> Submit  </button>
+        <button onClick={confirmSubmit} className="name" disabled={isSubmitting}> {isSubmitting ? "Submitting..." : "Submit"}  </button>
       </div>
     );
   }

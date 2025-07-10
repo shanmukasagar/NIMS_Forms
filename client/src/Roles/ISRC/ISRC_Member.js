@@ -203,6 +203,7 @@ const ISRC_Member = ({setSelectedForm}) => {
               methodologyData: projectView.methodologyData,
               consentData: projectView.consentData,
               declaration: projectView.declaration,
+              funding_FormData : projectView?.fundingDetails
           }}/>
         )}
 

@@ -21,6 +21,8 @@ const Section7 = ({selectedForm}) => {
  const [openTable, setOpenTable] = useState(false);
  const [editableData, setEditableData] = useState({});
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
    //context
    const { projectId } = useProject();
  
@@ -43,9 +45,10 @@ const Section7 = ({selectedForm}) => {
   };
   const handleSubmit = async () => {
    try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post("/api/research/payment_compensation",
         {
-          waiver_consent_type, specify,compensation_research_of_type,  specific,email,
+          waiver_consent_type, specify,compensation_research_of_type,  specific, email,
         }, { params : { selectedForm : selectedForm, 
           isEdit: (editableData && Object.keys(editableData).length > 0 )? "true" : "false", 
           tableName : "payment_compensation",
@@ -59,6 +62,9 @@ const Section7 = ({selectedForm}) => {
         "Error:",
         error.response ? error.response.data : error.message
       );
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -102,7 +108,7 @@ const Section7 = ({selectedForm}) => {
           <p><strong>Compensation for SAE:</strong> {compensation_research_of_type}</p>
           <p><strong>Compensation Details:</strong> {specific}</p>
           <button className="name" onClick={handleEdit}>Edit</button>
-          <button className="name" onClick={handleSubmit}>Submit</button>
+          <button className="name" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
         </div>
       ):
 

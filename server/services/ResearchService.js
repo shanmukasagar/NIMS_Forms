@@ -203,16 +203,14 @@ return newUser;
 const paymentCompensationDetails = async (formData, form_type, numericFormId) => {
   const formId = numericFormId;
   try {
-    const {waiver_consent_type, specify,  compensation_research_of_type,   specific,email
-      // camel‑case from front‑end
-    } = formData;
+    const {waiver_consent_type, specify,  compensation_research_of_type,   specific,email } = formData;
     // const adminId =
     //   typeof administrativeDetailId === "object"? administrativeDetailId.adminId   : administrativeDetailId;
     const newUser = await pool.query(
-      `INSERT INTO payment_compensation(  waiver_consent_type,  specify,compensation_research_of_type,
-       specific,email, form_id)VALUES ($1, $2, $3,$4,$5, $6)RETURNING id`,
+      `INSERT INTO payment_compensation(  waiver_consent_type,  specify, compensation_research_of_type,
+       specific, email, form_id)VALUES ($1, $2, $3,$4,$5, $6)RETURNING id`,
       [
-        waiver_consent_type,specify,compensation_research_of_type,specific,email, formId
+        waiver_consent_type, specify, compensation_research_of_type, specific, email, formId
       ]
     );
     return newUser;

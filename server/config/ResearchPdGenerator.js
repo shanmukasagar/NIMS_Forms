@@ -119,7 +119,6 @@ async function generateResearchPDF(data, fileName) {
                 <div><span className="label">Qualification:</span> ${researcher.qualification}</div>
                 <div><span className="label">Department:</span> ${researcher.department}</div>
                 <div><span className="label">Investigator Type:</span> ${researcher.investigator_type.replace('_', ' ')}</div>
-                <div><span className="label">Employee code:</span> ${researcher.email}</div>
                 <div><span className="label">Alternate Gmail:</span> ${researcher.gmail}</div>
                 <div><span className="label">Contact:</span> ${researcher.contact}</div>
               </div>`

@@ -33,6 +33,9 @@ function Section6({selectedForm}) {
   const [previewURL, setPreviewURL] = useState(null);
   const [image, setImage] = useState(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
   //context
   const { projectId } = useProject();
 
@@ -169,6 +172,7 @@ function Section6({selectedForm}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post("/api/research/informedd_consent",
         {seeking_waiver_of_consent_type, version_number, date, selectedLanguages, languageDetails, otherLanguageName, 
           PISSelectedItems, PISOtherText, certificates, subject, specify, selected_elements : selectedElements, summary, email
@@ -185,6 +189,8 @@ function Section6({selectedForm}) {
         "Error:",
         error.response ? error.response.data : error.message
       );
+    } finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -262,7 +268,7 @@ function Section6({selectedForm}) {
           <button style={{ padding: "10px 16px", cursor: "pointer", backgroundColor: "#007BFF", color: "#fff", border: "none", 
             borderRadius: "5px" }} onClick={handleBack}>Edit</button>
           <button style={{ padding: "10px 16px", cursor: "pointer", backgroundColor: "#28a745", color: "#fff", border: "none", 
-            borderRadius: "5px" }} onClick={handleSubmit}>Submit</button>
+            borderRadius: "5px" }} onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
         </div>
       </div>
 
@@ -341,9 +347,9 @@ function Section6({selectedForm}) {
                     <label>Language Name: <input type="text" className="name" value={otherLanguageName} 
                       onChange={(e) => setOtherLanguageName(e.target.value)} /></label>
                   )}
-                  <label>Version Number: <input type="text" className="name" value={languageDetails[lang]?.version || ""} 
+                  <label>{lang} Version Number: <input type="text" className="name" value={languageDetails[lang]?.version || ""} 
                     onChange={(e) => handleDetailChange(lang, "version", e.target.value)} /></label>
-                  <label>Date: <input type="date" className="name" value={languageDetails[lang]?.date || ""} 
+                  <label>{lang} Date: <input type="date" className="name" value={languageDetails[lang]?.date || ""} 
                     onChange={(e) => handleDetailChange(lang, "date", e.target.value)} /></label>
                 </div>
               ))}
@@ -389,28 +395,31 @@ function Section6({selectedForm}) {
             
           </div>
 
-        <h2 className="h2">if yes specify:</h2>
+        
         {/* Show input if "Yes" is selected */}
         {subject === "Yes" && (
-          <div className="h">
-            <label>
-              <input
-                type="radio" name="specify" value="By Questionaire"  checked={specify === "By Questionaire"}
-                onChange={(e) => setSpecify(e.target.value)} />{" "}
-              By Questionaire
-            </label>
-            <label>
-              <input type="radio" name="specify" value="Feedback"
-                checked={specify === "Feedback"} onChange={(e) => setSpecify(e.target.value)}
-              />{" "}
-              Feedback
-            </label>
+          <>
+            <h2 className="h2">if yes specify:</h2>
+            <div className="h">
+              <label>
+                <input
+                  type="radio" name="specify" value="By Questionaire"  checked={specify === "By Questionaire"}
+                  onChange={(e) => setSpecify(e.target.value)} />{" "}
+                By Questionaire
+              </label>
+              <label>
+                <input type="radio" name="specify" value="Feedback"
+                  checked={specify === "Feedback"} onChange={(e) => setSpecify(e.target.value)}
+                />{" "}
+                Feedback
+              </label>
 
-            <label>
-              <input type="radio" name="subjectDetails"  value="Others"
-                checked={specify === "Others"} onChange={(e) => setSpecify(e.target.value)} />{" "} Others
-            </label>
-          </div>
+              <label>
+                <input type="radio" name="subjectDetails"  value="Others"
+                  checked={specify === "Others"} onChange={(e) => setSpecify(e.target.value)} />{" "} Others
+              </label>
+            </div>
+          </>
         )}
         <div>
           <h3 className="h2">

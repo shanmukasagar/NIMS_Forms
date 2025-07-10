@@ -30,9 +30,13 @@ const FundingDetails = ({selectedForm}) => {
   const [openTable, setOpenTable] = useState(false);
   const [editableData, setEditableData] = useState({});
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
   const Submit = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post("/api/research/funding_budgett_and_details",
         {
           total_estimated_budget,  funding_source, funding_FormData,  email,}, 
@@ -51,6 +55,9 @@ const FundingDetails = ({selectedForm}) => {
         "Error:",
         error.response ? error.response.data : error.message
       );
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -174,7 +181,7 @@ const FundingDetails = ({selectedForm}) => {
             <IndustryFundingPreview data = {funding_FormData}/>
           )}
         </div>
-        <button onClick={Submit} className="name">Confirm & Submit</button>
+        <button onClick={Submit} className="name" disabled={isSubmitting} >{isSubmitting ? "Submitting..." : "Submit"}</button>
         <button onClick={handleEdit} className="name">Edit</button>
       </div>
     );

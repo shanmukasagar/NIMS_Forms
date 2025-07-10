@@ -88,6 +88,9 @@ const DetailsInvestigator = ({selectedForm}) => {
   //context
   const { projectId } = useProject();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+
   useEffect(() => {
     if(!fetchOnce.current) {
       fetchOnce.current = true;
@@ -146,6 +149,7 @@ const DetailsInvestigator = ({selectedForm}) => {
   const Submit = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true); // Show loading
       const allInvestigators = [principal, guide,hod, ...coInvestigators].filter(inv => inv.name);
       await axiosInstance.post("/api/research/investigatorss", allInvestigators, 
         { params : { selectedForm : selectedForm, 
@@ -157,6 +161,9 @@ const DetailsInvestigator = ({selectedForm}) => {
       navigate("/basic/funding");
     } catch (error) {
       console.error("Error:", error.response ? error.response.data : error.message);
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -221,7 +228,7 @@ const DetailsInvestigator = ({selectedForm}) => {
             ))}
           </div>
         ))}
-        <button onClick={Submit} style={styles.btn}>Submit</button>
+        <button onClick={Submit} style={styles.btn} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
         <button onClick={handleEdit} style={{ ...styles.btn, ...styles.btnSecondary }}>Edit</button>
       </div>
     );

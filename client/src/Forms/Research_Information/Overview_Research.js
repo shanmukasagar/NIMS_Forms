@@ -22,6 +22,8 @@ const [showPreview, setShowPreview] = useState(false);
 const navigate = useNavigate();
 const fetchOnce = useRef(false);
 
+const [isSubmitting, setIsSubmitting] = useState(false);
+
 const [openTable, setOpenTable] = useState(false);
 const [editableData, setEditableData] = useState({})
 const [previewURL, setPreviewURL] = useState(null);
@@ -42,6 +44,7 @@ const [previewURL, setPreviewURL] = useState(null);
   const Submit = async (e) => {
     e.preventDefault();
     try {
+      setIsSubmitting(true); // Show loading
       const userResponse = await axiosInstance.post("/api/research/overvieww_research",
         {
           summary, type_of_study, external_laboratory, specify, otherStudyType, sample_size : sampleSize, justification,  email,
@@ -75,6 +78,9 @@ const [previewURL, setPreviewURL] = useState(null);
         "Error:",
         error.response ? error.response.data : error.message
       );
+    }
+    finally {
+      setIsSubmitting(false); // Hide loading
     }
   };
 
@@ -159,7 +165,7 @@ const [previewURL, setPreviewURL] = useState(null);
           <p><strong>Lab Details:</strong> {specify}</p> )}
           <p><strong>sample size:</strong>{sampleSize} </p> 
         <p><strong>Justification:</strong>{justification} </p>  
-        <button onClick={Submit} className="name"> Submit</button>
+        <button onClick={Submit} className="name" disabled={isSubmitting}> {isSubmitting ? "Submitting..." : "Submit"}</button>
         <button onClick={handleEdit} className="name">Edit</button>
       </div>
     );
