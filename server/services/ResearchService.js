@@ -207,8 +207,8 @@ const paymentCompensationDetails = async (formData, form_type, numericFormId) =>
     // const adminId =
     //   typeof administrativeDetailId === "object"? administrativeDetailId.adminId   : administrativeDetailId;
     const newUser = await pool.query(
-      `INSERT INTO payment_compensation(  waiver_consent_type,  specify, compensation_research_of_type,
-       specific, email, form_id)VALUES ($1, $2, $3,$4,$5, $6)RETURNING id`,
+      `INSERT INTO payment_compensation(  waiver_consent_type,  specify,compensation_research_of_type,
+       specific,email, form_id)VALUES ($1, $2, $3,$4,$5, $6)RETURNING id`,
       [
         waiver_consent_type, specify, compensation_research_of_type, specific, email, formId
       ]
@@ -684,8 +684,17 @@ const researchPDF = async (formID) => {
 
       if (project_id) {
         await connectToMongo();
-        const projectsCollection = getDB().collection('Projects');
 
+        const projectsCollection = getDB().collection("Projects");
+        const projectPDFCollection = getDB().collection("PDF_Versions");
+
+        const projectData = await projectsCollection.findOne({ project_ref: project_id });
+        if (!projectData) {
+          console.error(`Project not found for project_ref: ${project_id}`);
+          return false;
+        }
+
+        // Update the current PDF path in main project document
         const updateResult = await projectsCollection.updateOne(
           { project_ref: project_id },
           {
@@ -695,10 +704,33 @@ const researchPDF = async (formID) => {
           }
         );
 
-        console.log('Update result:', updateResult);
+        const projectPDFData = await projectPDFCollection.findOne({ project_ref: project_id });
+
+        const pdfPath = `media/research/projects/${fileName}`;
+
+        if (projectPDFData) {
+          // Append the new version to existing array
+          const result = await projectPDFCollection.updateOne(
+            { project_ref: project_id },
+            { $push: { project_pdf: pdfPath } }
+          );
+
+          return result.modifiedCount > 0;
+        } else {
+          // Create new version tracking document
+          const result = await projectPDFCollection.insertOne({
+            project_id: projectData.project_id,
+            project_ref: projectData.project_ref,
+            project_pdf: [pdfPath],
+          });
+
+          return result.acknowledged;
+        }
       } else {
-        console.error('No project_id found for form:', formID);
+        console.error("No project_id found for form:", formID);
+        return false;
       }
+
     }
     return true;
   } catch (error) {

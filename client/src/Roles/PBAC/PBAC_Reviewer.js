@@ -17,10 +17,10 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
   const [projectView, setProjectView] = useState({});
   const [openPreview, setOpenPreview] = useState(false);
 
-  const navigate = useNavigate();
-
   const [isVersionDialogOpen, setIsVersionDialogOpen] = useState(false);
   const [selectedProjectForVersions, setSelectedProjectForVersions] = useState(null);
+
+  const navigate = useNavigate();
 
   // Context
   const { setProjectId, setnewProject } = useProject();
@@ -48,7 +48,7 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
         projectData: item,
         reviewer_code: reviewer_code,
         reviewer_name : reviewer_name,
-        type : "isrc"
+        type : "pbac"
       });
 
       if (response.status === 200) {
@@ -60,15 +60,7 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
     }
   };
 
-  const openPdfVersionDialog = (projectItem) => { //Open pdf dialog
-    setSelectedProjectForVersions(projectItem);
-    setIsVersionDialogOpen(true);
-  };
-
-  const closePdfVersionDialog = () => { //Close pdf dialog
-      setIsVersionDialogOpen(false);
-      setSelectedProjectForVersions(null);
-  };
+  
 
   const handleViewIcon = async (item) => { // Handle view icon
         try {
@@ -106,6 +98,16 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
       }
   }
 
+  const openPdfVersionDialog = (projectItem) => { //Open pdf dialog
+    setSelectedProjectForVersions(projectItem);
+    setIsVersionDialogOpen(true);
+  };
+
+  const closePdfVersionDialog = () => { //Close pdf dialog
+      setIsVersionDialogOpen(false);
+      setSelectedProjectForVersions(null);
+  };
+
   const commonTextStyle = { fontSize: '16px' };
 
   const fetchData = async () => { //Get all projects
@@ -113,7 +115,7 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
     try{
       if(!fetchOnce.current) {
         fetchOnce.current = true;
-        const response = await axiosInstance.get('/api/investigator/projects', {params : {type : "isrc_secretary"}});
+        const response = await axiosInstance.get('/api/investigator/projects', {params : {type : "pbac_secretary"}});
         setProjectsData(response.data);
       }
     }
@@ -151,9 +153,9 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
             <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
                   onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
           </Grid>
-          {item.reviewer_name !== "" ? (
+          {item?.pbac_reviewer_name && item?.pbac_reviewer_name !== "" ? (
             <Grid item size = {3}>
-              <TextField fullWidth value = {item.reviewer_name} disabled />
+              <TextField fullWidth value = {item?.pbac_reviewer_name} disabled />
             </Grid>
           ) : (
             <Grid item size={3}>
@@ -194,29 +196,30 @@ const ReviewerAssignmentGrid = ({setSelectedForm}) => {
             funding_FormData : projectView.fundingDetails
         }}/>
         )}
-        <Dialog open={isVersionDialogOpen} onClose={closePdfVersionDialog} maxWidth="md" fullWidth>
-          <DialogTitle> PDF Versions for Project 
-              <IconButton onClick={closePdfVersionDialog} sx={{ position: "absolute", right: 8, top: 8 }}>
-                  <CloseIcon />
-              </IconButton>
-          </DialogTitle>
-          <DialogContent dividers>
-              {selectedProjectForVersions?.all_project_pdfs?.length > 0 ? (
-                  <List>
-                      {[...selectedProjectForVersions.all_project_pdfs].reverse().map((pdfUrl, index) => (
-                          <ListItem key={index}>
-                              <Link href={`http://localhost:4000/${pdfUrl}.pdf`}
-                                  target="_blank" rel="noopener noreferrer" underline="hover" >
-                                      Version {selectedProjectForVersions.all_project_pdfs.length - index}
-                              </Link>
-                          </ListItem>
-                      ))}
-                  </List>
-                  ) : (
-                      <Typography>No PDF versions available.</Typography>
-                  )}
-          </DialogContent>
-        </Dialog>
+
+      <Dialog open={isVersionDialogOpen} onClose={closePdfVersionDialog} maxWidth="md" fullWidth>
+        <DialogTitle> PDF Versions for Project 
+            <IconButton onClick={closePdfVersionDialog} sx={{ position: "absolute", right: 8, top: 8 }}>
+                <CloseIcon />
+            </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+            {selectedProjectForVersions?.all_project_pdfs?.length > 0 ? (
+                <List>
+                    {[...selectedProjectForVersions.all_project_pdfs].reverse().map((pdfUrl, index) => (
+                        <ListItem key={index}>
+                            <Link href={`http://localhost:4000/${pdfUrl}.pdf`}
+                                target="_blank" rel="noopener noreferrer" underline="hover" >
+                                    Version {selectedProjectForVersions.all_project_pdfs.length - index}
+                            </Link>
+                        </ListItem>
+                    ))}
+                </List>
+                ) : (
+                    <Typography>No PDF versions available.</Typography>
+                )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

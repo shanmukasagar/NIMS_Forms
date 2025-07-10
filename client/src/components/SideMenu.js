@@ -56,6 +56,78 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       ]
     },
     {
+      id: 'NIEC Committee Member',
+      label: 'NIEC Committee Member',
+      hasSubMenu: false,
+      role: "NIMS IEC committee- member",
+      subItems: [
+        { id: 'NIEC Committee Member', label: 'NIEC Committee Member', path: '/nice/member' },
+      ]
+    },
+    {
+      id: 'NIEC Reviewers',
+      label: 'NIEC Reviewers',
+      hasSubMenu: false,
+      role: "NIMS IEC CommitteeMember-secretary",
+      subItems: [
+        { id: 'Assign Reviewers', label: 'Assign Reviewers', path: '/niec/secretary/assignreviewers' },
+      ]
+    },
+    {
+      id: 'NIEC Decision',
+      label: 'NIEC Decision',
+      hasSubMenu: false,
+      role: "NIMS IEC Committee - Chairman",
+      subItems: [
+        { id: 'NIEC Decision', label: 'NIEC Decision', path: '/nice/chair/decision' },
+      ]
+    },
+    {
+      id: 'NIEC Decision',
+      label: 'NIEC Decision',
+      hasSubMenu: false,
+      role: "NIMS IEC CommitteeMember-secretary",
+      subItems: [
+        { id: 'NIEC Decision', label: 'NIEC Decision', path: '/nice/chair/decision' },
+      ]
+    },
+    {
+      id: 'PBAC Committee Member',
+      label: 'PBAC Committee Member',
+      hasSubMenu: false,
+      role: "PBAC Committee Member",
+      subItems: [
+        { id: 'PBAC Committee Member', label: 'PBAC Committee Member', path: '/pbac/commitee/member' },
+      ]
+    },
+    {
+      id: 'PBAC Reviewers',
+      label: 'PBAC Reviewers',
+      hasSubMenu: false,
+      role: "PBAC Member Secretary",
+      subItems: [
+        { id: 'Assign Reviewers', label: 'Assign Reviewers', path: '/pbac/chair/assignreviewers' },
+      ]
+    },
+    {
+      id: 'PBAC Decision',
+      label: 'PBAC Decision',
+      hasSubMenu: false,
+      role: "PBAC Committee Chair",
+      subItems: [
+        { id: 'PBAC Decision', label: 'PBAC Decision', path: '/pbac/chair/decision' },
+      ]
+    },
+    {
+      id: 'PBAC Decision',
+      label: 'PBAC Decision',
+      hasSubMenu: false,
+      role: "PBAC Member Secretary",
+      subItems: [
+        { id: 'PBAC Decision', label: 'PBAC Decision', path: '/pbac/chair/decision' },
+      ]
+    },
+    {
       id: 'Research',
       label: 'Research',
       hasSubMenu: true,

@@ -38,7 +38,7 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
             if(!fetchOnce.current) {
                 fetchOnce.current = true;
                 const response = await axiosInstance.get('/api/isrc/chair/projects', {
-                    params : { type : "isrc" }
+                    params : { type : "niec" }
                 });
                 setProjectsData(response.data);
             }
@@ -85,8 +85,8 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
             status : status,
         };
         try{
-            const response = await axiosInstance.post('/api/isrc/chair/comment', data,  {
-                params : { type : "isrc"}
+            const response = await axiosInstance.post('/api/isrc/chair/comment', data, {
+                params : { type : "niec"}
             });
             alert("Comment added successfully");
         }
@@ -101,7 +101,7 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
 
     const handleViewReviewerMessage = (item) => {
         setOpenReviewerMessage(true);
-        setReviewerMessage(item.comments);
+        setReviewerMessage(item.niec_member_comments);
     }
 
     const handleComment = (item) => {
@@ -156,7 +156,7 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
                             <CommentIcon sx={{ color: "rebeccapurple" }} />
                         </IconButton>
                     </Grid>
-                    <Grid item size={1}><Typography>{proj.status}</Typography></Grid>
+                    <Grid item size={1}><Typography>{proj.niec_member_status}</Typography></Grid>
                     <Grid item size={1}>
                         <IconButton onClick = {() => handleComment(proj)}>
                             <CommentIcon sx={{ color: "rebeccapurple" }} />
@@ -212,7 +212,6 @@ const ProjectReviewGrid = ({setSelectedForm}) => {
                     methodologyData: projectView.methodologyData,
                     consentData: projectView.consentData,
                     declaration: projectView.declaration,
-                    funding_FormData : projectView?.fundingDetails
                 }}/>
             )}
 

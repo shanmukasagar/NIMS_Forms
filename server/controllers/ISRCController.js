@@ -6,6 +6,7 @@ const ISRCReviewerController = async (req, res) => {
         const data = req.body;
         const email = req.user.email;
         data.email = email;
+        data.type = req.query?.type;
         const result = await reviewerComments(data);
         if(result) {
             return res.status(200).json("comment successfully added");
@@ -38,7 +39,8 @@ const assignReviewerController = async (req, res) => {
 const getISRCProjectsController = async (req, res) => {
     try{
         const email = req.user.email;
-        const result = await getReviewedProjectsService();
+        const type = req.query?.type;
+        const result = await getReviewedProjectsService(type);
         res.status(200).json(result);
     }
     catch(error) {
@@ -52,6 +54,7 @@ const ISRCChairController = async (req, res) => {
     try{
         const data = req.body;
         const email = req.user.email;
+        data.type = req.query?.type;
         data.email = email;
         const result = await chairMemberComments(data);
         if(result) {

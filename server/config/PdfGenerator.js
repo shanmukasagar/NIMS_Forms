@@ -378,26 +378,37 @@ async function generateConsentPdf(data, fileName, project_ref) {
   try{
     await connectToMongo();
     const projectsCollection = getDB().collection("Projects");
+    const projectPDFCollection = getDB().collection("PDF_Versions");
     const projectData = await projectsCollection.findOne({project_ref : project_ref});
-    const previousFileName = projectData.project_pdf;
-    if(previousFileName !== "") {
-      const previousName = previousFileName.split("/").at(-1);
-      const filePath = path.join(__dirname, "media/clinical/projects", previousName);
-      if (fs.existsSync(filePath)) {
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.error("Error deleting file:", err);
-          } else {
-            console.log("File deleted successfully.");
-          }
-        });
-      } 
-    }
-    
     const result = await projectsCollection.updateOne({project_ref : project_ref},
       { $set : { project_pdf : `media/clinical/projects/${fileName}` }
     });
 
+    const projectPDFData = await projectPDFCollection.findOne({project_ref : project_ref});
+    if(projectPDFData) {
+      const result = await projectPDFCollection.updateOne({project_ref : project_ref},
+        {
+          $push: {
+            project_pdf: `media/clinical/projects/${fileName}`
+          }
+        }
+      );
+      if(result.modifiedCount > 0) {
+        return true;
+      }
+    }
+    else{
+      const result = await projectPDFCollection.insertOne(
+        {
+          project_id : projectData.project_id,
+          project_ref : projectData.project_ref,
+          project_pdf : [`media/clinical/projects/${fileName}`]
+        }
+      )
+      if(result.acknowledged) {
+        return true;
+      }
+    }
     return true;
   }
   catch(error) {

@@ -83,22 +83,27 @@ const TableComponent8 = ({ data, setOpenTable, setEditableData }) => {
               <span style={labelStyle}>Waiver of Consent:</span>
               <span style={valueStyle}>{entry.waiver_consent_type || "N/A"}</span>
             </div>
-            <div style={rowStyle}>
-              <span style={labelStyle}>Waiver Details:</span>
-              <span style={valueStyle}>{entry.specify || "N/A"}</span>
-            </div>
+            {
+              entry.waiver_consent_type === "Yes" && (
+                <div style={rowStyle}>
+                  <span style={labelStyle}>Waiver Details:</span>
+                  <span style={valueStyle}>{entry.specify || "N/A"}</span>
+                </div>
+              )
+            }
+            
             <div style={rowStyle}>
               <span style={labelStyle}>Compensation Research:</span>
               <span style={valueStyle}>{entry.compensation_research_of_type || "N/A"}</span>
             </div>
-            <div style={rowStyle}>
-              <span style={labelStyle}>Compensation Specific:</span>
-              <span style={valueStyle}>{entry.specific || "N/A"}</span>
-            </div>
-            <div style={rowStyle}>
-              <span style={labelStyle}>Email:</span>
-              <span style={valueStyle}>{entry.email || "N/A"}</span>
-            </div>
+            {
+              entry.compensation_research_of_type === "Yes" && (
+                <div style={rowStyle}>
+                  <span style={labelStyle}>Compensation Specific:</span>
+                  <span style={valueStyle}>{entry.specific || "N/A"}</span>
+                </div>
+              )
+            }
           </div>
         ))
       ) : (

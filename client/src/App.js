@@ -47,6 +47,14 @@ const HODApproval = lazy(() => import('./Roles/Investigators/components/HODAppro
 const AssignReviewers = lazy(() => import('./Roles/ISRC/AssignReviewers'));
 const ISRCChairMemberDecision = lazy(() => import('./Roles/ISRC/ISRC_Chair_Decision'));
 
+const NIEC_Member = lazy(() => import('./Roles/NIEC/NIEC_Member'));
+const NIEC_Reviewers = lazy(() => import('./Roles/NIEC/NIEC_Reviewers'));
+const NIECChairMemberDecision = lazy(() => import('./Roles/NIEC/NIEC_Chair'));
+
+const PBAC_Member = lazy(() => import('./Roles/PBAC/PBAC_Member'));
+const PBAC_Reviewers = lazy(() => import('./Roles/PBAC/PBAC_Reviewer'));
+const PBACChairMemberDecision = lazy(() => import('./Roles/PBAC/PBAC_Chair'));
+
 
 
 const App = () => {
@@ -135,6 +143,15 @@ const App = () => {
                   <Route path="/hod/approval" element={<HODApproval />} />
                   <Route path="/isrc/chair/assignreviewers" element={<AssignReviewers user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/isrc/chair/decision" element={<ISRCChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
+
+                  <Route path="/nice/member" element={<NIEC_Member user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/niec/secretary/assignreviewers" element={<NIEC_Reviewers user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/nice/chair/decision" element={<NIECChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
+
+                  <Route path="/pbac/commitee/member" element={<PBAC_Member user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/pbac/chair/assignreviewers" element={<PBAC_Reviewers user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/pbac/chair/decision" element={<PBACChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
+
                 </Routes>
               </Box>
             </Box>

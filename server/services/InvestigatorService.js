@@ -5,37 +5,101 @@ const {sendEmail, sendProjectSubmissionMail} = require("../config/SendEmail");
 const { convertToFrontendKeys} = require("../config/FundingTableConfig");
 
 //Get projects data
-const getProjectsService = async (email, type) => { 
-    try{
-        await connectToMongo(); //connect to database
+const getProjectsService = async (email, type) => {
+    try {
+        await connectToMongo(); // connect to DB
         const projectsCollection = getDB().collection("Projects");
         const reviewersCollection = getDB().collection("AssignReviewers");
+
         let filteredObj = {};
-        if(type === "investigators") {
-            filteredObj = { $or: [ { emp_code: email }, { allowedEmployees: email } ] };
+
+        if (type === "investigators") {
+            filteredObj = {
+                $or: [{ emp_code: email }, { allowedEmployees: email }]
+            };
+        } 
+        else if (type === "isrc_member" || type === "niec_member" || type === "pbac_member") {
+            filteredObj = 
+                type === "isrc_member" ? { reviewer_id: email } :
+                type === "niec_member" ? { niec_reviewer_id: email } :
+                { pbac_reviewer_id: email };
         }
-        else if(type === "isrc_member") {
-            filteredObj = { reviewer_id : email };
-            // filteredObj = {};
-        }
-        else if(type === "isrc_secretary") {
+        else if (type === "isrc_secretary" || type === "niec_secretary" || type === "pbac_secretary") {
+            const reviewType = type === "isrc_secretary" ? "isrc" : type === "pbac_secretary" ? "pbac" : "niec";
             filteredObj = { project_id: { $ne: "" } };
-            // filteredObj = {};
-            const reviewersData = await reviewersCollection.find({}).toArray();
-            const projectsData = await projectsCollection.find(filteredObj).sort({ created_at: -1 }).toArray();
-            return {projects : projectsData, reviewers : reviewersData};
-        }
-        else if(type === "isrc_chair") {
+
+            const reviewersData = await reviewersCollection
+                .find({ type: reviewType })
+                .toArray();
+
+            const projectsData = await projectsCollection
+                .aggregate([
+                { $match: filteredObj },
+                { $sort: { created_at: -1 } },
+                {
+                    $lookup: {
+                        from: "PDF_Versions",     // your PDF version collection
+                        localField: "project_ref",
+                        foreignField: "project_ref",
+                        as: "pdf_versions"
+                    }
+                },
+                {
+                    $addFields: {
+                        all_project_pdfs: {
+                            $ifNull: [{ $arrayElemAt: ["$pdf_versions.project_pdf", 0] }, []]
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        pdf_versions: 0 // remove the extra joined field
+                    }
+                }
+                ])
+                .toArray();
+
+            return { projects: projectsData, reviewers: reviewersData };
+        } 
+        else if (type === "isrc_chair") {
             filteredObj = { project_id: { $ne: "" } };
         }
-        const projectsData = await projectsCollection.find(filteredObj).sort({ created_at: -1 }).toArray();
+
+        // Default case for other roles
+        const projectsData = await projectsCollection
+            .aggregate([
+                { $match: filteredObj },
+                { $sort: { created_at: -1 } },
+                {
+                $lookup: {
+                    from: "PDF_Versions",
+                    localField: "project_ref",
+                    foreignField: "project_ref",
+                    as: "pdf_versions"
+                }
+                },
+                {
+                $addFields: {
+                    all_project_pdfs: {
+                    $ifNull: [{ $arrayElemAt: ["$pdf_versions.project_pdf", 0] }, []]
+                    }
+                }
+                },
+                {
+                $project: {
+                    pdf_versions: 0
+                }
+                }
+            ])
+            .toArray();
+
         return projectsData;
-    }
-    catch(error) {
-        console.log("Error occured while fetching projects");
+    } catch (error) {
+        console.log("Error occurred while fetching projects", error);
         throw error;
     }
-}
+};
+
 
 //Get overall project data
 const getClinicalProjectData = async (project_ref) => {

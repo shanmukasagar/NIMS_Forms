@@ -104,9 +104,13 @@ const Section7 = ({selectedForm}) => {
         <div className="h">
           <h3 className="h2">Preview </h3>
           <p><strong>Waiver of Consent:</strong> {waiver_consent_type}</p>
-          <p><strong>Waiver Details:</strong> {specify}</p>
+          {waiver_consent_type === "Yes" && (
+            <p><strong>Waiver Details:</strong> {specify}</p>
+          )}
           <p><strong>Compensation for SAE:</strong> {compensation_research_of_type}</p>
-          <p><strong>Compensation Details:</strong> {specific}</p>
+          {compensation_research_of_type === "Yes" && (
+            <p><strong>Compensation Details:</strong> {specific}</p>
+          )}
           <button className="name" onClick={handleEdit}>Edit</button>
           <button className="name" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</button>
         </div>

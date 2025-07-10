@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, InputAdornment, IconButton, Typography, MenuItem, FormControl, InputLabel, Select  } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import "../styles/RegistrationForm.css";
 import axiosInstance from "./AxiosInstance";
@@ -55,6 +54,31 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                     navigate('/isrc/chair/decision');
                     return ;
                 }
+                else if(selectedRole === "NIMS IEC committee- member") {
+                    navigate('/nice/member');
+                    return ;
+                }
+                else if(selectedRole === "NIMS IEC CommitteeMember-secretary") {
+                    navigate('/niec/secretary/assignreviewers');
+                    return ;
+                }
+                else if(selectedRole === "NIMS IEC Committee - Chairman"){
+                    navigate('/nice/chair/decision');
+                    return ;
+                }
+                else if(selectedRole === "PBAC Committee Member") {
+                    navigate('/pbac/commitee/member');
+                    return ;
+                }
+                else if(selectedRole === "PBAC Member Secretary") {
+                    navigate('/pbac/chair/assignreviewers');
+                    return ;
+                }
+                else if(selectedRole === "PBAC Committee Chair"){
+                    navigate('/pbac/chair/decision');
+                    return ;
+                }
+                
                 navigate('/basic/administrative');
             } catch (err) {
                 setError(err.response?.data || 'Login failed');
@@ -118,16 +142,21 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                             <InputLabel id="role-label">Role</InputLabel>
                             <Select labelId="role-label" name="role" value={selectedRole}
                                 onChange={(e) => setSelectedRole(e.target.value)}  label="Role" >
+
                                 <MenuItem value="Principal/CoInvestigator">Principal/CoInvestigator</MenuItem>
+
                                 <MenuItem value="ISRC Member Secretary">ISRC Member Secretary</MenuItem>
                                 <MenuItem value="ISRC Committee Member">ISRC Committee Member</MenuItem>
                                 <MenuItem value="ISRC Committee Chair">ISRC Committee Chair</MenuItem>
-                                <MenuItem value="Project Budget committee(PBC) member and chair">
-                                    Project Budget committee(PBC) member and chair
-                                </MenuItem>
+
+                                <MenuItem value="PBAC Member Secretary">PBAC Member Secretary</MenuItem>
+                                <MenuItem value="PBAC Committee Member">PBAC Committee Member</MenuItem>
+                                <MenuItem value="PBAC Committee Chair">PBAC Committee Chair</MenuItem>
+                                
                                 <MenuItem value="NIMS IEC committee- member">NIMS IEC committee- member</MenuItem>
                                 <MenuItem value="NIMS IEC CommitteeMember-secretary">NIMS IEC CommitteeMember-secretary</MenuItem>
                                 <MenuItem value="NIMS IEC Committee - Chairman">NIMS IEC Committee - Chairman</MenuItem>
+
                                 <MenuItem value="Admin">Admin</MenuItem>
                             </Select>
                         </FormControl>

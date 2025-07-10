@@ -13,6 +13,8 @@ import {  Table, TableHead, TableBody, TableRow, TableCell,
      Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useProject} from "../../../components/ResearchContext";
+import { List, ListItem, Link } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 const Dashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
@@ -27,6 +29,9 @@ const Dashboard = ({user, setSelectedForm}) => {
     const [selectedOption, setSelectedOption] = useState(''); // default option
     const [selectedOrg, setSelectedOrg] = useState('');
     const [selectedProject, setSelectedProject] = useState({});
+
+    const [isVersionDialogOpen, setIsVersionDialogOpen] = useState(false);
+    const [selectedProjectForVersions, setSelectedProjectForVersions] = useState(null);
 
     const navigate = useNavigate();
     const fetchOnce = useRef(false);
@@ -51,6 +56,16 @@ const Dashboard = ({user, setSelectedForm}) => {
         }
         handleGetProjects();
     },[])
+
+    const openPdfVersionDialog = (projectItem) => { //Open pdf dialog
+        setSelectedProjectForVersions(projectItem);
+        setIsVersionDialogOpen(true);
+    };
+ 
+    const closePdfVersionDialog = () => { //Close pdf dialog
+        setIsVersionDialogOpen(false);
+        setSelectedProjectForVersions(null);
+    };
 
     //Show comments of isrc, niec, pbac
     const handleSelectChange = (event) => {
@@ -213,6 +228,22 @@ const Dashboard = ({user, setSelectedForm}) => {
         setSelectedOption(e.target.value);
     };
 
+    //Status colors
+    const getStatusColor = (status) => {
+        switch (status?.toLowerCase()) {
+            case 'approved':
+                return 'green';
+            case 'rejected':
+                return 'red';
+            case 'reviewed':
+                return 'blue';
+            case 'pending':
+                return 'orange';
+            default:
+                return 'orange';
+        }
+    };
+
 
     return (
         <React.Fragment>
@@ -223,10 +254,10 @@ const Dashboard = ({user, setSelectedForm}) => {
                 </Box>
                 <Box>
                     <Grid container spacing={3} style={{ backgroundColor: '#4b1d77', color: 'white', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
+                        <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Change Log</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Submission Date</Typography></Grid>
-                        <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid>
+                        {/* <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid> */}
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>View</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Comments</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Edit</Typography></Grid>
@@ -234,14 +265,14 @@ const Dashboard = ({user, setSelectedForm}) => {
                     <Grid container spacing={3} style={{ backgroundColor: 'white', color: '#4b1d77', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
                         {projectsData.length > 0 ? projectsData.map((item, index) => (
                             <React.Fragment key = {index}>
-                                <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
+                                <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
                                 <Grid item size={2}>
                                     <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handlePIComments(item)}/>
                                 </Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
-                                <Grid item size={1}><Typography sx={{ fontSize: "18px", color : `${statusColors[item.status]}` }}>{item.status}</Typography></Grid>
+                                {/* <Grid item size={1}><Typography sx={{ fontSize: "18px", color : `${statusColors[item.status]}` }}>{item.status}</Typography></Grid> */}
                                 <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
-                                    <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleViewIcon(item)} /> 
+                                    <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => openPdfVersionDialog(item)} /> 
                                     {item.project_pdf !== "" && (
                                         <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
                                             onClick={() => window.open(`http://localhost:4000/${item.project_pdf}.pdf`, "_blank")} />
@@ -272,13 +303,40 @@ const Dashboard = ({user, setSelectedForm}) => {
                         </Select>
                     </FormControl>
                     {selectedOrg &&  selectedOrg === "NIEC" && (
-                        <Typography variant="body1">{ selectedProject?.niec_inv_comments || 'No comment available.'} </Typography>
+                        <Box sx={{ border: '1px solid #ccc', borderRadius: 2, p: 2, mt: 2,
+                                backgroundColor: '#fafafa' }} >
+                            <Typography variant="body1" mb={1}>
+                                {selectedProject?.pbac_inv_comments || 'No comment available.'}
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" textTransform="capitalize"
+                                color={getStatusColor(selectedProject?.pbac_status || "pending")} >
+                                {selectedProject?.pbac_status || 'Pending'}
+                            </Typography>
+                        </Box>
                     )}
                     {selectedOrg &&  selectedOrg === "ISRC" && (
-                        <Typography variant="body1">{ selectedProject?.isrc_inv_comments || 'No comment available.'} </Typography>
+                        <Box sx={{ border: '1px solid #ccc', borderRadius: 2, p: 2, mt: 2,
+                                backgroundColor: '#fafafa' }} >
+                            <Typography variant="body1" mb={1}>
+                                {selectedProject?.isrc_inv_comments || 'No comment available.'}
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" textTransform="capitalize"
+                                color={getStatusColor(selectedProject?.status || "pending")} >
+                                {selectedProject?.status || 'Pending'}
+                            </Typography>
+                        </Box>
                     )}
                     {selectedOrg &&  selectedOrg === "PBAC" && (
-                        <Typography variant="body1">{ selectedProject?.pbac_inv_comments || 'No comment available.'} </Typography>
+                        <Box sx={{ border: '1px solid #ccc', borderRadius: 2, p: 2, mt: 2,
+                                backgroundColor: '#fafafa' }} >
+                            <Typography variant="body1" mb={1}>
+                                {selectedProject?.pbac_inv_comments || 'No comment available.'}
+                            </Typography>
+                            <Typography variant="body1" fontWeight="bold" textTransform="capitalize"
+                                color={getStatusColor(selectedProject?.pbac_status || "pending")} >
+                                {selectedProject?.pbac_status || 'Pending'}
+                            </Typography>
+                        </Box>
                     )}
                 </DialogContent>
             </Dialog>
@@ -370,6 +428,29 @@ const Dashboard = ({user, setSelectedForm}) => {
                     <Button onClick={() => setOpenChangescomments(false)} color="secondary">Cancel</Button>
                     <Button onClick={handleChangesSubmit} variant="contained" color="primary">Send</Button>
                 </DialogActions>
+            </Dialog>
+            <Dialog open={isVersionDialogOpen} onClose={closePdfVersionDialog} maxWidth="md" fullWidth>
+                <DialogTitle> PDF Versions for Project 
+                    <IconButton onClick={closePdfVersionDialog} sx={{ position: "absolute", right: 8, top: 8 }}>
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {selectedProjectForVersions?.all_project_pdfs?.length > 0 ? (
+                        <List>
+                            {[...selectedProjectForVersions.all_project_pdfs].reverse().map((pdfUrl, index) => (
+                                <ListItem key={index}>
+                                    <Link href={`http://localhost:4000/${pdfUrl}.pdf`}
+                                        target="_blank" rel="noopener noreferrer" underline="hover" >
+                                            Version {selectedProjectForVersions.all_project_pdfs.length - index}
+                                    </Link>
+                                </ListItem>
+                            ))}
+                        </List>
+                        ) : (
+                            <Typography>No PDF versions available.</Typography>
+                        )}
+                </DialogContent>
             </Dialog>
         </React.Fragment>
     )

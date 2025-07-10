@@ -10,7 +10,6 @@ import axiosInstance from "../../components/AxiosInstance";
 import { useNavigate } from 'react-router-dom';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { Table, TableHead, TableRow, TableCell, TableBody } from '@mui/material';
-
 import { List, ListItem, Link } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility } from '@mui/icons-material';
@@ -45,16 +44,6 @@ const ISRC_Member = ({setSelectedForm}) => {
     }
   } 
 
-  const openPdfVersionDialog = (projectItem) => { //Open pdf dialog
-    setSelectedProjectForVersions(projectItem);
-    setIsVersionDialogOpen(true);
-  };
-
-  const closePdfVersionDialog = () => { //Close pdf dialog
-      setIsVersionDialogOpen(false);
-      setSelectedProjectForVersions(null);
-  };
-
   const handleViewIcon = async (item) => { // Handle view icon
     try {
       if(item.form_type === "biomedical-1") {
@@ -76,10 +65,20 @@ const ISRC_Member = ({setSelectedForm}) => {
     }
   };
 
+  const openPdfVersionDialog = (projectItem) => { //Open pdf dialog
+    setSelectedProjectForVersions(projectItem);
+    setIsVersionDialogOpen(true);
+  };
+
+  const closePdfVersionDialog = () => { //Close pdf dialog
+      setIsVersionDialogOpen(false);
+      setSelectedProjectForVersions(null);
+  };
+
   //Open project changes
   const openProjectChanges = (item) => {
     setChanges((prev) => ({
-    ...prev, projectChanges: item?.inv_isrc_comments || '', open: true,
+    ...prev, projectChanges: item?.inv_niec_comments || '', open: true,
     }));
   }
 
@@ -113,11 +112,11 @@ const ISRC_Member = ({setSelectedForm}) => {
       status : status,
       form_type : selectedData?.form_type,
       project_pdf : selectedData?.project_pdf,
-      type : "isrc"
+      type : "niec"
     };
     try{
       const response = await axiosInstance.post('/api/isrc/committee/comment', data, {
-        params : { type : "isrc" } 
+        params : { type : "niec" } 
       });
       alert("Comment added successfully");
     }
@@ -133,7 +132,7 @@ const ISRC_Member = ({setSelectedForm}) => {
     try{
       if(!fetchOnce.current) {
         fetchOnce.current = true;
-        const response = await axiosInstance.get('/api/investigator/projects', {params : {type : "isrc_member"}});
+        const response = await axiosInstance.get('/api/investigator/projects', {params : {type : "niec_member"}});
         setProjectsData(response.data);
       }
     }
@@ -181,7 +180,7 @@ const ISRC_Member = ({setSelectedForm}) => {
                 <Grid item size={1}>
                   <CommentIcon sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => openProjectChanges(item)}/>
                 </Grid>
-                <Grid item size={1}><Typography sx={commonTextStyle}>{item.status || ""}</Typography></Grid>
+                <Grid item size={1}><Typography sx={commonTextStyle}>{item?.niec_status || "pending"}</Typography></Grid>
                 <Grid item size={2} sx = {{display : "flex", gap : "25px", alignItems : "center"}}>
                   <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => openPdfVersionDialog(item)} /> 
                   <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
