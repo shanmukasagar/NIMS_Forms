@@ -67,40 +67,59 @@ const addClinicalService = async(formData) => {
         //Email sent to all filled co-investigators and guide
 
         const principal = modified_investigators.find(inv => inv.role === "principal" && inv.name);
+        const guideOrCoInvestigator = modified_investigators.find(
+            inv => (inv.role === "guide" || inv.role === "co-investigator") && inv.name
+        );
         const allowedEmployees = [];
 
         for (const inv of modified_investigators) {
-            const {name, designation, qualification, emp_code, department, role,  contact = "", gmail, approved = false, approval_token = ""  } = inv;
-            const token = uuidv4(); // Or generate JWT if you want secure verification
-            if (inv.role !== "principal" && inv.role !== "hod" && inv.gmail) {
+            const { name, designation, qualification, department, role,
+                emp_code, contact = "", gmail, approved = false, approval_token = "" } = inv;
 
-                // You can store this token in PostgreSQL with expiration and investigator ID
-
-                const approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=${"clinical_investigators"}`;
-
-                const html = `
-                    <p>Dear ${inv.name},</p>
-                    <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
-                    <p>Please click the button below to approve your involvement:</p>
-                    <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
-                    <p>If you did not expect this email, you can ignore it.</p>
-                `;
-
-                await sendEmail(principal.gmail, inv.gmail, "Approval Request for Research Project", html);
-            }
-
+            const token = uuidv4();
             allowedEmployees.push(emp_code);
+
+            // Prepare email only if gmail is present
+            if (gmail) {
+                let approvalLink = "";
+                let subject = "";
+
+                if (guideOrCoInvestigator) {
+                    if (role !== "principal" && role !== "hod") {
+                        approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=clinical_investigators`;
+                        subject = "Approval Request for Research Project";
+                    }
+                } 
+                else {
+                    if (role !== "principal") {
+                        approvalLink = `http://localhost:3000/hod/approval?token=${token}&tableName=clinical_investigators`;
+                        subject = "HOD Approval Request for Research Project";
+                    }
+                }
+
+                if (approvalLink) {
+                    const html = `
+                        <p>Dear ${name},</p>
+                        <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
+                        <p>Please click the button below to approve your involvement:</p>
+                        <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
+                        <p>If you did not expect this email, you can ignore it.</p>
+                    `;
+
+                    await sendEmail(principal.gmail, gmail, subject, html);
+                }
+            }
 
             const result = await client.query(
                 `INSERT INTO clinical_investigators (
-                    name, designation, qualification, department, emp_code,
-                    role, gmail, contact, approved, approval_token, email, form_id
-                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-                RETURNING id`,
-                [ name, designation, qualification, department, emp_code, role, gmail,
-                    contact, approved, token, email, formId ]
+                name, designation, qualification, department, emp_code,
+                role, gmail, contact, approved, approval_token, email, form_id
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+                [
+                name, designation, qualification, department, emp_code,
+                role, gmail, contact, approved, token, email, formId
+                ]
             );
-
         }
 
         await client.query( //Insert investigator counts
@@ -281,36 +300,56 @@ const updateClinicalService = async (formData) => {
 
         const principal = modified_investigators.find(inv => inv.role === "principal" && inv.name);
         const allowedEmployees = [];
+        const guideOrCoInvestigator = modified_investigators.find(
+            inv => (inv.role === "guide" || inv.role === "co-investigator") && inv.name
+        );
 
         for (const inv of modified_investigators) {
-            const {name, designation, qualification, department, role, emp_code,  contact = "", gmail, approved = false, approval_token = ""  } = inv;
-            const token = uuidv4(); // Or generate JWT if you want secure verification
-            if (inv.role !== "principal" && inv.role !== "hod" && inv.gmail) {
+            const { name, designation, qualification, department, role,
+                emp_code, contact = "", gmail, approved = false, approval_token = "" } = inv;
 
-                // You can store this token in PostgreSQL with expiration and investigator ID
-
-                const approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=${"clinical_investigators"}`;
-
-                const html = `
-                    <p>Dear ${inv.name},</p>
-                    <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
-                    <p>Please click the button below to approve your involvement:</p>
-                    <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
-                    <p>If you did not expect this email, you can ignore it.</p>
-                `;
-
-                await sendEmail(principal.gmail, inv.gmail, "Approval Request for Research Project", html);
-            }
-
+            const token = uuidv4();
             allowedEmployees.push(emp_code);
+
+            // Prepare email only if gmail is present
+            if (gmail) {
+                let approvalLink = "";
+                let subject = "";
+
+                if (guideOrCoInvestigator) {
+                    if (role !== "principal" && role !== "hod") {
+                        approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=clinical_investigators`;
+                        subject = "Approval Request for Research Project";
+                    }
+                } 
+                else {
+                    if (role !== "principal") {
+                        approvalLink = `http://localhost:3000/hod/approval?token=${token}&tableName=clinical_investigators`;
+                        subject = "HOD Approval Request for Research Project";
+                    }
+                }
+
+                if (approvalLink) {
+                    const html = `
+                        <p>Dear ${name},</p>
+                        <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
+                        <p>Please click the button below to approve your involvement:</p>
+                        <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
+                        <p>If you did not expect this email, you can ignore it.</p>
+                    `;
+
+                    await sendEmail(principal.gmail, gmail, subject, html);
+                }
+            }
 
             const result = await client.query(
                 `INSERT INTO clinical_investigators (
-                    name, designation, qualification, department, emp_code,
-                    role, gmail, contact, approved, approval_token, email, form_id
+                name, designation, qualification, department, emp_code,
+                role, gmail, contact, approved, approval_token, email, form_id
                 ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
-                [ name, designation, qualification, department, emp_code,
-                    role, gmail, contact, approved, token, email, formId
+                [
+                name, designation, qualification, department, emp_code,
+                role, gmail, contact, approved, token, email, formId
                 ]
             );
         }

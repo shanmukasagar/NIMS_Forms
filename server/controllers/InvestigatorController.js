@@ -1,6 +1,5 @@
-const {getProjectsService, getClinicalProjectData, approvalService, approveHODService, projectChanges
-
-} = require("../services/InvestigatorService");
+const {getProjectsService, getClinicalProjectData, approvalService, approveHODService, projectChanges,
+    getInvestigatorStatus } = require("../services/InvestigatorService");
 
 //Get all projects
 const getProjectsController = async (req, res) => {
@@ -71,6 +70,20 @@ const projectChangesController = async (req, res) => {
     }
 };
 
+//Project status controller
+
+const investigatorStatusController = async (req, res) => {
+    const {tableName, formId} = req.query;
+    const numericFormId = Number(formId);
+    try {
+        const result = await getInvestigatorStatus(tableName, numericFormId);
+        res.status(200).json(result);
+    } catch (err) {
+        console.error('Investigator staus Error:', err.message);
+        res.status(500).json({ message: err.message || "Server error" });
+    }
+};
+
 
 module.exports = {getProjectsController, getOverallProjectController, checkInvestigatorApproval, 
-    approveHOD, projectChangesController};
+    approveHOD, projectChangesController, investigatorStatusController};

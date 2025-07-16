@@ -49,7 +49,7 @@ const FundingDetails = ({ fundingData, setFundingData, funding_FormData, setFund
         <Grid container spacing={2}>
             <Grid item size={6}>
                 <TextField fullWidth required label="Total Estimated Budget for Site" variant="outlined" name="estimated_budget" value={fundingData?.estimated_budget || ""}
-                    onChange={handleChange} />
+                    onChange={handleChange} type = "number" />
             </Grid>
             <Grid item size={6}>
                 <FormControl fullWidth required>

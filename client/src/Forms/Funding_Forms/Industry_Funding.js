@@ -43,7 +43,7 @@ const Industry_Funding = ({ funding_FormData, setFundingFormData }) => {
 
       <Typography variant="subtitle1" gutterBottom>Proposed Budget by Sponsor:</Typography>
       {budgetItems.map((item, i) => (
-        <TextField required key={i} fullWidth size="small" label={item.label} value={item.value} onChange={(e) => {
+        <TextField type = "number" required key={i} fullWidth size="small" label={item.label} value={item.value} onChange={(e) => {
           const updated = [...budgetItems];
           updated[i].value = e.target.value;
           handleChange('budgetItems', updated);
@@ -63,7 +63,7 @@ const Industry_Funding = ({ funding_FormData, setFundingFormData }) => {
           {nimsInvestigations.map((row, i) => (
             <TableRow key={i}>
               <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleArrayChange('nimsInvestigations', i, 'name', e.target.value)} /></TableCell>
-              <TableCell><TextField required fullWidth size="small" value={row.cost} onChange={(e) => handleArrayChange('nimsInvestigations', i, 'cost', e.target.value)} /></TableCell>
+              <TableCell><TextField required fullWidth size="small" type = "number" value={row.cost} onChange={(e) => handleArrayChange('nimsInvestigations', i, 'cost', e.target.value)} /></TableCell>
               <TableCell>{nimsInvestigations.length > 1 && <IconButton onClick={() => deleteArrayRow('nimsInvestigations', i)}><DeleteIcon color="error" /></IconButton>}</TableCell>
             </TableRow>
           ))}
@@ -86,7 +86,7 @@ const Industry_Funding = ({ funding_FormData, setFundingFormData }) => {
           {personnel.map((row, i) => (
             <TableRow key={i}>
               <TableCell><TextField required fullWidth size="small" value={row.designation} onChange={(e) => handleArrayChange('personnel', i, 'designation', e.target.value)} /></TableCell>
-              <TableCell><TextField required fullWidth size="small" value={row.fees} onChange={(e) => handleArrayChange('personnel', i, 'fees', e.target.value)} /></TableCell>
+              <TableCell><TextField type = "number" required fullWidth size="small" value={row.fees} onChange={(e) => handleArrayChange('personnel', i, 'fees', e.target.value)} /></TableCell>
               <TableCell>{personnel.length > 1 && <IconButton onClick={() => deleteArrayRow('personnel', i)}><DeleteIcon color="error" /></IconButton>}</TableCell>
             </TableRow>
           ))}

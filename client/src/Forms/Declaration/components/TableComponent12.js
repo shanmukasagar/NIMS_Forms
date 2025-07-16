@@ -94,63 +94,33 @@ const TableComponent12 = ({ data, setOpenTable, setEditableData }) => {
             </div>
 
             <div>
-              <div style={labelStyle}>PI Name</div>
+              <div style={labelStyle}>Prinicipal Investigator Name</div>
               <div style={valueStyle}>{item.name_of_pi_research || "N/A"}</div>
             </div>
 
             <div>
-              <div style={labelStyle}>PI Signature</div>
+              <div style={labelStyle}>Prinicipal Investigator Signature</div>
               <div style={valueStyle}>{item.sign_1 || "N/A"}</div>
             </div>
 
             <div>
-              <div style={labelStyle}>PI Date</div>
+              <div style={labelStyle}>Prinicipal Investigator Date</div>
               <div style={valueStyle}>{item.date_pi || "N/A"}</div>
             </div>
 
             <div>
-              <div style={labelStyle}>Co-PI Name</div>
+              <div style={labelStyle}>Guide Name</div>
               <div style={valueStyle}>{item.name_of_co_pi_guide || "N/A"}</div>
             </div>
 
             <div>
-              <div style={labelStyle}>Co-PI Signature</div>
+              <div style={labelStyle}>Guide Signature</div>
               <div style={valueStyle}>{item.sign_2 || "N/A"}</div>
             </div>
 
             <div>
-              <div style={labelStyle}>Co-PI Date</div>
+              <div style={labelStyle}>Guide Date</div>
               <div style={valueStyle}>{item.date_co_pi || "N/A"}</div>
-            </div>
-
-            <div>
-              <div style={labelStyle}>Co-Investigator 1</div>
-              <div style={valueStyle}>{item.name_of_co_investigator_1 || "N/A"}</div>
-            </div>
-
-            <div>
-              <div style={labelStyle}>Signature 3</div>
-              <div style={valueStyle}>{item.sign_3 || "N/A"}</div>
-            </div>
-
-            <div>
-              <div style={labelStyle}>Date 1</div>
-              <div style={valueStyle}>{item.date_co_inv_1 || "N/A"}</div>
-            </div>
-
-            <div>
-              <div style={labelStyle}>Co-Investigator 2</div>
-              <div style={valueStyle}>{item.name_of_co_investigator_2 || "N/A"}</div>
-            </div>
-
-            <div>
-              <div style={labelStyle}>Signature 4</div>
-              <div style={valueStyle}>{item.sign_4 || "N/A"}</div>
-            </div>
-
-            <div>
-              <div style={labelStyle}>Date 2</div>
-              <div style={valueStyle}>{item.date_co_inv_2 || "N/A"}</div>
             </div>
 
             <div>
@@ -166,6 +136,35 @@ const TableComponent12 = ({ data, setOpenTable, setEditableData }) => {
             <div>
               <div style={labelStyle}>HOD Date</div>
               <div style={valueStyle}>{item.date_co_inv_3 || "N/A"}</div>
+            </div>
+            <div>
+              {item.co_investigators && Array.isArray(item.co_investigators) && item.co_investigators.length > 0 ? (
+                item.co_investigators.map((co, idx) => (
+                  <div key={idx} style={{ marginBottom: "16px" }}>
+                    <div style={labelStyle}>Co-Investigator {idx + 1}</div>
+
+                    <div>
+                      <div style={labelStyle}>Name</div>
+                      <div style={valueStyle}>{co.name || "N/A"}</div>
+                    </div>
+
+                    <div>
+                      <div style={labelStyle}>Signature</div>
+                      <div style={valueStyle}>{co.signature || "N/A"}</div>
+                    </div>
+
+                    <div>
+                      <div style={labelStyle}>Date</div>
+                      <div style={valueStyle}>{co.date || "N/A"}</div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div>
+                  <div style={labelStyle}>Co-Investigators</div>
+                  <div style={valueStyle}>None</div>
+                </div>
+              )}
             </div>
           </div>
         </div>

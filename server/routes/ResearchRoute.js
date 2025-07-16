@@ -9,7 +9,7 @@ const fs = require('fs');
 
 const { administartion, fundingBudget ,overviewResearch,participantRelatedInformation,benefitsAndRisk,
      paymentCompensation,additionalInformation, storageAndConfidentiality,administrativeRequirements,declaration,
-      expeditedReview,requestingWaiver,informedConsent ,submitInvestigators} = require("../controllers/ResearchController");
+      expeditedReview,requestingWaiver,informedConsent ,submitInvestigators, checkConsentType} = require("../controllers/ResearchController");
 const { CURSOR_FLAGS } = require('mongodb');
 
 
@@ -40,6 +40,7 @@ router.post("/declaration",verifyToken,declaration);
 router.post("/expedited_review",verifyToken, expeditedReview);
 router.post("/requesting_waiver", verifyToken,requestingWaiver);
 router.post("/informedd_consent",verifyToken, informedConsent);
+router.get("/waiverconsent/type",verifyToken, checkConsentType);
 
 router.post("/upload", verifyToken , upload.single('image'), async(req,res) => {
     try{

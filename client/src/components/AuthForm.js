@@ -78,6 +78,12 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                     navigate('/pbac/chair/decision');
                     return ;
                 }
+                else if(selectedRole === "Admin") {
+                    navigate('/basic/administrative');
+                }
+                else if(selectedRole === "Super Admin") {
+                    navigate('/basic/administrative');
+                }
                 
                 navigate('/basic/administrative');
             } catch (err) {
@@ -158,6 +164,7 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                                 <MenuItem value="NIMS IEC Committee - Chairman">NIMS IEC Committee - Chairman</MenuItem>
 
                                 <MenuItem value="Admin">Admin</MenuItem>
+                                <MenuItem value="Super Admin">Super Admin</MenuItem>
                             </Select>
                         </FormControl>
                     </React.Fragment>

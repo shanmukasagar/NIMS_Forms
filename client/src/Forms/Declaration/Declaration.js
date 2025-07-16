@@ -7,7 +7,8 @@ import axiosInstance from "../../components/AxiosInstance.js";
 
 import {useProject} from "../../components/ResearchContext";
 
-const Section10 = ({selectedForm}) => {
+const Section10 = ({selectedForm, user}) => {
+
   const [name_of_pi_research, setNameOfPiResearch] = useState("");
   const [sign_1, setSign1] = useState("");
   const [date_pi, setDatePi] = useState(new Date().toISOString().split("T")[0]);
@@ -19,17 +20,11 @@ const Section10 = ({selectedForm}) => {
   const [sign_2, setSign2] = useState("");
   const [date_co_pi, setDateCoPi] = useState(  new Date().toISOString().split("T")[0]);
 
-  const [name_of_co_investigator_1, setNameOfCoInvestigator1] = useState("");
-  const [sign_3, setSign3] = useState("");
-  const [date_co_inv_1, setDateCoInv1] = useState(  new Date().toISOString().split("T")[0]);
-
-  const [name_of_co_investigator_2, setNameOfCoInvestigator2] = useState("");
-  const [sign_4, setSign4] = useState("");
-  const [date_co_inv_2, setDateCoInv2] = useState(  new Date().toISOString().split("T")[0]);
-
   const [name_of_hod, setNameOfHod] = useState("");
   const [sign_5, setSign5] = useState("");
   const [date_co_inv_3, setDateCoInv3] = useState(  new Date().toISOString().split("T")[0]);
+
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const [showPreview, setShowPreview] = useState(false);
   const[existData,setExistData]=useState(null);
@@ -40,6 +35,10 @@ const Section10 = ({selectedForm}) => {
   const [previewURL, setPreviewURL] = useState({"image1" : null, "image2" : null, "image3" : null, "image4" : null});
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [coInvestigators, setCoInvestigators] = useState([
+    { name: "", sign: "", date: new Date().toISOString().split("T")[0] }
+  ]);
 
   const elementsList = [
     "I/We certify that the information provided in this application is complete and correct.",
@@ -67,7 +66,7 @@ const Section10 = ({selectedForm}) => {
   }, []);
 
   useEffect(() => {
-    if (editableData) {
+    if (editableData && Object.keys(editableData).length > 0) {
       setSelectedElements(editableData?.selected_elements || []);
 
       setNameOfPiResearch(editableData?.name_of_pi_research || "");
@@ -86,22 +85,6 @@ const Section10 = ({selectedForm}) => {
           : new Date().toISOString().split("T")[0]
       );
 
-      setNameOfCoInvestigator1(editableData?.name_of_co_investigator_1 || "");
-      setSign3(editableData?.sign_3 || "");
-      setDateCoInv1(
-        editableData?.date_co_inv_1
-          ? new Date(editableData.date_co_inv_1).toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0]
-      );
-
-      setNameOfCoInvestigator2(editableData?.name_of_co_investigator_2 || "");
-      setSign4(editableData?.sign_4 || "");
-      setDateCoInv2(
-        editableData?.date_co_inv_2
-          ? new Date(editableData.date_co_inv_2).toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0]
-      );
-
       setNameOfHod(editableData?.name_of_hod || "");
       setSign5(editableData?.sign_5 || "");
       setDateCoInv3(
@@ -109,8 +92,31 @@ const Section10 = ({selectedForm}) => {
           ? new Date(editableData.date_co_inv_3).toISOString().split("T")[0]
           : new Date().toISOString().split("T")[0]
       );
+      setCoInvestigators(editableData?.co_investigators);
     }
   }, [editableData]);
+
+  // Add co investigator
+  const addCoInvestigator = () => { 
+    setCoInvestigators(prev => [
+      ...prev,
+      { name: "", sign: "", date: new Date().toISOString().split("T")[0] }
+    ]);
+  };
+
+  //Delete co investigator
+  const deleteCoInvestigator = (index) => {
+    const updated = [...coInvestigators];
+    updated.splice(index, 1);
+    setCoInvestigators(updated);
+  };
+
+  // Handle co investigator change
+  const handleChange = (index, field, value) => { 
+    const updated = [...coInvestigators];
+    updated[index][field] = value;
+    setCoInvestigators(updated);
+  };
 
 
   const handleCheckboxChange = (event) => {
@@ -136,8 +142,8 @@ const Section10 = ({selectedForm}) => {
           name_of_pi_research, date_pi, sign_1, 
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
-          name_of_co_investigator_1,  date_co_inv_1, sign_3, 
-          name_of_co_investigator_2, date_co_inv_2, sign_4, email
+          email,
+          co_investigators : coInvestigators
         }, 
         {
           params: {
@@ -162,6 +168,19 @@ const Section10 = ({selectedForm}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const investigatorResponse = await axiosInstance.get("/api/research/check/admin", { 
+          params : {
+            form_type:"investigatorss",              // or hardcoded for now
+            formId : projectId
+          }
+        });
+
+        if(investigatorResponse.data.length > 0) {
+          const prinicipal_Investigator = investigatorResponse.data?.filter((item) => item.investigator_type === "Principal_Investigator");
+          const disabledOrNot = prinicipal_Investigator[0]?.emp_code;
+          setIsDisabled(disabledOrNot === user);
+        }
+        
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"declaration",              // or hardcoded for now
@@ -204,24 +223,21 @@ const Section10 = ({selectedForm}) => {
               <li><strong>Date:</strong> {date_co_pi}</li>
             </ul>
           </li>
-
-          <li>
-            <strong>Co-Investigator 1:</strong>
-            <ul>
-              <li><strong>Name:</strong> {name_of_co_investigator_1}</li>
-              <li><strong>Signature:</strong> {sign_3 || "Not signed"}</li>
-              <li><strong>Date:</strong> {date_co_inv_1}</li>
-            </ul>
-          </li>
-
-          <li>
-            <strong>Co-Investigator 2:</strong>
-            <ul>
-              <li><strong>Name:</strong> {name_of_co_investigator_2}</li>
-              <li><strong>Signature:</strong> {sign_4 || "Not signed"}</li>
-              <li><strong>Date:</strong> {date_co_inv_2}</li>
-            </ul>
-          </li>
+        <li>
+          <strong>Co Investigators:</strong>
+          <ul>
+            {coInvestigators.map((co, index) => (
+              <li key={index}>
+                <strong>Co-Investigator {index + 1}:</strong>
+                <ul>
+                  <li><strong>Name:</strong> {co.name || "Not provided"}</li>
+                  <li><strong>Signature:</strong> {co.sign || "Not signed"}</li>
+                  <li><strong>Date:</strong> {co.date || "Not selected"}</li>
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </li>
 
           <li>
             <strong>HOD:</strong>
@@ -297,14 +313,14 @@ const Section10 = ({selectedForm}) => {
                 <h3 className="h2">Name of Guide: </h3>
                 <label>
                   <input  type="text" name="text"   placeholder="Enter guide" value={name_of_co_pi_guide}
-                    onChange={(e) => setNameOfCoPiGuide(e.target.value)} className="name"  />
+                    onChange={(e) => setNameOfCoPiGuide(e.target.value)} className="name" disabled = {isDisabled} />
                 </label>
               </div>
               <div className="form-group">
                 <h3 className="h2">Signature</h3>
                 <label>
                   <input type="text" name="sign2" value={sign_2} className="name"  
-               onChange={(e) => setSign2(e.target.value)}   placeholder="Enter your signature" />
+               onChange={(e) => setSign2(e.target.value)}   placeholder="Enter your signature" disabled = {isDisabled}/>
                 </label>
               </div>
              
@@ -312,7 +328,7 @@ const Section10 = ({selectedForm}) => {
                 <h3 className="h2">Date</h3>
                 <label>
                   <input type="date" name="date_co_pi"
-                    value={date_co_pi} onChange={(e) => setDateCoPi(e.target.value)} className="name"  />
+                    value={date_co_pi} onChange={(e) => setDateCoPi(e.target.value)} className="name" disabled = {isDisabled} />
                 </label>
                 <br />
               </div>
@@ -323,83 +339,74 @@ const Section10 = ({selectedForm}) => {
                 <h3 className="h2">Name of Head Of Department</h3>
                 <label>
                   <input type="text"  name="hod" placeholder="Enter hod"  value={name_of_hod}
-                    onChange={(e) => setNameOfHod(e.target.value)}  className="name"  />
+                    onChange={(e) => setNameOfHod(e.target.value)}  className="name" disabled = {isDisabled} />
                 </label>
               </div>
               <div className="form-group">
                 <h3 className="h2">Signature</h3>
                 <label>
                   <input type="text" name="sign"  value={sign_5} onChange={(e) => setSign5(e.target.value)} 
-                    placeholder="Enter your signature" className="name"/>
+                    placeholder="Enter your signature" className="name" disabled = {isDisabled}/>
                 </label>
               </div>
             
               <div className="form-group">
                 <h3 className="h2">Date</h3>
                 <label>
-                  <input  type="date" name="date" value={date_co_inv_3}
+                  <input  type="date" name="date" value={date_co_inv_3} disabled = {isDisabled}
                     onChange={(e) => setDateCoInv3(e.target.value)} className="name"  />
                 </label>
                 <br />
               </div>
             </div>
+            <div>
+              {coInvestigators.length > 0 && coInvestigators.map((co, index) => (
+                <div key={index} style={{ display: "flex", justifyContent: "space-between",
+                    alignItems: "flex-start", gap: "20px", marginBottom: "20px", flexWrap: "wrap",
+                    border: "1px solid #ccc", padding: "15px", borderRadius: "8px", position: "relative"
+                  }}>
+                  <div className="form-group" style={{ flex: 1, minWidth: "250px" }}>
+                    <h3 className="h2">Name of Co-investigator {index + 1}</h3>
+                    <label>
+                      <input type="text" placeholder="Enter name" value={co.name} 
+                        onChange={(e) => handleChange(index, "name", e.target.value)}
+                        className="name" disabled={isDisabled} />
+                    </label>
+                  </div>
+                  <div className="form-group" style={{ flex: 1, minWidth: "250px" }}>
+                    <h3 className="h2">Signature</h3>
+                    <label> 
+                      <input type="text" placeholder="Enter signature"
+                        value={co.sign} onChange={(e) => handleChange(index, "sign", e.target.value)}
+                        className="name" disabled={isDisabled} />
+                    </label>
+                  </div>
+                  <div className="form-group" style={{ flex: 1, minWidth: "250px" }}>
+                    <h3 className="h2">Date</h3>
+                    <label>
+                      <input type="date" value={co.date} onChange={(e) => handleChange(index, "date", e.target.value)}
+                        className="name" disabled={isDisabled} />
+                    </label>
+                  </div>
 
-            <div style = {{display : "flex", justifyContent : "space-between"}}>
-              <div className="form-group">
-                <h3 className="h2">
-                  Name of Co-Investigator 1:{" "}
-                </h3>
-                <label>
-                  <input  type="text" name="coguide" placeholder="Enter guide"  value={name_of_co_investigator_1}
-                    onChange={(e) => setNameOfCoInvestigator1(e.target.value)}  className="name" />
-                </label>
-              </div>
-              <div className="form-group">
-                <h3 className="h2">Signature</h3>
-                <label>
-                  <input type="text" name="images" value={sign_3} className="name"  
-               onChange={(e) => setSign3(e.target.value)}   placeholder="Enter your signature" />
-                </label>
-              </div>
-             
-              <div className="form-group">
-                <h3 className="h2">Date</h3>
-                <label>
-                  <input  type="date" name="date" value={date_co_inv_1}
-                    onChange={(e) => setDateCoInv1(e.target.value)} className="name"  />
-                </label>
-              </div>
-            </div>
-            <div style = {{display : "flex", justifyContent : "space-between"}}>
-              <div className="form-group">
-                <h3 className="h2">
-                  Name of Co-investigator 2:{" "}
-                </h3>
-                <label>
-                  <input type="text" name="guidde"  placeholder="Enter guidde"  value={name_of_co_investigator_2} 
-                  onChange={(e) => setNameOfCoInvestigator2(e.target.value)}  className="name"   />
-                </label>
-              </div>
-              <div className="form-group">
-                <h3 className="h2">Signature</h3>
-               <label>
-                  <input type="text" name="images" value={sign_4} className="name"  
-               onChange={(e) => setSign4(e.target.value)}   placeholder="Enter your signature" />
-                </label>
-              </div>
-             
-              <div className="form-group">
-                <h3 className="h2">Date</h3>
-                <label> <input type="date" placeholder="YYYY/MM/DD"  name="date" value={date_co_inv_2 || ""}  
-                onChange={(e) => setDateCoInv2(e.target.value)} className="name"   /> </label>
-                <br />
-              </div>
-            </div>
+                  {coInvestigators.length > 1 && (
+                    <button type="button" onClick={() => deleteCoInvestigator(index)}
+                      style={{ position: "absolute", top: "10px", right: "10px", background: "#ff4d4d",
+                        color: "#fff", border: "none", padding: "6px 10px", borderRadius: "4px", cursor: "pointer"
+                      }} disabled={isDisabled} > Delete </button>
+                  )}
+                </div>
+              ))}
+
+      <button type="button" onClick={addCoInvestigator} style={{ backgroundColor: "#4CAF50",
+          color: "#fff", border: "none", padding: "10px 16px", borderRadius: "5px",
+          cursor: "pointer" }} disabled={isDisabled} >
+        Add Co-Investigator
+      </button>
+    </div>
           </div>
         </div>
-        <button type="submit" className="name">
-          Preview
-        </button>
+        <button type="submit" className="name"> Preview </button>
       </form>
   }
     </div>

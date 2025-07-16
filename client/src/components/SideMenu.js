@@ -14,7 +14,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'Dashboard',
       label: 'Dashboard',
       hasSubMenu: false,
-      role: "Principal/CoInvestigator",
+      role: ["Principal/CoInvestigator"],
       subItems: [
         { id: 'Dashboard', label: 'Dashboard', path: '/investigator' },
       ]
@@ -23,115 +23,115 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'ISRC Committee Member',
       label: 'ISRC Committee Member',
       hasSubMenu: false,
-      role: "ISRC Committee Member",
+      role: ["ISRC Committee Member", "Super Admin"],
       subItems: [
         { id: 'ISRC Committee Member', label: 'ISRC Committee Member', path: '/isrc/commitee/member' },
       ]
     },
     {
-      id: 'Assign Reviewers',
-      label: 'Assign Reviewers',
+      id: 'Assign ISRC Reviewers',
+      label: 'Assign ISRC Reviewers',
       hasSubMenu: false,
-      role: "ISRC Member Secretary",
+      role: ["ISRC Member Secretary", "Super Admin"],
       subItems: [
-        { id: 'Assign Reviewers', label: 'Assign Reviewers', path: '/isrc/chair/assignreviewers' },
+        { id: 'Assign ISRC Reviewers', label: 'Assign ISRC Reviewers', path: '/isrc/chair/assignreviewers' },
       ]
     },
     {
-      id: 'Final Decision',
-      label: 'Final Decision',
+      id: 'ISRC Secretary Decision',
+      label: 'ISRC Secretary Decision',
       hasSubMenu: false,
-      role: "ISRC Member Secretary",
+      role: ["ISRC Member Secretary", "Super Admin"],
       subItems: [
-        { id: 'Final Decision', label: 'Final Decision', path: '/isrc/chair/decision' },
+        { id: 'ISRC Secretary Decision', label: 'ISRC Secretary Decision', path: '/isrc/chair/decision' },
       ]
     },
     {
-      id: 'Final Decision',
-      label: 'Final Decision',
+      id: 'ISRC Chair Decision',
+      label: 'ISRC Chair Decision',
       hasSubMenu: false,
-      role: "ISRC Committee Chair",
+      role: ["ISRC Committee Chair", "Super Admin"],
       subItems: [
-        { id: 'Final Decision', label: 'Final Decision', path: '/isrc/chair/decision' },
+        { id: 'ISRC Chair Decision', label: 'ISRC Chair Decision', path: '/isrc/chair/decision' },
       ]
     },
     {
       id: 'NIEC Committee Member',
       label: 'NIEC Committee Member',
       hasSubMenu: false,
-      role: "NIMS IEC committee- member",
+      role: ["NIMS IEC committee- member", "Super Admin"],
       subItems: [
         { id: 'NIEC Committee Member', label: 'NIEC Committee Member', path: '/nice/member' },
       ]
     },
     {
-      id: 'NIEC Reviewers',
-      label: 'NIEC Reviewers',
+      id: 'NIEC Assign Reviewers',
+      label: 'NIEC Assign Reviewers',
       hasSubMenu: false,
-      role: "NIMS IEC CommitteeMember-secretary",
+      role: ["NIMS IEC CommitteeMember-secretary", "Super Admin"],
       subItems: [
-        { id: 'Assign Reviewers', label: 'Assign Reviewers', path: '/niec/secretary/assignreviewers' },
+        { id: 'NIEC Assign Reviewers', label: 'NIEC Assign Reviewers', path: '/niec/secretary/assignreviewers' },
       ]
     },
     {
-      id: 'NIEC Decision',
-      label: 'NIEC Decision',
+      id: 'NIEC Chair Decision',
+      label: 'NIEC Chair Decision',
       hasSubMenu: false,
-      role: "NIMS IEC Committee - Chairman",
+      role: ["NIMS IEC Committee - Chairman", "Super Admin"],
       subItems: [
-        { id: 'NIEC Decision', label: 'NIEC Decision', path: '/nice/chair/decision' },
+        { id: 'NIEC Chair Decision', label: 'NIEC Chair Decision', path: '/nice/chair/decision' },
       ]
     },
     {
-      id: 'NIEC Decision',
-      label: 'NIEC Decision',
+      id: 'NIEC Secretary Decision',
+      label: 'NIEC Secretary Decision',
       hasSubMenu: false,
-      role: "NIMS IEC CommitteeMember-secretary",
+      role: ["NIMS IEC CommitteeMember-secretary", "Super Admin"],
       subItems: [
-        { id: 'NIEC Decision', label: 'NIEC Decision', path: '/nice/chair/decision' },
+        { id: 'NIEC Secretary Decision', label: 'NIEC Secretary Decision', path: '/nice/chair/decision' },
       ]
     },
     {
       id: 'PBAC Committee Member',
       label: 'PBAC Committee Member',
       hasSubMenu: false,
-      role: "PBAC Committee Member",
+      role: ["PBAC Committee Member", "Super Admin"],
       subItems: [
         { id: 'PBAC Committee Member', label: 'PBAC Committee Member', path: '/pbac/commitee/member' },
       ]
     },
     {
-      id: 'PBAC Reviewers',
-      label: 'PBAC Reviewers',
+      id: 'Assign PBAC Reviewers',
+      label: 'Assign PBAC Reviewers',
       hasSubMenu: false,
-      role: "PBAC Member Secretary",
+      role: ["PBAC Member Secretary", "Super Admin"],
       subItems: [
-        { id: 'Assign Reviewers', label: 'Assign Reviewers', path: '/pbac/chair/assignreviewers' },
+        { id: 'Assign PBAC Reviewers', label: 'Assign PBAC Reviewers', path: '/pbac/chair/assignreviewers' },
       ]
     },
     {
-      id: 'PBAC Decision',
-      label: 'PBAC Decision',
+      id: 'PBAC Chair Decision',
+      label: 'PBAC Chair Decision',
       hasSubMenu: false,
-      role: "PBAC Committee Chair",
+      role: ["PBAC Committee Chair", "Super Admin"],
       subItems: [
-        { id: 'PBAC Decision', label: 'PBAC Decision', path: '/pbac/chair/decision' },
+        { id: 'PBAC Chair Decision', label: 'PBAC Chair Decision', path: '/pbac/chair/decision' },
       ]
     },
     {
-      id: 'PBAC Decision',
-      label: 'PBAC Decision',
+      id: 'PBAC Secretary Decision',
+      label: 'PBAC Secretary Decision',
       hasSubMenu: false,
-      role: "PBAC Member Secretary",
+      role: ["PBAC Member Secretary", "Super Admin"],
       subItems: [
-        { id: 'PBAC Decision', label: 'PBAC Decision', path: '/pbac/chair/decision' },
+        { id: 'PBAC Secretary Decision', label: 'PBAC Secretary Decision', path: '/pbac/chair/decision' },
       ]
     },
     {
       id: 'Research',
       label: 'Research',
       hasSubMenu: true,
-      role: "biomedical-1",
+      role: ["biomedical-1"],
       subItems: [
         { id: 'Administrative Details', label: 'Administrative Details', path: '/basic/administrative' },
         { id: 'Details Investigator', label: 'Details Investigator', path: '/basic/details' },
@@ -145,18 +145,13 @@ const Sidebar = ({selectedRole, selectedForm}) => {
         { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' },
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
         { id: 'CheckList', label: 'CheckList', path: '/checklist' },
-        // { id: 'ExpeditedReview', label: 'Expedited Review', path: '/expedited' },
-        // { id: 'WaiverOfConsent', label: 'Waiver Of Consent', path: '/waiver' }
-        // { id: 'Self Funding', label: 'Self Funding', path: '/self-funding' },
-        // { id: 'Funding Agency', label: 'Funding Agency', path: '/funding-agency' },
-        // { id: 'Industry Funding', label: 'Industry Funding', path: '/industry-funding' },
       ]
     },
     {
       id: 'Medical Research',
       label: 'Medical Research',
       hasSubMenu: true,
-      role: "biomedical-2",
+      role: ["biomedical-2"],
       subItems: [
         { id: 'Administrative Details', label: 'Administrative Details', path: '/basic/administrative' },
         { id: 'Details Investigator', label: 'Details Investigator', path: '/basic/details' },
@@ -165,37 +160,23 @@ const Sidebar = ({selectedRole, selectedForm}) => {
         { id: 'Additional Issues', label: 'Additional Issues', path: '/issues/additional' },
         { id: 'Declaration', label: 'Declaration', path: '/declaration' },
         { id: 'CheckList', label: 'CheckList', path: '/checklist' },
-        // { id: 'ExpeditedReview', label: 'Expedited Review', path: '/expedited' },
-        // { id: 'WaiverOfConsent', label: 'Waiver Of Consent', path: '/waiver' }
       ]
     },
     // {
-    //   id: 'ClinicalTrails',
-    //   label: 'Clinical Trails',
+    //   id: 'NIEC',
+    //   label: 'NIEC',
     //   hasSubMenu: true,
-    //   role: "",
+    //   role: "NIEC",
     //   subItems: [
-    //     { id: 'Add Clinical Trials', label: 'Add Clinical Trials', path: '/addclinicaltrails' },
-    //     { id: 'Clinical Trials Feedback', label: 'Clinical Trials Feedback', path: '/investigator/feedback' },
+    //     { id: 'Amendment', label: 'Amendment', path: '/amendment' },
+    //     { id: 'Amendment Template', label: 'Amendment Template', path: '/amendment/template' },
+    //     { id: 'SAE Reporting', label: 'SAE Reporting Form', path: '/sae/reporting' },
+    //     { id: 'Study Progress Report', label: 'Study Progress Report', path: '/study/progress' },
+    //     { id: 'Study Completion Report', label: 'Study Completion Report', path: '/study/completion' },
+    //     { id: 'Premature Termination/Suspension', label: 'Premature Termination/Suspension', path: '/termination' },
+    //     { id: 'Protocol Deviation and Compilance', label: 'Protocol Deviation and Compilance', path: '/protocol/deviation' },
     //   ]
     // },
-    {
-      id: 'NIEC',
-      label: 'NIEC',
-      hasSubMenu: true,
-      role: "NIEC",
-      subItems: [
-        { id: 'Amendment', label: 'Amendment', path: '/amendment' },
-        { id: 'Amendment Template', label: 'Amendment Template', path: '/amendment/template' },
-        { id: 'SAE Reporting', label: 'SAE Reporting Form', path: '/sae/reporting' },
-        { id: 'Study Progress Report', label: 'Study Progress Report', path: '/study/progress' },
-        { id: 'Study Completion Report', label: 'Study Completion Report', path: '/study/completion' },
-        { id: 'Premature Termination/Suspension', label: 'Premature Termination/Suspension', path: '/termination' },
-        { id: 'Protocol Deviation and Compilance', label: 'Protocol Deviation and Compilance', path: '/protocol/deviation' },
-      ]
-    },
-    
-    
   ];
 
   const handleMenuClick = (item) => {
@@ -216,9 +197,9 @@ const Sidebar = ({selectedRole, selectedForm}) => {
     <Drawer variant="permanent" className="custom-drawer">
       <Box sx={{ overflow: 'auto' }}>
         <List>
-          {menuItems.map((item) => (
-            <React.Fragment key={item.id}>
-              {(item.role === selectedRole) && (
+          {menuItems.map((item, index) => (
+            <React.Fragment key={index}>
+              {(item.role.includes(selectedRole)) && (
                 <React.Fragment>
                   <ListItem button onClick={() => handleMenuClick(item)}
                     selected={
@@ -234,9 +215,9 @@ const Sidebar = ({selectedRole, selectedForm}) => {
                   {item.hasSubMenu && (
                     <Collapse in={expandedMenu === item.id} timeout="auto" unmountOnExit>
                       <List component="div" disablePadding sx={{ backgroundColor: "#ede0fe" }}>
-                        {item.subItems.map((subItem) => (
+                        {item.subItems.map((subItem, index) => (
                           <ListItem
-                            key={subItem.id}
+                            key={index}
                             button
                             sx={{ pl: 4 }}
                             onClick={() => handleNavigation(subItem.path)}
@@ -251,7 +232,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
                   )}
                </React.Fragment>
             )}
-            {(item.role === selectedForm) && (
+            {(item.role.includes(selectedForm)) && (
                 <React.Fragment>
                   <ListItem button onClick={() => handleMenuClick(item)}
                     selected={
@@ -267,9 +248,9 @@ const Sidebar = ({selectedRole, selectedForm}) => {
                   {item.hasSubMenu && (
                     <Collapse in={expandedMenu === item.id} timeout="auto" unmountOnExit>
                       <List component="div" disablePadding sx={{ backgroundColor: "#ede0fe" }}>
-                        {item.subItems.map((subItem) => (
+                        {item.subItems.map((subItem, index) => (
                           <ListItem
-                            key={subItem.id}
+                            key={index}
                             button
                             sx={{ pl: 4 }}
                             onClick={() => handleNavigation(subItem.path)}

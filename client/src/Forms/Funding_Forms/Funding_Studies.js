@@ -57,16 +57,14 @@ const FundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
 
   return (
     <Box sx={{ py: 4 }}>
-      <Typography variant="h5" gutterBottom>
-        Budget Proposal Submission Form for Funded Studies
-      </Typography>
+      <Typography variant="h5" gutterBottom>Budget Proposal Submission Form for Funded Studies</Typography>
 
       <Typography variant="h6" sx={{ mt: 3 }}>A. Name of the Funding Agency:</Typography>
       <TextField required fullWidth size="small" sx={{ mt: 2, mb: 4 }} placeholder="Enter funding agency name" value={fundingAgency} onChange={(e) => handleChange('fundingAgency', e.target.value)} />
 
       <Typography variant="h6">B. Proposed Budget</Typography>
-      <TextField required fullWidth label="1. Expected Grant per Completed Patient" size="small" sx={{ mb: 2 }} value={grantPerPatient} onChange={(e) => handleChange('grantPerPatient', e.target.value)} />
-      <TextField required fullWidth label="2. Expected Man-Power Grant per Completed Patient" size="small" sx={{ mb: 3 }} value={manpowerGrant} onChange={(e) => handleChange('manpowerGrant', e.target.value)} />
+      <TextField required type = "number" fullWidth label="1. Expected Grant per Completed Patient" size="small" sx={{ mb: 2 }} value={grantPerPatient} onChange={(e) => handleChange('grantPerPatient', e.target.value)} />
+      <TextField required type = "number" fullWidth label="2. Expected Man-Power Grant per Completed Patient" size="small" sx={{ mb: 3 }} value={manpowerGrant} onChange={(e) => handleChange('manpowerGrant', e.target.value)} />
 
       <Typography variant="subtitle1">3. Investigations to be done in NIMS</Typography>
       <Table size="small" sx={{ mt: 1 }}>
@@ -81,7 +79,7 @@ const FundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
           {nimsInvestigations.map((row, i) => (
             <TableRow key={i}>
               <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleNimsChange(i, 'name', e.target.value)} /></TableCell>
-              <TableCell><TextField required fullWidth size="small" value={row.cost} onChange={(e) => handleNimsChange(i, 'cost', e.target.value)} /></TableCell>
+              <TableCell><TextField type = "number" required fullWidth size="small" value={row.cost} onChange={(e) => handleNimsChange(i, 'cost', e.target.value)} /></TableCell>
               <TableCell>
                 {nimsInvestigations.length > 1 && (
                   <IconButton onClick={() => deleteNimsRow(i)}>
@@ -95,7 +93,7 @@ const FundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
       </Table>
       <Button variant="outlined" sx={{ mt: 2 }} onClick={addNimsRow}>+ Add Row</Button>
 
-      <TextField required fullWidth label="Total Grant Allotted to the Study" size="small" sx={{ mt: 4 }} value={totalGrant} onChange={(e) => handleChange('totalGrant', e.target.value)} />
+      <TextField required type = "number" fullWidth label="Total Grant Allotted to the Study" size="small" sx={{ mt: 4 }} value={totalGrant} onChange={(e) => handleChange('totalGrant', e.target.value)} />
 
       <Typography variant="h6" sx={{ mt: 5 }}>
         C. Are any study specific investigations being outsourced?
@@ -125,7 +123,7 @@ const FundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
               {outsourcedInvestigations.map((row, i) => (
                 <TableRow key={i}>
                   <TableCell><TextField required fullWidth size="small" value={row.name} onChange={(e) => handleOutsourcedChange(i, 'name', e.target.value)} /></TableCell>
-                  <TableCell><TextField required fullWidth size="small" value={row.cost} onChange={(e) => handleOutsourcedChange(i, 'cost', e.target.value)} /></TableCell>
+                  <TableCell><TextField type = "number" required fullWidth size="small" value={row.cost} onChange={(e) => handleOutsourcedChange(i, 'cost', e.target.value)} /></TableCell>
                   <TableCell><TextField required fullWidth size="small" value={row.lab} onChange={(e) => handleOutsourcedChange(i, 'lab', e.target.value)} /></TableCell>
                   <TableCell><TextField required fullWidth size="small" value={row.nabl} onChange={(e) => handleOutsourcedChange(i, 'nabl', e.target.value)} /></TableCell>
                   <TableCell>

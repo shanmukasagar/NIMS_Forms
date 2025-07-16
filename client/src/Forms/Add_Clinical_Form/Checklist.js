@@ -33,17 +33,13 @@ const ChecklistRow = React.memo(({ item, index, isEdit, handleFileChange }) => (
 ));
 
 // ✅ Main Checklist Component
-const Checklist = ({ setCheckListData, checkListData, isEdit }) => {
+const Checklist = ({ consentData, setCheckListData, checkListData, isEdit }) => {
 
   useEffect(() => {
     if(isEdit) {
-      const requiredFields = {
-        1: true, 2: true, 3: true, 4: false, 5: false, 6: false, 7: true, 8: true, 9: false,
-        10: true, 11: true, 12: true, 13: false, 14: true, 15: false, 16: false, 17: true, 18: false
-      };
       const updatedCheckListData = checkListData.map(item => ({
           ...item,
-          required: requiredFields[item.label_id],
+          required: item.file_name !== null,
         }));
 
       setCheckListData(updatedCheckListData);
@@ -52,18 +48,26 @@ const Checklist = ({ setCheckListData, checkListData, isEdit }) => {
   }, [isEdit])
 
   const handleFileChange = useCallback(
-    (e, index) => {
-      const file = e.target.files?.[0];
-      if (!file || file.type !== 'application/pdf') return;
+  (e, index) => {
+    const file = e.target.files?.[0];
 
-      setCheckListData((prev) => {
-        const updated = [...prev];
-        updated[index] = { ...updated[index], file };
-        return updated;
-      });
-    },
-    [setCheckListData]
-  );
+    if (!file) return;
+
+    if (file.type !== 'application/pdf') {
+      alert('Only PDF files are allowed.');
+      e.target.value = null; // Reset the file input
+      return;
+    }
+
+    setCheckListData((prev) => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], file };
+      return updated;
+    });
+  },
+  [setCheckListData]
+);
+
 
   return (
     <>

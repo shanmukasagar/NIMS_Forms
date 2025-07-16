@@ -33,21 +33,22 @@ const ConsentDisplayComponent = ({ data, setOpenTable, setEditableData }) => {
           <p><strong>Selected Languages:</strong></p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "12px" }}>
             {entry.selectedlanguages?.length ? (
-              entry.selectedlanguages.map((lang, i) => (
-                <span
-                  key={i}
-                  style={{
-                    backgroundColor: "#e3f2fd",
-                    color: "#1565c0",
-                    padding: "4px 10px",
-                    borderRadius: "20px",
-                    fontSize: "13px",
-                    fontWeight: 500,
-                  }}
-                >
-                  {lang}
-                </span>
-              ))
+              entry.selectedlanguages.map((lang, i) => {
+                const detail = entry.languagedetails?.[lang];
+                return (
+                  <div key={i} style={{ backgroundColor: "#e3f2fd",
+                      color: "#1565c0", padding: "8px 12px", borderRadius: "12px", fontSize: "13px",
+                      fontWeight: 500, minWidth: "120px", }} >
+                    <div>{lang}</div>
+                    {detail && (
+                      <div style={{ fontSize: "12px", color: "#0d47a1", marginTop: "4px" }}>
+                        Date: {detail.date} <br />
+                        Version: {detail.version}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             ) : (
               <span style={{ fontStyle: "italic", color: "#777" }}>None</span>
             )}

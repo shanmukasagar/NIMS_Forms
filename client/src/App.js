@@ -93,7 +93,7 @@ const App = () => {
         user && (
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <CssBaseline />
-            <Header />
+            <Header user = {user} selectedRole = {selectedRole}/>
             <Box sx={{ display: 'flex', marginTop: '90px' }}>
               <Sidebar selectedRole={selectedRole} selectedForm={selectedForm} />
               <Box component="main" sx={{ flexGrow: 1, marginLeft: '20px', padding: '20px', overflow: 'auto', height: 'calc(100vh - 90px)' }}>
@@ -114,7 +114,7 @@ const App = () => {
                   {/* Other Issues */}
                   <Route path="/issues/additional" element={<AdditionalInformation selectedForm={selectedForm} />} />
                   {/* Declaration */}
-                  <Route path="/declaration" element={<Declaration selectedForm={selectedForm} />} />
+                  <Route path="/declaration" element={<Declaration selectedForm={selectedForm} user = {user}/>} />
                   <Route path="/checklist" element={<CheckList selectedForm={selectedForm} />} />
                   {/* Clinical Trials */}
                   <Route path="/addclinicaltrails" element={<AddClinicalTrails user={user} />} />

@@ -393,5 +393,34 @@ const projectChanges = async(data) => {
     }
 
 }
+//Get Investigator status
+const getInvestigatorStatus = async (tableName, formId) => {
+    try {
+        let result;
 
-module.exports = {getProjectsService, getClinicalProjectData, approvalService, approveHODService, projectChanges};
+        if (tableName === "investigatorss") {
+            result = await pool.query(
+                `SELECT * FROM investigatorss WHERE form_id = $1 AND investigator_type != 'Principal_Investigator'`,
+                [formId]
+            );
+        } 
+        else if (tableName === "clinical_investigators") {
+            result = await pool.query(
+                `SELECT * FROM clinical_investigators WHERE form_id = $1 AND role != 'principal'`,
+                [formId]
+            );
+        }
+        else {
+            throw new Error("Invalid table name");
+        }
+        return result.rows;
+    } 
+    catch (error) {
+        console.error("Error fetching investigator status:", error);
+        return [];
+    }
+};
+
+
+module.exports = {getProjectsService, getClinicalProjectData, approvalService, 
+    approveHODService, projectChanges, getInvestigatorStatus};

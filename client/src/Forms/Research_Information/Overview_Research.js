@@ -180,6 +180,7 @@ const [previewURL, setPreviewURL] = useState(null);
         <h2 className="h1">(a). Summary of study (within 300 words)</h2>
         <textarea name="researchSummary" placeholder="Enter research summary" value={summary}
           onChange={(e) => setSummary(e.target.value)} className="custom-textarea"   maxLength={600} required/>
+        <span>Word Count : {summary.trim() === '' ? 0 : summary.trim().split(/\s+/).length} words</span>
         <div>
           <h3 className="h2">(b). Type of study</h3>
           <select name="studyType" value={type_of_study} onChange={(e) => setTypeOfStudy(e.target.value)} className="name" required >

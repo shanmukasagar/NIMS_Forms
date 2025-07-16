@@ -102,7 +102,7 @@ const Investigators = ({ researchers, setResearchers, investigatorsCount, setInv
             required value={investigatorsCount.co_pi_count} onChange={handleInvestigatorsCount} />
         </Grid>
         <Grid item size={4}>
-          <TextField  label="Proposed Duration of present study" name="duration"   fullWidth  
+          <TextField  label="Proposed Duration of present study" name="duration"   fullWidth  type="number"
             required   value={investigatorsCount.duration}   onChange={handleInvestigatorsCount} />
         </Grid>
       </Grid>

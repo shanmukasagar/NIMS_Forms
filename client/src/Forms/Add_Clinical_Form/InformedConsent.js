@@ -21,11 +21,25 @@ const pisElementsList = [
 
 const languageOptions = ["Telugu", "Hindi", "Urdu", "Other"];
 
-const ConsentDetails = ({ consentData, setConsentData }) => {
+const ConsentDetails = ({ consentData, setConsentData, checkListData, setCheckListData }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setConsentData({ ...consentData, [name]: value });
+        if(name === "waiver_consent") {
+            let updatedChecklist = checkListData.filter(item => item.id <= 18);
+            if(value === "Yes")  {
+                updatedChecklist = updatedChecklist.map(item =>
+                    item.id === 12 ? { ...item, required: false } : item
+                );
+            }
+            else {
+                updatedChecklist = updatedChecklist.map(item =>
+                    item.id === 12 ? { ...item, required: true } : item
+                );
+            }
+            setCheckListData(updatedChecklist);
+        }
     };
 
     const handleCheckboxChange = (value) => {
@@ -33,7 +47,28 @@ const ConsentDetails = ({ consentData, setConsentData }) => {
         const updated = selected.includes(value)
         ? selected.filter((v) => v !== value)
         : [...selected, value];
+
+        if(consentData.waiver_consent && consentData.waiver_consent !== "Yes") {
+            let updatedChecklist = checkListData.filter(item => ( item.id <= 18 || item.label_id <= 18 ));
+            let uniqueId = 100;
+            const extraUploads = updated?.flatMap((lang) => [
+                {
+                    id: uniqueId++,
+                    label: `Participant Information Sheet (PIS) and Informed Consent Form (ICF) - ${lang}`,
+                    required: true,
+                },
+                {
+                    id: uniqueId++,
+                    label: `Translation Certificate - ${lang}`,
+                    required: true,
+                }
+                ]) || [];
+            updatedChecklist = [...updatedChecklist, ...extraUploads];
+            setCheckListData(updatedChecklist);
+            
+        }
         setConsentData({ ...consentData, translated_languages: updated });
+
     };
 
     const handlePISElementsList = (value) => {
@@ -150,8 +185,10 @@ const ConsentDetails = ({ consentData, setConsentData }) => {
                 </Grid>
 
                 <Grid item size={4}>
-                    <TextField fullWidth label="Date of Participant Information Sheet (PIS)" variant="outlined" name="english_date"
-                        value={consentData.english_date || ''} onChange={handleChange} />
+                    <TextField type = "date" fullWidth label="Date of Participant Information Sheet (PIS)" variant="outlined" name="english_date"
+                        value={consentData.english_date || ''} onChange={handleChange}
+                        InputLabelProps={{ shrink: true }}
+                        placeholder="Select Date" />
                 </Grid>
 
                 {/* Translated Languages - Plain Checkboxes */}
@@ -183,9 +220,10 @@ const ConsentDetails = ({ consentData, setConsentData }) => {
                                 <TextField label={`Version Number`} size="small"
                                     value={consentData.languageDetails?.[lang]?.version || ''}
                                     onChange={(e) => handleLanguageDetailChange(lang, 'version', e.target.value) } />
-                                <TextField   label={`Date`}   type="text"   size="small" 
-                                value={consentData.languageDetails?.[lang]?.date || ''}
-                                    onChange={(e) => handleLanguageDetailChange(lang, 'date', e.target.value)}/>
+                                <TextField  type = "date" label={`Date`}   size="small" 
+                                    value={consentData.languageDetails?.[lang]?.date || null}
+                                    onChange={(e) => handleLanguageDetailChange(lang, 'date', e.target.value)}
+                                    InputLabelProps={{ shrink: true }}/>
                             </Box>
                         </Box>
                     ))}

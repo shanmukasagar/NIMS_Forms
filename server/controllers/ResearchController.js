@@ -13,7 +13,7 @@ const { expeditedReviewDetails } = require("../services/ResearchService");
 const { requestingWaiverDetails } = require("../services/ResearchService");
 const{insertInformedConsent} =require("../services/ResearchService");
 const {saveInvestigatorDetails}=require("../services/ResearchService");
-const {updateResearchForms, updateInvestigators} = require("../services/ResearchService");
+const {updateResearchForms, updateInvestigators, checkWaiverOfConsent} = require("../services/ResearchService");
 
 const administartion = async (req, res) => {
   try {
@@ -435,10 +435,22 @@ const informedConsent = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+//Check waiver of consent
+const checkConsentType = async (req, res) => {
+  try {
+    const formId = req.query.formId;
+    const result = await checkWaiverOfConsent(formId);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error in checkConsentType:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
   
 
 module.exports = {
   administartion,fundingBudget,overviewResearch,administrativeRequirements, participantRelatedInformation,benefitsAndRisk,  
     paymentCompensation, storageAndConfidentiality,additionalInformation,declaration,expeditedReview,  requestingWaiver, 
-    informedConsent, submitInvestigators
+    informedConsent, submitInvestigators, checkConsentType
 };

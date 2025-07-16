@@ -45,6 +45,8 @@ const styles = {
     border: "none",
     borderRadius: "4px",
     cursor: "pointer",
+    display : "flex",
+    justifyContent : "center"
   },
   btnSecondary: {
     backgroundColor: "#6c757d",
@@ -56,6 +58,26 @@ const styles = {
     borderRadius: "5px",
     backgroundColor: "#f9f9f9",
   },
+  add: {
+    backgroundColor: "#1976d2",
+    color: "#fff",
+    padding: "10px 20px",
+    fontSize: "14px",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)"
+  },
+  delete: {
+    backgroundColor: "#d32f2f",
+    color: "#fff",
+    padding: "6px 14px",
+    fontSize: "13px",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)"
+  }
 };
 
 const DetailsInvestigator = ({selectedForm}) => {
@@ -80,9 +102,11 @@ const DetailsInvestigator = ({selectedForm}) => {
   });
 
   const [coInvestigators, setCoInvestigators] = useState([
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : ""},
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
-    { name: "", designation: "", qualification: "", department: "", Email: "", contact: "",  emp_code : "", investigator_type: "Co-investigator", approved : false, approval_token : "" },
+    {
+      name: "", designation: "", qualification: "", department: "",
+      Email: "", contact: "", emp_code: "", investigator_type: "Co-investigator",
+      approved: false, approval_token: ""
+    }
   ]);
 
   //context
@@ -192,6 +216,26 @@ const DetailsInvestigator = ({selectedForm}) => {
     fetchData();
   }, []);
 
+  // Add co-investigator
+  const addCoInvestigator = () => {
+    setCoInvestigators(prev => [
+      ...prev,
+      {
+        name: "", designation: "", qualification: "", department: "",
+        Email: "", contact: "", emp_code: "", investigator_type: "Co-investigator",
+        approved: false, approval_token: ""
+      }
+    ]);
+  };
+  //Remove co-investigator
+  const removeCoInvestigator = (index) => {
+    if (coInvestigators.length === 1) return; // Prevent removing last one
+    const updated = [...coInvestigators];
+    updated.splice(index, 1);
+    setCoInvestigators(updated);
+  };
+
+
   const renderInvestigatorInput = (data, setData, prefix = "", required = false) => (
     <div style={styles.investigatorCard}>
       <h4>{prefix}</h4>
@@ -244,13 +288,31 @@ const DetailsInvestigator = ({selectedForm}) => {
           {renderInvestigatorInput(principal, setPrincipal, "Principal Investigator", true)}
           {renderInvestigatorInput(guide, setGuide, "Guide", false)}
           {renderInvestigatorInput(hod, setHod, "HOD", true)}
-          {coInvestigators.map((coi, index) =>
-            renderInvestigatorInput(coi, (newData) => {
-              const updated = [...coInvestigators];
-              updated[index] = newData;
-              setCoInvestigators(updated);
-            }, `Co-Investigator ${index + 1}`)
-          )}
+          {coInvestigators.map((coi, index) => (
+            <div key={index} style={{ position: "relative", marginBottom: "20px" }}>
+              {renderInvestigatorInput(
+                coi,
+                (newData) => {
+                  const updated = [...coInvestigators];
+                  updated[index] = newData;
+                  setCoInvestigators(updated);
+                },
+                `Co-Investigator ${index + 1}`
+              )}
+
+              {/* Delete Button (only show if more than 1) */}
+              {coInvestigators.length > 1 && (
+                <button type="button" onClick={() => removeCoInvestigator(index)}
+                  style={styles.delete}> Delete </button>
+              )}
+            </div>
+          ))}
+
+          {/* Add Button */}
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
+            <button type="button" onClick={addCoInvestigator} style={styles.add}
+            >Add Co-Investigator</button>
+          </div>
           <button type="submit" style={styles.btn}>Preview</button>
         </form>
       )}

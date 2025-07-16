@@ -16,7 +16,6 @@ const UploadChecklist = ({selectedForm}) => {
     { id: 6, label: "Copy of the detailed protocol (clearly identified numbered and dated) and synopsis", file: null, required: true },
     { id: 7, label: "Participant Information Sheet (PIS) and Informed Consent Form (ICF)", file: null, required: true },
     { id: 8, label: "Assent form for minors (12-18 years)", file: null, required: false },
-    
     { id: 9, label: "CRF / Interview guides / Focused Group Discussions (English and translated)", file: null, required: true },
     { id: 10, label: "Advertisement / material to recruit participants", file: null, required: false },
     { id: 11, label: "Insurance policy / participant coverage details", file: null, required: false }
@@ -25,16 +24,69 @@ const UploadChecklist = ({selectedForm}) => {
   
   const fetchOnce = useRef(false);
   const initialFetch = useRef(false);
+  const secondFetch = useRef(false);
   const [showPreview, setShowPreview] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [submittedData, setSubmittedData] =  useState([]);
+  const [consentData, setConsentData] =  useState([]);
   const [formId, setFormId] = useState(-1);
+
+
   const navigate = useNavigate();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
     //context
   const { projectId } = useProject();
+
+  //Check waiver consent type is ticked or not. If yes not mandatory to upload PIS file
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axiosInstance.get("/api/research/waiverconsent/type", { 
+  //         params : { formId : projectId }
+  //       });
+  //       if(Object.keys(response.data).length > 0) {
+  //         const consentResult = response.data;
+  //         if(consentResult.seeking_waiver_of_consent_type === "Yes") {
+  //           setUploads((prevUploads) =>
+  //             prevUploads.map((item) =>
+  //               item.id === 7 ? { ...item, required: false } : item
+  //             )
+  //           );
+  //         }
+  //         else{
+  //           const selectedLanguages = consentResult.selectedlanguages;
+  //           const newUploadItems = [];
+  //           let nextId = uploads.length + 1;
+
+  //           selectedLanguages.forEach((lang) => {
+  //             newUploadItems.push(
+  //               {
+  //                 id: nextId++,
+  //                 label: `Participant Information Sheet (PIS) and Informed Consent Form (ICF) - ${lang}`,
+  //                 file: null,
+  //                 required: true,
+  //               },
+  //               {
+  //                 id: nextId++,
+  //                 label: `Translation Certificate - ${lang}`,
+  //                 file: null,
+  //                 required: true,
+  //               }
+  //             );
+  //           });
+  //           setUploads((prevUploads) => [...prevUploads, ...newUploadItems]);
+  //         }
+  //       }
+  //     } catch (err) {
+  //       console.error("Fetch error:", err);
+  //     }
+  //   }
+  //   if(!secondFetch.current) {
+  //     secondFetch.current = true;
+  //     fetchData();
+  //   }
+  // },[])
 
   useEffect(() => {
     if(!initialFetch.current) {
@@ -49,6 +101,11 @@ const UploadChecklist = ({selectedForm}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const WaiverResponse = await axiosInstance.get("/api/research/waiverconsent/type", { 
+          params : { formId : projectId }
+        });
+        setConsentData(WaiverResponse.data)
+        
         const response = await axiosInstance.get("/api/research/check/admin", { 
           params : {
             form_type:"administrative_requirements",// or hardcoded for now
@@ -56,20 +113,47 @@ const UploadChecklist = ({selectedForm}) => {
           }
         });
         if (response.data.length > 0) {
-          const existingUploads = [];
-          for(let item of uploads) {
-            for(let existingItem of response.data) {
-              if(Number(item.id) === Number(existingItem.label_id)) {
-                existingUploads.push({...existingItem, required : item.required});
-                break;
-              }
-            }
-          }
+          const existingUploads = response.data.map((item) => ({
+            ...item,
+            required: item.file_name ? true : false,
+          }));
 
           setFormId(response.data[0].form_id);
           setUploads(existingUploads); // You probably meant setExistData, not setExistData
           setShowPreview(true);
           setIsEdit(true);
+        }
+        else {
+          if(WaiverResponse.data?.seeking_waiver_of_consent_type === "Yes") {
+            setUploads((prevUploads) =>
+              prevUploads.map((item) =>
+                item.id === 7 ? { ...item, required: false } : item
+              )
+            );
+          }
+          else{
+            const selectedLanguages = WaiverResponse.data?.selectedlanguages;
+            const newUploadItems = [];
+            let nextId = uploads.length + 1;
+
+            selectedLanguages.forEach((lang) => {
+              newUploadItems.push(
+                {
+                  id: nextId++,
+                  label: `Participant Information Sheet (PIS) and Informed Consent Form (ICF) - ${lang}`,
+                  file: null,
+                  required: true,
+                },
+                {
+                  id: nextId++,
+                  label: `Translation Certificate - ${lang}`,
+                  file: null,
+                  required: true,
+                }
+              );
+            });
+            setUploads((prevUploads) => [...prevUploads, ...newUploadItems]);
+          }
         }
       } catch (err) {
         console.error("Fetch error:", err);
@@ -83,6 +167,11 @@ const UploadChecklist = ({selectedForm}) => {
 
   const handleFileChange = (e, id) => {
     const file = e.target.files?.[0] || null;
+    if (file && file.type !== "application/pdf") {
+      alert("Only PDF files are allowed.");
+      e.target.value = null; // Reset the input
+      return;
+    }
     if(isEdit) {
       setUploads(prev =>
         prev.map(item =>
@@ -99,11 +188,53 @@ const UploadChecklist = ({selectedForm}) => {
     }
   };
 
+  const handleEdit = async () => {
+    setShowPreview(false);
+
+    // Get the default uploads (with id or label_id <= 11)
+    const defaultUploads = uploads.filter(item =>
+      Number(item.id) <= 11 || Number(item.label_id) <= 11
+    );
+
+    if (consentData.seeking_waiver_of_consent_type === "Yes") {
+      // If waiver is 'Yes', set item with id or label_id 7 to not required
+      const updatedUploads = defaultUploads.map(item =>
+        Number(item.id) === 7 || Number(item.label_id) === 7
+          ? { ...item, required: false }
+          : item
+      );
+      setUploads(updatedUploads);
+    } else {
+      // If waiver is 'No', append selected language-specific items
+      const selectedLanguages = consentData.selectedlanguages || [];
+      let nextId = defaultUploads.length + 1;
+
+      const newUploadItems = selectedLanguages.flatMap(lang => ([
+        {
+          id: nextId++,
+          label: `Participant Information Sheet (PIS) and Informed Consent Form (ICF) - ${lang}`,
+          file: null,
+          required: true,
+        },
+        {
+          id: nextId++,
+          label: `Translation Certificate - ${lang}`,
+          file: null,
+          required: true,
+        }
+      ]));
+
+      setUploads([...defaultUploads, ...newUploadItems]);
+    }
+  };
 
   const handleSubmit = async () => {
     let missingRequired = false;
     if(!isEdit) {
       missingRequired = uploads.find(item => item.required && !item.file);
+    }
+    else{
+      missingRequired = uploads.find(item => item.required && (!item?.file_name && !item.file) );
     }
 
     if (missingRequired) {
@@ -250,7 +381,7 @@ const UploadChecklist = ({selectedForm}) => {
           </div>
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2, mt: 3 }}>
-            <Button variant="outlined" color="secondary" onClick={() => setShowPreview(false)}>Edit</Button>
+            <Button variant="outlined" color="secondary" onClick={handleEdit}>Edit</Button>
             <Button variant="contained" color="success" onClick={handleSubmit} disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Submit"}</Button>
           </Box>
         </Box>

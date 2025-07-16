@@ -301,7 +301,7 @@ const declarationDetails = async (formData, form_type, numericFormId) => {
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
           name_of_co_investigator_1,  date_co_inv_1, sign_3, 
-          name_of_co_investigator_2, date_co_inv_2, sign_4, email
+          name_of_co_investigator_2, date_co_inv_2, sign_4, email, co_investigators
     } = formData;
 
     
@@ -309,15 +309,13 @@ const declarationDetails = async (formData, form_type, numericFormId) => {
       `INSERT INTO declaration( selected_elements, name_of_pi_research, date_pi, sign_1, 
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
-          name_of_co_investigator_1,  date_co_inv_1, sign_3, 
-          name_of_co_investigator_2, date_co_inv_2, sign_4, 
-          email, form_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11, $12, $13, $14, $15, $16, $17, $18)RETURNING id`,
+           co_investigators
+          email, form_id) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, $11, $12, $13)RETURNING id`,
         [
         selected_elements, name_of_pi_research, date_pi, sign_1, 
           name_of_co_pi_guide, date_co_pi,  sign_2, 
           name_of_hod, date_co_inv_3,  sign_5, 
-          name_of_co_investigator_1,  date_co_inv_1, sign_3, 
-          name_of_co_investigator_2, date_co_inv_2, sign_4, email, formId
+          JSON.stringify(co_investigators), email, formId
         ]
     );
     return newUser;
@@ -392,37 +390,62 @@ const saveInvestigatorDetails = async (investigators, email, form_type, numericF
   const results = [];
 
   const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
-  
+  const guideOrCoInvestigator = investigators.find(
+    inv =>
+      (inv.investigator_type === "Guide" || inv.investigator_type === "Co-investigator") &&
+      inv.name
+  );
+
   const allowedEmployees = [];
+
   for (const inv of investigators) {
-    const {name, designation, qualification, department, emp_code, investigator_type, Email = "", contact = "", approved = false, approval_token = ""  } = inv;
-
+    const { name, designation, qualification, department, emp_code, investigator_type,
+      Email = "", contact = "", approved = false, approval_token = "" } = inv;
     allowedEmployees.push(emp_code);
-    const token = uuidv4(); // Or generate JWT if you want secure verification
-    if (inv.investigator_type !== "Principal_Investigator" && inv.investigator_type !== "hod"  && inv.Email) {
+    const token = uuidv4();
+    // Determine whether to send email
+    if (Email) {
+      let approvalLink = "";
+      let subject = "";
+      let recipientType = "";
 
-      // You can store this token in PostgreSQL with expiration and investigator ID
+      if (guideOrCoInvestigator) {
+        if (investigator_type !== "Principal_Investigator" && investigator_type !== "hod") {
+          approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=investigatorss`;
+          subject = "Approval Request for Research Project";
+          recipientType = "investigator";
+        }
+      }
+      else {
+        if (investigator_type !== "Principal_Investigator") {
+          approvalLink = `http://localhost:3000/hod/approval?token=${token}&tableName=investigatorss`;
+          subject = "HOD Approval Request for Research Project";
+          recipientType = "hod";
+        }
+      }
 
-      const approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=${"investigatorss"}`;
-
-      const html = `
-        <p>Dear ${inv.name},</p>
-        <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
-        <p>Please click the button below to approve your involvement:</p>
-        <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
-        <p>If you did not expect this email, you can ignore it.</p>
-      `;
-
-      await sendEmail(principal.Email, inv.Email, "Approval Request for Research Project", html);
+      if (approvalLink) {
+        const html = `
+          <p>Dear ${name},</p>
+          <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
+          <p>Please click the button below to approve your involvement:</p>
+          <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
+          <p>If you did not expect this email, you can ignore it.</p>
+        `;
+        await sendEmail(principal.Email, Email, subject, html);
+      }
     }
 
     const result = await pool.query(
-      `INSERT INTO investigatorss (name, designation, qualification, department,
-         investigator_type, gmail, contact, emp_code, approved, approval_token, form_id, email
+      `INSERT INTO investigatorss (
+        name, designation, qualification, department,
+        investigator_type, gmail, contact, emp_code,
+        approved, approval_token, form_id, email
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
       [
-        name, designation, qualification, department, investigator_type, Email, contact, emp_code,
-         approved, token, formId, email
+        name, designation, qualification, department,
+        investigator_type, Email, contact, emp_code,
+        approved, token, formId, Email
       ]
     );
     results.push(result.rows[0]);
@@ -467,8 +490,13 @@ const updateResearchForms = async (tableName, fieldsObject, formId, fundingTable
     let i = 1;
 
     for (const [key, value] of Object.entries(fieldsObject)) {
-      updates.push(`${key} = $${i}`);
-      values.push(value);
+      if (key === 'co_investigators' && tableName === "declaration") {
+        updates.push(`${key} = $${i}`);
+        values.push(JSON.stringify(value)); 
+      } else {
+        updates.push(`${key} = $${i}`);
+        values.push(value);
+      }
       i++;
     }
 
@@ -515,51 +543,65 @@ const updateInvestigators = async (investigators, email, numericFormId) => {
     const results = [];
     const principal = investigators.find(inv => inv.investigator_type === "Principal_Investigator" && inv.name);
 
+    const guideOrCoInvestigator = investigators.find(
+      inv =>
+        (inv.investigator_type === "Guide" || inv.investigator_type === "Co-investigator") &&
+        inv.name
+    );
+
     const allowedEmployees = [];
+
     for (const inv of investigators) {
-      const { name, designation, qualification, department, investigator_type, Email = "",
-        emp_code = "", contact = "", approved = false, approval_token = "" } = inv;
-
-      const token = uuidv4();
+      const { name, designation, qualification, department, emp_code, investigator_type,
+        Email = "", contact = "", approved = false, approval_token = "" } = inv;
       allowedEmployees.push(emp_code);
-      
-      // Send approval email for non-PI investigators
-      if (
-        investigator_type !== "Principal_Investigator" &&
-        investigator_type !== "hod" &&
-        Email
-      ) {
-        const approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=investigatorss`;
+      const token = uuidv4();
+      // Determine whether to send email
+      if (Email) {
+        let approvalLink = "";
+        let subject = "";
+        let recipientType = "";
 
-        const html = `
-          <p>Dear ${name},</p>
-          <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
-          <p>Please click the button below to approve your involvement:</p>
-          <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
-          <p>If you did not expect this email, you can ignore it.</p>
-        `;
+        if (guideOrCoInvestigator) {
+          if (investigator_type !== "Principal_Investigator" && investigator_type !== "hod") {
+            approvalLink = `http://localhost:3000/investigator/approval?token=${token}&tableName=investigatorss`;
+            subject = "Approval Request for Research Project";
+            recipientType = "investigator";
+          }
+        }
+        else {
+          if (investigator_type !== "Principal_Investigator") {
+            approvalLink = `http://localhost:3000/hod/approval?token=${token}&tableName=investigatorss`;
+            subject = "HOD Approval Request for Research Project";
+            recipientType = "hod";
+          }
+        }
 
-        try {
-          await sendEmail(principal.Email, Email, "Approval Request for Research Project", html);
-        } catch (emailErr) {
-          console.error(`Failed to send email to ${Email}:`, emailErr);
+        if (approvalLink) {
+          const html = `
+            <p>Dear ${name},</p>
+            <p>The Principal Investigator <b>${principal.name}</b> has added you to a research project.</p>
+            <p>Please click the button below to approve your involvement:</p>
+            <a href="${approvalLink}" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none;">Approve</a>
+            <p>If you did not expect this email, you can ignore it.</p>
+          `;
+          await sendEmail(principal.Email, Email, subject, html);
         }
       }
 
-      // Insert into investigatorss table
-      try {
-        const result = await pool.query(
-          `INSERT INTO investigatorss (
-            name, designation, qualification, department,
-            investigator_type, gmail, contact, emp_code, approved, approval_token, form_id, email
-          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
-          [name, designation, qualification, department, investigator_type, Email, contact, emp_code, 
-            approved, token, numericFormId, email]
-        );
-        results.push(result.rows[0]);
-      } catch (insertErr) {
-        console.error(`Failed to insert investigator ${name}:`, insertErr);
-      }
+      const result = await pool.query(
+        `INSERT INTO investigatorss (
+          name, designation, qualification, department,
+          investigator_type, gmail, contact, emp_code,
+          approved, approval_token, form_id, email
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id`,
+        [
+          name, designation, qualification, department,
+          investigator_type, Email, contact, emp_code,
+          approved, token, numericFormId, Email
+        ]
+      );
+      results.push(result.rows[0]);
     }
 
     const submittedProject = await pool.query( "SELECT project_ref FROM forms WHERE id = $1",
@@ -739,10 +781,17 @@ const researchPDF = async (formID) => {
   }
 };
 
+//Check the waiver of consent is ticked or not
+const checkWaiverOfConsent = async(formId) => {
+  const result = await pool.query( `SELECT * FROM  informedd_consent WHERE form_id = $1`, [formId] )
+  return result.rows[0];
+}
+
 
 module.exports = {
   administrationDetails, saveInvestigatorDetails, fundingBudgetDetails,  overviewResearchDetails, participantRelatedInformationDetails, 
     benefitsAndRiskDetails,  paymentCompensationDetails, storageAndConfidentialityDetails, additionalInformationDetails,  
       administrativeRequirementsDetails, declarationDetails, expeditedReviewDetails, requestingWaiverDetails,insertInformedConsent, 
-      updateResearchForms, updateInvestigators, insertAdminFiles, updateAdminFiles, checkFormDetails
+      updateResearchForms, updateInvestigators, insertAdminFiles, updateAdminFiles, checkFormDetails,
+      checkWaiverOfConsent
 };

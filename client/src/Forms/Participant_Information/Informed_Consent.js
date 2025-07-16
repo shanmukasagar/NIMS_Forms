@@ -303,7 +303,7 @@ function Section6({selectedForm}) {
                 ))}
               </div>
               <h3 style={{ marginBottom: "10px" }}>Any other reason (please specify)</h3>
-              <textarea name="researchSummary" placeholder="Specify" value={summary} onChange={(e) => setSummary(e.target.value)} maxLength={600} required 
+              <textarea name="researchSummary" placeholder="Specify" value={summary} onChange={(e) => setSummary(e.target.value)} maxLength={600}  
                    style={{ width: "100%", minHeight: "100px", padding: "10px", fontSize: "14px", borderRadius: "5px", border: "1px solid #ccc" }} />
             </>
           )}

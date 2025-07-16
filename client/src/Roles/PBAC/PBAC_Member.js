@@ -76,7 +76,7 @@ const ISRC_Member = ({setSelectedForm}) => {
   //Open project changes
   const openProjectChanges = (item) => {
     setChanges((prev) => ({
-    ...prev, projectChanges: item?.inv_niec_comments || '', open: true,
+    ...prev, projectChanges: item?.inv_pbac_comments || '', open: true,
     }));
   }
 

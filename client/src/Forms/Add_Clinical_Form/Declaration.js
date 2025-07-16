@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from "react";
 import { Grid, TextField, Button, Typography } from "@mui/material";
 
-const DeclarationForm = ({ declaration, setDeclaration, isEdit }) => {
+const DeclarationForm = ({ user, researchers, declaration, setDeclaration, isEdit }) => {
+  const isDisabled = researchers[0]?.emp_code === user;
 
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
@@ -24,29 +25,28 @@ const DeclarationForm = ({ declaration, setDeclaration, isEdit }) => {
     return new Date(date).toISOString().split('T')[0]; // returns 'yyyy-MM-dd'
   };
 
-  const renderUploadField = (label, nameField, fileField, dateField) => (
-    <Grid container spacing={2} alignItems="center" sx={{ mt: 1 }}>
-      <Grid item size={4}>
-        <TextField
-          fullWidth
-          label={label}
-          name={nameField}
-          value={declaration[nameField] || ""}
-          onChange={(e) => handleFieldChange(e, nameField)}
-        />
+  const renderUploadField = (label, nameField, fileField, dateField, isDisabled) =>{
+    
+    return (
+      <Grid container spacing={2} alignItems="center" sx={{ mt: 1 }}>
+        <Grid item size={4}>
+          <TextField fullWidth label={label} name={nameField} value={declaration[nameField] || ""}
+            onChange={(e) => handleFieldChange(e, nameField)} disabled = {isDisabled}
+          />
+        </Grid>
+        <Grid item size={4}>
+          <TextField fullWidth label="Signature" name={fileField} value={declaration[fileField] || ""}
+            onChange={(e) => handleFieldChange(e, fileField)} disabled = {isDisabled}
+          />
+        </Grid>
+        <Grid item size={4}>
+          <TextField fullWidth type="date" label="Date" InputLabelProps={{ shrink: true }} 
+            value={ isEdit ? formatSubmissionDate(declaration[dateField]) : declaration[dateField] || new Date().toISOString().split("T")[0]}
+            onChange={(e) => handleFieldChange(e, dateField)} disabled = {isDisabled} />
+        </Grid>
       </Grid>
-      <Grid item size={4}>
-        <TextField fullWidth label="Signature" name={fileField} value={declaration[fileField] || ""}
-          onChange={(e) => handleFieldChange(e, fileField)}
-        />
-      </Grid>
-      <Grid item size={4}>
-        <TextField fullWidth type="date" label="Date" InputLabelProps={{ shrink: true }} 
-          value={ isEdit ? formatSubmissionDate(declaration[dateField]) : declaration[dateField] || new Date().toISOString().split("T")[0]}
-          onChange={(e) => handleFieldChange(e, dateField)} />
-      </Grid>
-    </Grid>
-  );
+    );
+  }
 
   const checkboxLabels = [
     "I/We certify that the information provided in this application is complete and correct.",
@@ -86,11 +86,11 @@ const DeclarationForm = ({ declaration, setDeclaration, isEdit }) => {
         Signatures
       </Typography>
 
-      {renderUploadField("Name of Principal Investigator", "pi_name", "pi_signature", "pi_date")}
-      {renderUploadField("Name of Guide", "guide_name", "guide_signature", "guide_date")}
-      {renderUploadField("Name of HOD", "hod_name", "hod_signature", "hod_date")}
-      {renderUploadField("Name of Co-investigator 1", "co1_name", "co1_signature", "co1_date")}
-      {renderUploadField("Name of Co-investigator 2", "co2_name", "co2_signature", "co2_date")}
+      {renderUploadField("Name of Principal Investigator", "pi_name", "pi_signature", "pi_date", false)}
+      {renderUploadField("Name of Guide", "guide_name", "guide_signature", "guide_date", isDisabled)}
+      {renderUploadField("Name of HOD", "hod_name", "hod_signature", "hod_date", isDisabled)}
+      {renderUploadField("Name of Co-investigator 1", "co1_name", "co1_signature", "co1_date", isDisabled)}
+      {renderUploadField("Name of Co-investigator 2", "co2_name", "co2_signature", "co2_date", isDisabled)}
     </div>
   );
 };

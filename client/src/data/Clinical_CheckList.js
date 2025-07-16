@@ -6,7 +6,7 @@ export const checklist = [
   { id: 5, label: "Agreement between collaborating partners", required: false },
   { id: 6, label: "MTA between collaborating partners", required: false },
   { id: 7, label: "Insurance policy / certificate", required: true },
-  { id: 8, label: "Copy of CTA signed with the sponsor", required: true },
+  { id: 8, label: "Copy of CTA signed with the sponsor", required: false },
   { id: 9, label: "Provide all significant previous decisions (e.g. those leading to a negative decision or modified protocol) by other ECs / Regulatory authorities for proposed study (whether in same location or elsewhere) and modification(s) to protocol", required: false},
   { id: 10, label: "Copy of the detailed protocol (clearly identified numbered and dated) and synopsis (summary as far as possible in non-technical language, flowchart, diagrammatic representation of the protocol)", required: true },
   { id: 11, label: "Investigators Brochure (If applicable for drug / biologicals / device trials)", required: true },
@@ -14,7 +14,7 @@ export const checklist = [
   { id: 13, label: "Assent form for minors (12-18 years) (English and Translated)", required: false },
   { id: 14, label: "Proforma / Questionnaire / Case Report Forms (CRF) / Interview guides / Guides for Focused Group Discussions (FGDs) (English and translated)", required: true },
   { id: 15, label: "Advertisement / material to recruit participants (fliers, posters, etc.)", required: false },
-  { id: 17, label: "DCGI Approval letter", required: true },
+  { id: 17, label: "DCGI Approval letter", required: false },
   { id: 18, label: "Others specify", required: false }
 ];
 

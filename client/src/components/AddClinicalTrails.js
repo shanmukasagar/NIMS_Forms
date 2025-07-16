@@ -48,8 +48,7 @@ const MainContent = ({user}) => {
     { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "guide", emp_code : "" }, 
     { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "hod", emp_code : "" }, 
     { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" },
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" }, 
-    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" } 
+    { name: "", designation: "", qualification: "", department: "", gmail: "", contact: "", type: "co-investigator", emp_code : "" }
   ]);
 
   const [investigatorsCount, setInvestigatorsCount] = useState({
@@ -75,7 +74,7 @@ const MainContent = ({user}) => {
     social_benefits : "", science_benefits : "", adv_details : "" });
 
   //Informed consent
-  const [consentData, setConsentData] = useState({ waiver_consent: '', english_version_number: '', english_date : "", translated_languages: [],
+  const [consentData, setConsentData] = useState({ waiver_consent: '', english_version_number: '', english_date : null, translated_languages: [],
     translation_cert_provided: '', understanding_tools: '', understanding_tools_specify: '',
     pis_elements: [], languageDetails: {}, reason_for_waiver: [], other_reason: '',});
 
@@ -109,7 +108,26 @@ const MainContent = ({user}) => {
  });
 
   //Check list state
-  const [checkListData, setCheckListData] = useState(checklist);
+  const [checkListData, setCheckListData] = useState(
+    [
+    { id: 1, label: "Cover letter", required: true },
+    { id: 2, label: "Brief CV of all Investigators- Updated, signed and dated", required: true },
+    { id: 3, label: "Good Clinical Practice (GCP) training of investigators in last 3 years", required: true },
+    { id: 4, label: "EC clearance of other centers", required: false },
+    { id: 5, label: "Agreement between collaborating partners", required: false },
+    { id: 6, label: "MTA between collaborating partners", required: false },
+    { id: 7, label: "Insurance policy / certificate", required: true },
+    { id: 8, label: "Copy of CTA signed with the sponsor", required: false },
+    { id: 9, label: "Provide all significant previous decisions (e.g. those leading to a negative decision or modified protocol) by other ECs / Regulatory authorities for proposed study (whether in same location or elsewhere) and modification(s) to protocol", required: false},
+    { id: 10, label: "Copy of the detailed protocol (clearly identified numbered and dated) and synopsis (summary as far as possible in non-technical language, flowchart, diagrammatic representation of the protocol)", required: true },
+    { id: 11, label: "Investigators Brochure (If applicable for drug / biologicals / device trials)", required: true },
+    { id: 12, label: "Participant Information Sheet (PIS) and Informed Consent Form (ICF) (English and translated) with version number and dated", required: true },
+    { id: 13, label: "Assent form for minors (12-18 years) (English and Translated)", required: false },
+    { id: 14, label: "Proforma / Questionnaire / Case Report Forms (CRF) / Interview guides / Guides for Focused Group Discussions (FGDs) (English and translated)", required: true },
+    { id: 15, label: "Advertisement / material to recruit participants (fliers, posters, etc.)", required: false },
+    { id: 17, label: "DCGI Approval letter", required: false },
+    { id: 18, label: "Others specify", required: false }
+  ]);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -119,6 +137,14 @@ const MainContent = ({user}) => {
 
   const handleSubmit = async(e) => { //Handle Submit
     e.preventDefault();
+    for(const item of checkListData) {
+      if(item.required === true) {
+        if(!item.file_name && !item.file) {
+          alert(`${item.label} is missing`);
+          return;
+        }
+      }
+    }
     setShowConfirmDialog(true);
   }
 
@@ -296,7 +322,8 @@ const mergeResearchers = (fetched = []) => {
               </Grid>
               <Grid item size={12} className="content-box" id="InformedConsent">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Informed Consent</Typography>
-                  <InformedConsent  consentData = {consentData} setConsentData = {setConsentData} />
+                  <InformedConsent  consentData = {consentData} setConsentData = {setConsentData}
+                      setCheckListData = {setCheckListData} checkListData = {checkListData} />
               </Grid>
               <Grid item size={12} className="content-box" id="PaymentCompensation">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Payment Compensation</Typography>
@@ -312,11 +339,11 @@ const mergeResearchers = (fetched = []) => {
               </Grid>
               <Grid item size={12} className="content-box" id="Declaration">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Declaration</Typography>
-                  <Declaration declaration = {declaration} setDeclaration = {setDeclaration} isEdit = {isEdit}/>
+                  <Declaration user = {user} researchers = {researchers} declaration = {declaration} setDeclaration = {setDeclaration} isEdit = {isEdit}/>
               </Grid>
               <Grid item size={12} className="content-box" id="Checklist">
                   <Typography sx = {{fontSize : "22px", fontWeight : "600"}}>Checklist</Typography>
-                  <Checklist checkListData = {checkListData} setCheckListData = {setCheckListData} isEdit = {isEdit}/>
+                  <Checklist consentData = {consentData} checkListData = {checkListData} setCheckListData = {setCheckListData} isEdit = {isEdit}/>
               </Grid>
               <Grid item size={12} sx={{ display: "flex", justifyContent:"center", gap : "40px"}}>
                 <Button onClick={() => setOpenPreview(true)} sx={buttonStyle}>Preview</Button>
@@ -338,7 +365,7 @@ const mergeResearchers = (fetched = []) => {
             <DialogContent>Are you sure once submitted you can not modify or edit?</DialogContent>
             <DialogActions sx = {{ display : "flex", justifyContent : "space-around"}}>
               <Button sx={buttonStyle} onClick={() => setShowConfirmDialog(false)} disabled={isSubmitting} >Cancel</Button>
-              <Button sx={buttonStyle} onClick={handleConfirmSubmission} autoFocus disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Conform"}</Button>
+              <Button sx={buttonStyle} onClick={handleConfirmSubmission} autoFocus disabled={isSubmitting}>{isSubmitting ? "Submitting..." : "Confirm"}</Button>
             </DialogActions>
           </Dialog>
         </React.Fragment>

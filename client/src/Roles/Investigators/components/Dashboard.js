@@ -15,6 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import {useProject} from "../../../components/ResearchContext";
 import { List, ListItem, Link } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import InfoIcon from '@mui/icons-material/Info';
 
 const Dashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
@@ -29,6 +30,12 @@ const Dashboard = ({user, setSelectedForm}) => {
     const [selectedOption, setSelectedOption] = useState(''); // default option
     const [selectedOrg, setSelectedOrg] = useState('');
     const [selectedProject, setSelectedProject] = useState({});
+
+    const [openProjectStatus, setOpenProjectStatus] = useState(false);
+    const [statusSelection, setStatusSelection] = useState('');
+    const [projectStatus, setProjectStatus] = useState('');
+    const [investigatorsData, setInvestigatorsData] = useState([]);
+  
 
     const [isVersionDialogOpen, setIsVersionDialogOpen] = useState(false);
     const [selectedProjectForVersions, setSelectedProjectForVersions] = useState(null);
@@ -81,7 +88,46 @@ const Dashboard = ({user, setSelectedForm}) => {
         setOpen(true);
     };
 
-    const handleClose = () => setOpen(false); //Close comment
+    const handleOpenStatus = (projectItem) => { //Open project status
+        setSelectedProject(projectItem);
+        setOpenProjectStatus(true);
+    }
+
+    const handleProjectStatusSelection = async (e) => { //Handle project status
+        const selection = e.target.value;
+        if(selection === "Investigators") {
+            const response = await axiosInstance.get("/api/investigator/approvedstatus", {
+                params: {
+                    tableName: selectedProject.form_type === "Principal/CoInvestigator"
+                    ? "clinical_investigators"
+                    : "investigatorss",
+                    formId: selectedProject.form_number,
+                },
+            });
+            setInvestigatorsData(response.data);
+        } 
+        else if(selection === "PBAC") {
+            setProjectStatus(selectedProject?.pbac_status);
+        }
+        else if(selection === "NIEC") {
+            setProjectStatus(selectedProject?.niec_status);
+        }
+        else if(selection === "ISRC") {
+            setProjectStatus(selectedProject?.status);
+        }
+        setStatusSelection(selection);
+    }
+
+    const handleClose = () => { //Close comment
+        setOpen(false); 
+    }
+
+    const handleStatusClose = () => { // Handle close project status
+        setOpenProjectStatus(false);
+        setStatusSelection('');
+        setProjectStatus('');
+        setInvestigatorsData([]);
+    } 
 
     const formatSubmitDate = (isoString) => { //Format submission date
         const date = new Date(isoString);
@@ -254,24 +300,25 @@ const Dashboard = ({user, setSelectedForm}) => {
                 </Box>
                 <Box>
                     <Grid container spacing={3} style={{ backgroundColor: '#4b1d77', color: 'white', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
+                        <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Change Log</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Submission Date</Typography></Grid>
                         {/* <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid> */}
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>View</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Comments</Typography></Grid>
+                        <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Edit</Typography></Grid>
                     </Grid>
                     <Grid container spacing={3} style={{ backgroundColor: 'white', color: '#4b1d77', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
                         {projectsData.length > 0 ? projectsData.map((item, index) => (
                             <React.Fragment key = {index}>
-                                <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
+                                <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
                                 <Grid item size={2}>
                                     <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handlePIComments(item)}/>
                                 </Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
                                 {/* <Grid item size={1}><Typography sx={{ fontSize: "18px", color : `${statusColors[item.status]}` }}>{item.status}</Typography></Grid> */}
-                                <Grid item size={1} sx = {{display : "flex", gap : "25px"}}>
+                                <Grid item size={1} sx = {{display : "flex", gap : "15px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => openPdfVersionDialog(item)} /> 
                                     {item.project_pdf !== "" && (
                                         <PictureAsPdfIcon sx={{ fontSize: 24, cursor: "pointer", color: 'red' }}
@@ -280,6 +327,9 @@ const Dashboard = ({user, setSelectedForm}) => {
                                 </Grid>
                                 <Grid item size={1}>
                                     <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenComment(item)}/>
+                                </Grid>
+                                <Grid item size={1}>
+                                    <InfoIcon sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenStatus(item)}/>
                                 </Grid>
                                 <Grid item size={1}> 
                                     <Edit sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleEditIcon(item)} />
@@ -291,7 +341,7 @@ const Dashboard = ({user, setSelectedForm}) => {
                 </Box>
             </Box>
             <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Comment</DialogTitle>
+                <DialogTitle>Add review remarks </DialogTitle>
                 <DialogContent>
                     <FormControl fullWidth sx={{ mb: 2 }}>
                         <InputLabel id="org-select-label">Select Organization</InputLabel>
@@ -309,8 +359,8 @@ const Dashboard = ({user, setSelectedForm}) => {
                                 {selectedProject?.pbac_inv_comments || 'No comment available.'}
                             </Typography>
                             <Typography variant="body1" fontWeight="bold" textTransform="capitalize"
-                                color={getStatusColor(selectedProject?.pbac_status || "pending")} >
-                                {selectedProject?.pbac_status || 'Pending'}
+                                color={getStatusColor(selectedProject?.niec_status || "pending")} >
+                                {selectedProject?.niec_status || 'Pending'}
                             </Typography>
                         </Box>
                     )}
@@ -383,8 +433,8 @@ const Dashboard = ({user, setSelectedForm}) => {
                     <Table>
                     <TableHead>
                         <TableRow>
-                        <TableCell><strong>Change</strong></TableCell>
-                        <TableCell><strong>My Change Description</strong></TableCell>
+                        <TableCell><strong>Modifications suggested</strong></TableCell>
+                        <TableCell><strong>Modifications done</strong></TableCell>
                         <TableCell><strong>Action</strong></TableCell>
                         </TableRow>
                     </TableHead>
@@ -451,6 +501,33 @@ const Dashboard = ({user, setSelectedForm}) => {
                             <Typography>No PDF versions available.</Typography>
                         )}
                 </DialogContent>
+            </Dialog>
+            {/* Status Dialog box popup*/}
+            <Dialog open={openProjectStatus} onClose={handleStatusClose} fullWidth maxWidth="sm">
+                <DialogTitle>Approval Status</DialogTitle>
+
+                <DialogContent dividers>
+                    <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                    <InputLabel>Select Group</InputLabel>
+                    <Select value={statusSelection} label="Select Group" onChange={handleProjectStatusSelection}>
+                        <MenuItem value="Investigators">Investigators</MenuItem>
+                        <MenuItem value="ISRC">ISRC</MenuItem>
+                        <MenuItem value="NIEC">NIEC</MenuItem>
+                        <MenuItem value="PBAC">PBAC</MenuItem>
+                    </Select>
+                    </FormControl>
+                    {statusSelection === "Investigators" ?
+                        investigatorsData.map((item, index) => (
+                            <Typography key={index} variant="subtitle1" sx={{ mt: 2 }}>
+                            {`${item.name} : ${item.approved ? "Approved" : "Pending"}`}
+                            </Typography>
+                    )) : (
+                        <Typography variant="subtitle1" sx={{ mt: 2 }}>Status: {projectStatus || "Pending"}</Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleStatusClose} variant="contained" color="primary">Close</Button>
+                </DialogActions>
             </Dialog>
         </React.Fragment>
     )

@@ -39,11 +39,11 @@ const SelfFundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
   return (
     <Box sx={{ py: 4 }}>
       <Typography variant="h5">Budget Proposal Submission Form for Self-Funded Research</Typography>
-      <TextField required fullWidth label="Proposed Budget by Principal Investigator" 
+      <TextField required type = "number" fullWidth label="Proposed Budget by Principal Investigator" 
         value={proposedBudget} onChange={(e) => handleChange('proposedBudget', e.target.value)} 
           size="small" sx={{ my: 2 }} />
       <Typography>No of Study Patients/Participants planned to be recruited:</Typography>
-      <TextField required fullWidth label="1. Expected Cost per Completed Patient" value={costPerPatient}
+      <TextField required type = "number" fullWidth label="1. Expected Cost per Completed Patient" value={costPerPatient}
          onChange={(e) => handleChange('costPerPatient', e.target.value)} size="small" 
           sx={{ mb: 3, mt: 3 }} />
       <Typography variant="subtitle1">2. Investigations to be done in NIMS</Typography>
@@ -60,7 +60,7 @@ const SelfFundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
             <TableRow key={i}>
               <TableCell><TextField required fullWidth value={row.name} 
                 onChange={(e) => handleNimsChange(i, 'name', e.target.value)} size="small" /></TableCell>
-              <TableCell><TextField required fullWidth value={row.cost} 
+              <TableCell><TextField type = "number" required fullWidth value={row.cost} 
                 onChange={(e) => handleNimsChange(i, 'cost', e.target.value)} size="small" /></TableCell>
               <TableCell><IconButton onClick={() => deleteNimsRow(i)} 
                 disabled={nimsInvestigations.length === 1}><DeleteIcon color="error" /></IconButton>
@@ -70,7 +70,7 @@ const SelfFundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
         </TableBody>
       </Table>
       <Button onClick={addNimsRow} variant="outlined" sx={{ mt: 2 }}>+ Add Row</Button>
-      <TextField required fullWidth label="3. Total Project Cost" value={totalProjectCost} onChange={(e) => handleChange('totalProjectCost', e.target.value)} size="small" sx={{ mt: 4 }} />
+      <TextField type = "number" required fullWidth label="3. Total Project Cost" value={totalProjectCost} onChange={(e) => handleChange('totalProjectCost', e.target.value)} size="small" sx={{ mt: 4 }} />
       <Typography variant="h6" sx={{ mt: 4 }}>Are any study specific investigations being outsourced?</Typography>
       <RadioGroup row value={isOutsourced} onChange={(e) => handleChange('isOutsourced', e.target.value)}>
         <FormControlLabel value="yes" control={<Radio />} label="Yes" />
@@ -93,7 +93,7 @@ const SelfFundedStudyForm = ({ funding_FormData, setFundingFormData }) => {
               {outsourcedInvestigations.map((row, i) => (
                 <TableRow key={i}>
                   <TableCell><TextField required fullWidth value={row.name} onChange={(e) => handleOutsourcedChange(i, 'name', e.target.value)} size="small" /></TableCell>
-                  <TableCell><TextField required fullWidth value={row.cost} onChange={(e) => handleOutsourcedChange(i, 'cost', e.target.value)} size="small" /></TableCell>
+                  <TableCell><TextField required type = "number" fullWidth value={row.cost} onChange={(e) => handleOutsourcedChange(i, 'cost', e.target.value)} size="small" /></TableCell>
                   <TableCell><TextField required fullWidth value={row.lab} onChange={(e) => handleOutsourcedChange(i, 'lab', e.target.value)} size="small" /></TableCell>
                   <TableCell><TextField required fullWidth value={row.nabl} onChange={(e) => handleOutsourcedChange(i, 'nabl', e.target.value)} size="small" /></TableCell>
                   <TableCell><IconButton onClick={() => deleteOutsourcedRow(i)} disabled={outsourcedInvestigations.length === 1}><DeleteIcon color="error" /></IconButton></TableCell>
