@@ -5,7 +5,7 @@ const {sendEmail, sendProjectSubmissionMail} = require("../config/SendEmail");
 const { convertToFrontendKeys} = require("../config/FundingTableConfig");
 
 //Get projects data
-const getProjectsService = async (email, type) => {
+const getProjectsService = async (email, type, role) => {
     try {
         await connectToMongo(); // connect to DB
         const projectsCollection = getDB().collection("Projects");
@@ -18,12 +18,29 @@ const getProjectsService = async (email, type) => {
                 $or: [{ emp_code: email }, { allowedEmployees: email }]
             };
         } 
-        else if (type === "isrc_member" || type === "niec_member" || type === "pbac_member") {
-            filteredObj = 
-                type === "isrc_member" ? { reviewer_id: email } :
-                type === "niec_member" ? { niec_reviewer_id: email } :
-                { pbac_reviewer_id: email };
+        else if(type === "admin") {
+            filteredObj = {}
         }
+        else if (type === "isrc_member" || type === "niec_member" || type === "pbac_member") {
+            const reviewerKeyMap = {
+                isrc_member: "reviewer_id",
+                niec_member: "niec_reviewer_id",
+                pbac_member: "pbac_reviewer_id"
+            };
+
+            const reviewerKey = reviewerKeyMap[type]; // Fix: define this before using it
+
+            if (role === "Admin" || role === "Super Admin") {
+                filteredObj = {
+                    [reviewerKey]: { $exists: true, $ne: "" }
+                };
+            } else {
+                filteredObj = {
+                    [reviewerKey]: email
+                };
+            }
+        }
+
         else if (type === "isrc_secretary" || type === "niec_secretary" || type === "pbac_secretary") {
             const reviewType = type === "isrc_secretary" ? "isrc" : type === "pbac_secretary" ? "pbac" : "niec";
             filteredObj = { project_id: { $ne: "" } };

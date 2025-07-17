@@ -1,4 +1,4 @@
-const {userRegistration, userAuthentication} = require("../services/UserService");
+const {userRegistration, userAuthentication, deleteUserService } = require("../services/UserService");
 const {createToken} = require("../config/VerifyToken")
 const cookieParser = require('cookie-parser');
 
@@ -40,6 +40,21 @@ const userLogin = async(req, res) => { //User Login
     }
 }
 
+const deleteUser = async (req, res) => { //Delete User
+    try {
+        const empCode = req.query.emp_code;
+        const result = await deleteUserService(empCode);
+        if (result.success) {
+            return res.status(200).json(result.message);
+        } else {
+            return res.status(404).json(result.message);
+        }
+    } catch (error) {
+        console.error("Delete User Error:", error.message);
+        return res.status(500).json("Internal Server Error");
+    }
+};
+
 const verifyUser = async(req, res) => {//Verify user
     const userEmail = req.user;
     res.status(200).json(userEmail);
@@ -62,4 +77,4 @@ const userLogout = async (req, res) => {
 };
 
 
-module.exports = {userRegister, userLogin, verifyUser, userLogout};
+module.exports = {userRegister, userLogin, verifyUser, userLogout, deleteUser};

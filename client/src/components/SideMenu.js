@@ -20,10 +20,38 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       ]
     },
     {
+      id: 'Admin Dashboard',
+      label: 'Admin Dashboard',
+      hasSubMenu: false,
+      role: ["Super Admin", "Admin"],
+      subItems: [
+        { id: 'Admin Dashboard', label: 'Admin Dashboard', path: '/admin/dashboard' },
+      ]
+    },
+    
+    {
+      id: 'Add Users',
+      label: 'Add Users',
+      hasSubMenu: false,
+      role: [ "Admin"],
+      subItems: [
+        { id: 'Add Users', label: 'Add Users', path: '/admin/addusers' },
+      ]
+    },
+    {
+      id: 'Delete Users',
+      label: 'Delete Users',
+      hasSubMenu: false,
+      role: ["Admin"],
+      subItems: [
+        { id: 'Delete Users', label: 'Delete Users', path: '/admin/deleteusers' },
+      ]
+    },
+    {
       id: 'ISRC Committee Member',
       label: 'ISRC Committee Member',
       hasSubMenu: false,
-      role: ["ISRC Committee Member", "Super Admin"],
+      role: ["ISRC Committee Member", "Admin"],
       subItems: [
         { id: 'ISRC Committee Member', label: 'ISRC Committee Member', path: '/isrc/commitee/member' },
       ]
@@ -32,7 +60,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'Assign ISRC Reviewers',
       label: 'Assign ISRC Reviewers',
       hasSubMenu: false,
-      role: ["ISRC Member Secretary", "Super Admin"],
+      role: ["ISRC Member Secretary"],
       subItems: [
         { id: 'Assign ISRC Reviewers', label: 'Assign ISRC Reviewers', path: '/isrc/chair/assignreviewers' },
       ]
@@ -41,7 +69,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'ISRC Secretary Decision',
       label: 'ISRC Secretary Decision',
       hasSubMenu: false,
-      role: ["ISRC Member Secretary", "Super Admin"],
+      role: ["ISRC Member Secretary"],
       subItems: [
         { id: 'ISRC Secretary Decision', label: 'ISRC Secretary Decision', path: '/isrc/chair/decision' },
       ]
@@ -50,7 +78,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'ISRC Chair Decision',
       label: 'ISRC Chair Decision',
       hasSubMenu: false,
-      role: ["ISRC Committee Chair", "Super Admin"],
+      role: ["ISRC Committee Chair"],
       subItems: [
         { id: 'ISRC Chair Decision', label: 'ISRC Chair Decision', path: '/isrc/chair/decision' },
       ]
@@ -59,7 +87,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'NIEC Committee Member',
       label: 'NIEC Committee Member',
       hasSubMenu: false,
-      role: ["NIMS IEC committee- member", "Super Admin"],
+      role: ["NIMS IEC committee- member", "Super Admin", "Admin"],
       subItems: [
         { id: 'NIEC Committee Member', label: 'NIEC Committee Member', path: '/nice/member' },
       ]
@@ -95,7 +123,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'PBAC Committee Member',
       label: 'PBAC Committee Member',
       hasSubMenu: false,
-      role: ["PBAC Committee Member", "Super Admin"],
+      role: ["PBAC Committee Member", "Admin"],
       subItems: [
         { id: 'PBAC Committee Member', label: 'PBAC Committee Member', path: '/pbac/commitee/member' },
       ]
@@ -104,7 +132,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'Assign PBAC Reviewers',
       label: 'Assign PBAC Reviewers',
       hasSubMenu: false,
-      role: ["PBAC Member Secretary", "Super Admin"],
+      role: ["PBAC Member Secretary"],
       subItems: [
         { id: 'Assign PBAC Reviewers', label: 'Assign PBAC Reviewers', path: '/pbac/chair/assignreviewers' },
       ]
@@ -113,7 +141,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'PBAC Chair Decision',
       label: 'PBAC Chair Decision',
       hasSubMenu: false,
-      role: ["PBAC Committee Chair", "Super Admin"],
+      role: ["PBAC Committee Chair"],
       subItems: [
         { id: 'PBAC Chair Decision', label: 'PBAC Chair Decision', path: '/pbac/chair/decision' },
       ]
@@ -122,7 +150,7 @@ const Sidebar = ({selectedRole, selectedForm}) => {
       id: 'PBAC Secretary Decision',
       label: 'PBAC Secretary Decision',
       hasSubMenu: false,
-      role: ["PBAC Member Secretary", "Super Admin"],
+      role: ["PBAC Member Secretary"],
       subItems: [
         { id: 'PBAC Secretary Decision', label: 'PBAC Secretary Decision', path: '/pbac/chair/decision' },
       ]

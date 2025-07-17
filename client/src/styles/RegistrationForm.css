@@ -36,6 +36,38 @@
     gap : 17px;
 }
 
+.html-role-dropdown {
+  position: relative;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.dropdown-toggle {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+}
+
+.dropdown-checkboxes {
+  position: absolute;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ccc;
+  border-top: none;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 10px;
+}
+
+.checkbox-item {
+  display: block;
+  margin-bottom: 6px;
+}
+
   
 
   

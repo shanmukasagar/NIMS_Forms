@@ -15,7 +15,7 @@ import { List, ListItem, Link } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { Visibility } from '@mui/icons-material';
 
-const ISRC_Member = ({setSelectedForm}) => {
+const ISRC_Member = ({setSelectedForm, selectedRole}) => {
   const fetchOnce = useRef(false);
   const [openPreview, setOpenPreview] = useState(false);
   const [selectedData, setSelectedData] = useState({});
@@ -133,7 +133,8 @@ const ISRC_Member = ({setSelectedForm}) => {
     try{
       if(!fetchOnce.current) {
         fetchOnce.current = true;
-        const response = await axiosInstance.get('/api/investigator/projects', {params : {type : "isrc_member"}});
+        const response = await axiosInstance.get('/api/investigator/projects', 
+          {params : {type : "isrc_member", role : selectedRole}});
         setProjectsData(response.data);
       }
     }

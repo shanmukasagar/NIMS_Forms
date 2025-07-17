@@ -55,7 +55,9 @@ const PBAC_Member = lazy(() => import('./Roles/PBAC/PBAC_Member'));
 const PBAC_Reviewers = lazy(() => import('./Roles/PBAC/PBAC_Reviewer'));
 const PBACChairMemberDecision = lazy(() => import('./Roles/PBAC/PBAC_Chair'));
 
-
+const AdminDashboard = lazy(() => import('./Roles/Admin/AdminDashboard'));
+const AddUsers = lazy(() => import('./Roles/Admin/AddUsers'));
+const DeleteUsers = lazy(() => import('./Roles/Admin/DeleteUsers'));
 
 const App = () => {
   const [adminId, setAdminId] = useState(null);
@@ -135,7 +137,8 @@ const App = () => {
                   <Route path="/funding-agency" element={<FundingAgency />} />
 
                   {/* Roles */}
-                  <Route path="/isrc/commitee/member" element={<ISRC_Member user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/isrc/commitee/member" element={<ISRC_Member user={user} setSelectedForm={setSelectedForm} 
+                    selectedRole = {selectedRole} />} />
                   <Route path="/investigator/feedback" element={<ClinicalFormFeedback />} />
                   <Route path="/investigator" element={<InvestigatorDashboard user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/investigator/studylist" element={<InvestigatorStudy setSelectedForm={setSelectedForm} />} />
@@ -144,14 +147,19 @@ const App = () => {
                   <Route path="/isrc/chair/assignreviewers" element={<AssignReviewers user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/isrc/chair/decision" element={<ISRCChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
 
-                  <Route path="/nice/member" element={<NIEC_Member user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/nice/member" element={<NIEC_Member user={user} 
+                    setSelectedForm={setSelectedForm} selectedRole = {selectedRole}/>} />
                   <Route path="/niec/secretary/assignreviewers" element={<NIEC_Reviewers user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/nice/chair/decision" element={<NIECChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
 
-                  <Route path="/pbac/commitee/member" element={<PBAC_Member user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/pbac/commitee/member" element={<PBAC_Member user={user} 
+                    setSelectedForm={setSelectedForm} selectedRole = {selectedRole} />} />
                   <Route path="/pbac/chair/assignreviewers" element={<PBAC_Reviewers user={user} setSelectedForm={setSelectedForm} />} />
                   <Route path="/pbac/chair/decision" element={<PBACChairMemberDecision user={user} setSelectedForm={setSelectedForm} />} />
 
+                  <Route path="/admin/dashboard" element={<AdminDashboard user={user} setSelectedForm={setSelectedForm} />} />
+                  <Route path="/admin/addusers" element={<AddUsers selectedRole={selectedRole} setSelectedRole={setSelectedRole} />} />
+                  <Route path="/admin/deleteusers" element={<DeleteUsers selectedRole={selectedRole} setSelectedRole={setSelectedRole} />} />
                 </Routes>
               </Box>
             </Box>

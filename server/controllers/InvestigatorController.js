@@ -6,7 +6,8 @@ const getProjectsController = async (req, res) => {
     try{
         const email = req.user.email;
         const type = req.query.type;
-        const result = await getProjectsService(email, type);
+        const role = req.query.role;
+        const result = await getProjectsService(email, type, role);
         res.status(200).json(result);
     }
     catch(error) {

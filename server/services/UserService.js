@@ -17,17 +17,7 @@ const userRegistration = async(userData) => {
             emp_code: Long.fromString(userData.email), 
             emp_pwd: userData.password, 
             mobile: userData.mobile,
-            allowed_logins : [ "Principal/CoInvestigator",
-                                "ISRC Committee Member",
-                                "ISRC Member Secretary",
-                                "ISRC Committee Chair",
-                                "NIMS IEC committee- member",
-                                "NIMS IEC CommitteeMember-secretary",
-                                "NIMS IEC Committee - Chairman",
-                                "PBAC Committee Member",
-                                "PBAC Member Secretary",
-                                "PBAC Committee Chair" 
-            ]
+            allowed_logins : userData.allowed_logins
         };
 
         const result = await employeeCollection.insertOne(data);
@@ -68,4 +58,22 @@ const userAuthentication = async(userData) => {
     }
 }
 
-module.exports = {userRegistration, userAuthentication};
+const deleteUserService = async (empCode) => {
+    try {
+        await connectToMongo();
+        const employeeCollection = getDB().collection("Employees");
+
+        const result = await employeeCollection.deleteOne({ emp_code: Number(empCode) });
+
+        if (result.deletedCount === 1) {
+            return { success: true, message: "User deleted successfully" };
+        } else {
+            return { success: false, message: "User not found" };
+        }
+    } catch (error) {
+        console.log("Delete user failed:", error.message);
+        throw error;
+    }
+};
+
+module.exports = {userRegistration, userAuthentication, deleteUserService};

@@ -79,10 +79,12 @@ const AuthForm = ({selectedRole, setSelectedRole}) => {
                     return ;
                 }
                 else if(selectedRole === "Admin") {
-                    navigate('/basic/administrative');
+                    navigate('/admin/dashboard');
+                    return ;
                 }
                 else if(selectedRole === "Super Admin") {
-                    navigate('/basic/administrative');
+                    navigate('/admin/dashboard');
+                    return ;
                 }
                 
                 navigate('/basic/administrative');

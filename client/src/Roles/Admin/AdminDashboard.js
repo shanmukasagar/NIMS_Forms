@@ -1,25 +1,26 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {Box, Typography, Button, TextField, } from "@mui/material";
-import "../../../styles/Investigators/dashboard.css";
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from "../../../components/AxiosInstance";
 import { Visibility, Edit, Comment } from '@mui/icons-material';
 import { Dialog, DialogTitle, DialogContent, IconButton, Tooltip, DialogActions} from '@mui/material';
-import PreviewPopup from "../../../Forms/Add_Clinical_Form/Clinical_Preview";
-import AddClinicalTrails from '../../../components/AddClinicalTrails';
+
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {  Table, TableHead, TableBody, TableRow, TableCell, 
      Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {useProject} from "../../../components/ResearchContext";
 import { List, ListItem, Link } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from '@mui/icons-material/Info';
 
-const Dashboard = ({user, setSelectedForm}) => {
+import axiosInstance from "../../components/AxiosInstance";
+import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
+import {useProject} from "../../components/ResearchContext";
+import "../../styles/Investigators/dashboard.css";
+import Mail from '@mui/icons-material/Mail';
+
+const AdminDashboard = ({user, setSelectedForm}) => {
     const [projectsData, setProjectsData] = useState([]);
-    const [selectedComment, setSelectedComment] = useState('');
     const [open, setOpen] = useState(false);
     const [projectView, setProjectView] = useState({});
     const [openPreview, setOpenPreview] = useState(false);
@@ -35,6 +36,13 @@ const Dashboard = ({user, setSelectedForm}) => {
     const [statusSelection, setStatusSelection] = useState('');
     const [projectStatus, setProjectStatus] = useState('');
     const [investigatorsData, setInvestigatorsData] = useState([]);
+
+    const [openMail, setOpenMail] = useState(false);
+    const [from, setFrom] = useState('');
+    const [to, setTo] = useState('');
+    const [subject, setSubject] = useState('');
+    const [body, setBody] = useState('');
+    const [attachments, setAttachments] = useState([]);
   
 
     const [isVersionDialogOpen, setIsVersionDialogOpen] = useState(false);
@@ -43,10 +51,19 @@ const Dashboard = ({user, setSelectedForm}) => {
     const navigate = useNavigate();
     const fetchOnce = useRef(false);
 
-    // Context
-    const { setProjectId, setnewProject } = useProject();
+    //Add attachments to email
+    const handleFileChange = (e) => {
+        setAttachments([...e.target.files]);
+    };
 
-    const statusColors = { pending : "orange", reviewed : "blue", approved : "green", rejected : "red"};
+    //Send mail
+    const handleSend = () => {
+        console.log({ from, to, subject, body, attachments });
+        setOpenMail(false);
+    };
+
+
+    // Context
 
     useEffect(() => {
         const handleGetProjects = async () => {
@@ -54,7 +71,7 @@ const Dashboard = ({user, setSelectedForm}) => {
                 if(!fetchOnce.current) {
                     fetchOnce.current = true;
                     const response = await axiosInstance.get('/api/investigator/projects', 
-                        {params : {type : "investigators"}});
+                        {params : {type : "admin"}});
                     setProjectsData(response.data);
                 }
             }
@@ -137,98 +154,6 @@ const Dashboard = ({user, setSelectedForm}) => {
         return `${formattedDate} ${formattedTime}`;
     };
 
-    const handleViewIcon = async (item) => { // Handle view icon
-        try {
-            if(item.form_type === "biomedical-1") {
-                setSelectedForm("biomedical-1");
-                setProjectId(item.form_number);
-                setnewProject(null);
-                navigate("/basic/administrative")
-            }
-            else if(item.form_type === "biomedical-2") {
-                setSelectedForm("biomedical-2");
-                setProjectId(item.form_number);
-                setnewProject(null);
-                navigate("/basic/administrative")
-            }
-            else{
-                const result = await handleGetProjectDetails(item.project_ref);
-                setProjectView(result);
-                setOpenPreview(true);
-            }
-        } catch (error) {
-            console.log("Error occurred while fetching project data", error.message);
-        }
-    };
-
-    const handleEditIcon = async (item) => { // Handle Edit icon
-        if((item.isrc_inv_comments === "" && 
-            item.niec_inv_comments === "" && item.pbac_inv_comments === "") && item.project_id !== "") {
-                alert("Editing is only allowed when comments are provided.");
-                return;
-        }
-        else{
-            try {
-                if(item.form_type === "biomedical-1") {
-                    setSelectedForm("biomedical-1");
-                    setProjectId(item.form_number);
-                    setnewProject(null);
-                    navigate("/basic/administrative")
-                }
-                else if(item.form_type === "biomedical-2") {
-                    setSelectedForm("biomedical-2");
-                    setProjectId(item.form_number);
-                    setnewProject(null);
-                    navigate("/basic/administrative")
-                }
-                else{
-                    const result = await handleGetProjectDetails(item.project_ref);
-                    setProjectView(result);
-                    const initialData = {
-                        administration: result?.administration,
-                        researchers: result?.researchers,
-                        participants: result?.participants,
-                        benefits: result?.benefits,
-                        paymentState: result?.paymentState,
-                        storage: result?.storage,
-                        additional: result?.additional,
-                        checkListData: result?.checkListData,
-                        submittedFormId : result?.administration?.form_id || "",
-                        investigatorsCount: result?.investigatorsCount,
-                        fundingData: result?.fundingData,
-                        overviewResearch: result?.overviewResearch,
-                        methodologyData: result?.methodologyData,
-                        consentData: result?.consentData,
-                        declaration: result?.declaration,
-                        funding_FormData : result?.fundingDetails
-                    }
-                    navigate("/addclinicaltrails", { state: { initialData: initialData, user : user } });
-                }
-            } catch (error) {
-                console.log("Error occurred while fetching project data", error.message);
-            }
-        }
-    };
-
-    const handleGetProjectDetails = async (project_ref) => { //Get project details
-        try {
-            const response = await axiosInstance.get("/api/investigator/projectdata", {
-                params: { project_ref }  // <-- add `params`
-            });
-            return response.data;
-            
-        } catch (error) {
-            console.log("Error occurred while fetching project data", error.message);
-        }
-    } 
-
-    // Handle investigator changes comments
-    const handlePIComments = async (item) => {
-        setOpenChangescomments(true);
-        setProjectRef(item.project_ref)
-        setProjectChanges([{ change: '', description: '' }]);
-    }
-
     // Send principal investigator project changes
     const handleChangesSubmit = async () => {
         if (!projectChanges) {
@@ -301,24 +226,18 @@ const Dashboard = ({user, setSelectedForm}) => {
                 </Box>
                 <Box>
                     <Grid container spacing={3} style={{ backgroundColor: '#4b1d77', color: 'white', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
-                        <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Change Log</Typography></Grid>
+                        <Grid item size={6}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Submission Date</Typography></Grid>
-                        {/* <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid> */}
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>View</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Comments</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid>
-                        <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Edit</Typography></Grid>
+                        <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Mail</Typography></Grid>
                     </Grid>
                     <Grid container spacing={3} style={{ backgroundColor: 'white', color: '#4b1d77', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
                         {projectsData.length > 0 ? projectsData.map((item, index) => (
                             <React.Fragment key = {index}>
-                                <Grid item size={4}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
-                                <Grid item size={2}>
-                                    <Comment sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handlePIComments(item)}/>
-                                </Grid>
+                                <Grid item size={6}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
-                                {/* <Grid item size={1}><Typography sx={{ fontSize: "18px", color : `${statusColors[item.status]}` }}>{item.status}</Typography></Grid> */}
                                 <Grid item size={1} sx = {{display : "flex", gap : "15px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => openPdfVersionDialog(item)} /> 
                                     {item.project_pdf !== "" && (
@@ -332,10 +251,10 @@ const Dashboard = ({user, setSelectedForm}) => {
                                 <Grid item size={1}>
                                     <InfoIcon sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenStatus(item)}/>
                                 </Grid>
-                                <Grid item size={1}> 
-                                    <Edit sx={{ fontSize: 24, cursor: "pointer" }} onClick = {() => handleEditIcon(item)} />
+                                <Grid item xs={1}> 
+                                    <Mail sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => setOpenMail(true)}/>
                                 </Grid>
-                            </React.Fragment>
+                                                                </React.Fragment>
                         )) : <Typography style = {{textAlign : "center", fontSize : "20px", color : "#5a4c4c"}}>No projects to display</Typography>
                         }
                     </Grid>
@@ -530,8 +449,34 @@ const Dashboard = ({user, setSelectedForm}) => {
                     <Button onClick={handleStatusClose} variant="contained" color="primary">Close</Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={openMail} onClose={() => setOpenMail(false)} fullWidth maxWidth="xl">
+                <DialogTitle>Send Email</DialogTitle>
+                <DialogContent dividers>
+                    <TextField  margin="dense" label="From" type="email" fullWidth
+                        value={from} onChange={(e) => setFrom(e.target.value)} />
+                    <TextField margin="dense" label="To" type="email" fullWidth
+                        value={to} onChange={(e) => setTo(e.target.value)} />
+                    <TextField margin="dense" label="Subject" fullWidth
+                        value={subject} onChange={(e) => setSubject(e.target.value)} />
+                    <TextField margin="dense" label="Body" fullWidth multiline
+                        rows={10} value={body} onChange={(e) => setBody(e.target.value)} />
+                    <Button variant="outlined" component="label" sx={{ mt: 2 }}>Attach Files
+                        <input type="file" hidden multiple onChange={handleFileChange} />
+                    </Button>
+
+                    {attachments.length > 0 && (
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                            {attachments.map(file => file.name).join(', ')}
+                        </Typography>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenMail(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={handleSend}>Send</Button>
+                </DialogActions>
+            </Dialog>
         </React.Fragment>
     )
 }
 
-export default Dashboard;
+export default AdminDashboard;

@@ -49,6 +49,7 @@ app.use("/api/niec", NIECRoute);
 app.use("/api/investigator", InvestigatorRoute);
 app.use("/api/isrc", ISRCRoute);
 
+
 app.use('/', (req, res) => { 
     res.send('API is working');
 });
