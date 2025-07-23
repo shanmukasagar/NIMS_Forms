@@ -3,7 +3,7 @@ import { AppBar, Toolbar, Typography, Stack, Box, Avatar, Menu, MenuItem, IconBu
 import axiosInstance from "./AxiosInstance";
 import { useNavigate } from 'react-router-dom';
 
-const Header = ({ user, selectedRole, onLogout }) => {
+const Header = ({ user, userName, selectedRole, onLogout }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -49,7 +49,8 @@ const Header = ({ user, selectedRole, onLogout }) => {
         {user && (
           <Stack direction="row" spacing={2} alignItems="center">
             <Box textAlign="right">
-              <Typography sx={{ fontWeight: 600, color: '#4b1d77' }}>{user}</Typography>
+              <Typography sx={{ fontSize: '18px', fontWeight: 600, color: '#6a4c93' }}>{userName}</Typography>
+              <Typography sx={{ fontWeight: 400, fontSize: '17px', color: '#4b1d77' }}>{user}</Typography>
               <Typography sx={{ fontSize: '0.875rem', color: '#6a4c93' }}>{selectedRole}</Typography>
             </Box>
 

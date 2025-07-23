@@ -12,10 +12,10 @@ const sendEmail = async (fromEmail, toEmail, subject, htmlContent) => {
         });
 
         const mailOptions = {
-        from: `"Principal Investigator" <${fromEmail}>`,
-        to: toEmail,
-        subject: subject,
-        html: htmlContent,
+          from: `"Principal Investigator" <${fromEmail}>`,
+          to: toEmail,
+          subject: subject,
+          html: htmlContent,
         };
 
         await transporter.sendMail(mailOptions);

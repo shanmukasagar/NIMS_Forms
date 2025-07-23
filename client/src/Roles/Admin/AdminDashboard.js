@@ -43,7 +43,8 @@ const AdminDashboard = ({user, setSelectedForm}) => {
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
     const [attachments, setAttachments] = useState([]);
-  
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [isVersionDialogOpen, setIsVersionDialogOpen] = useState(false);
     const [selectedProjectForVersions, setSelectedProjectForVersions] = useState(null);
@@ -57,11 +58,34 @@ const AdminDashboard = ({user, setSelectedForm}) => {
     };
 
     //Send mail
-    const handleSend = () => {
-        console.log({ from, to, subject, body, attachments });
-        setOpenMail(false);
-    };
+    const handleSend = async () => {
+        const formData = new FormData();
+        formData.append('from', from);
+        formData.append('to', to);
+        formData.append('subject', subject);
+        formData.append('body', body);
+        attachments.forEach(file => formData.append('attachments', file));
 
+        setIsSubmitting(true); 
+
+        try {
+            await axiosInstance.post('/api/mail/send', formData);
+            setOpenMail(false);
+            alert("Mail sent!");
+            setFrom('');
+            setTo('');
+            setSubject('');
+            setBody('');
+            setAttachments([]); 
+        } 
+        catch (err) {
+            alert("Failed to send mail");
+            console.error(err);
+        }
+        finally {
+            setIsSubmitting(false); // Hide loading
+        }
+    };
 
     // Context
 
@@ -96,10 +120,6 @@ const AdminDashboard = ({user, setSelectedForm}) => {
     const handleSelectChange = (event) => {
         setSelectedOrg(event.target.value);
     };
-
-    const handleNewProject = () => { //Handle new project
-        navigate("/investigator/studylist");
-    }
 
     const handleOpenComment = (projectItem) => { //Open comment
         setSelectedProject(projectItem);
@@ -216,13 +236,22 @@ const AdminDashboard = ({user, setSelectedForm}) => {
         }
     };
 
+    //Handle close email
+    const handleCloseEmail = () => {
+        setOpenMail(false);
+        setFrom('');
+        setTo('');
+        setSubject('');
+        setBody('');
+        setAttachments([]); 
+    }
+
 
     return (
         <React.Fragment>
             <Box className = "dashboard_main">
                 <Box className = "header_main">
                     <Typography className = "page_title">Investigators</Typography>
-                    <Button className = "button_style" onClick = {handleNewProject}>New Project Submission</Button>
                 </Box>
                 <Box>
                     <Grid container spacing={3} style={{ backgroundColor: '#4b1d77', color: 'white', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
@@ -449,7 +478,7 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                     <Button onClick={handleStatusClose} variant="contained" color="primary">Close</Button>
                 </DialogActions>
             </Dialog>
-            <Dialog open={openMail} onClose={() => setOpenMail(false)} fullWidth maxWidth="xl">
+            <Dialog open={openMail} onClose={handleCloseEmail} fullWidth maxWidth="xl">
                 <DialogTitle>Send Email</DialogTitle>
                 <DialogContent dividers>
                     <TextField  margin="dense" label="From" type="email" fullWidth
@@ -472,7 +501,8 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenMail(false)}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSend}>Send</Button>
+                    <Button variant="contained" onClick={handleSend} disabled={isSubmitting}>
+                        {isSubmitting ? "Sending..." : "Send"}</Button>
                 </DialogActions>
             </Dialog>
         </React.Fragment>

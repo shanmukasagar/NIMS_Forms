@@ -64,6 +64,7 @@ const App = () => {
   const location = useLocation();
   const isRegistration = location.pathname === '/register';
   const [user, setUser] = useState(null);
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
   const fetchOnce = useRef(false);
   const [selectedRole, setSelectedRole] = useState('');
@@ -73,9 +74,11 @@ const App = () => {
     try {
       const res = await axiosInstance.get('/api/user/verify');
       setUser(res.data.email);
+      setUserName(res.data?.name);
       setSelectedRole(res.data.selectedRole || "");
     } catch (error) {
       setUser(null);
+      setUserName('');
       navigate('/register');
       console.log("User is not logged in");
     }
@@ -95,7 +98,7 @@ const App = () => {
         user && (
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <CssBaseline />
-            <Header user = {user} selectedRole = {selectedRole}/>
+            <Header user = {user} userName = {userName} selectedRole = {selectedRole}/>
             <Box sx={{ display: 'flex', marginTop: '90px' }}>
               <Sidebar selectedRole={selectedRole} selectedForm={selectedForm} />
               <Box component="main" sx={{ flexGrow: 1, marginLeft: '20px', padding: '20px', overflow: 'auto', height: 'calc(100vh - 90px)' }}>
