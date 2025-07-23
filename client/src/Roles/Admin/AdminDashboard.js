@@ -39,7 +39,7 @@ const AdminDashboard = ({user, setSelectedForm}) => {
 
     const [openMail, setOpenMail] = useState(false);
     const [from, setFrom] = useState('');
-    const [to, setTo] = useState('');
+    const [to, setTo] = useState([]);
     const [subject, setSubject] = useState('');
     const [body, setBody] = useState('');
     const [attachments, setAttachments] = useState([]);
@@ -54,7 +54,14 @@ const AdminDashboard = ({user, setSelectedForm}) => {
 
     //Add attachments to email
     const handleFileChange = (e) => {
-        setAttachments([...e.target.files]);
+        const files = Array.from(e.target.files);
+        const pdfFiles = files.filter(file => file.type === 'application/pdf');
+
+        if (pdfFiles.length < files.length) {
+            alert('Only PDF files are allowed. Some files were not added.');
+        }
+
+        setAttachments(pdfFiles);
     };
 
     //Send mail
@@ -73,7 +80,7 @@ const AdminDashboard = ({user, setSelectedForm}) => {
             setOpenMail(false);
             alert("Mail sent!");
             setFrom('');
-            setTo('');
+            setTo([]);
             setSubject('');
             setBody('');
             setAttachments([]); 
@@ -240,10 +247,31 @@ const AdminDashboard = ({user, setSelectedForm}) => {
     const handleCloseEmail = () => {
         setOpenMail(false);
         setFrom('');
-        setTo('');
+        setTo([]);
         setSubject('');
         setBody('');
         setAttachments([]); 
+    }
+    //Handle open email
+    const handleOpenEmail = async(project) => {
+        try {
+            const response = await axiosInstance.get("/api/investigator/mails", {
+                params: {
+                    formId: project?.form_number, 
+                    tableName: project?.form_type === "" ? "clinical_investigators" : "investigatorss" 
+                }
+            });
+            const emailList = response.data || [];
+            setTo(emailList);
+            setOpenMail(true);
+
+            // Optional: do something with the response
+            console.log('Fetched emails:', response.data);
+        } 
+        catch (error) {
+            console.error('Failed to fetch emails:', error);
+            alert('Something went wrong while fetching email data.');
+        }
     }
 
 
@@ -281,7 +309,7 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                                     <InfoIcon sx={{ fontSize: 24, cursor: "pointer" }}  onClick={() => handleOpenStatus(item)}/>
                                 </Grid>
                                 <Grid item xs={1}> 
-                                    <Mail sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => setOpenMail(true)}/>
+                                    <Mail sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => handleOpenEmail(item)}/>
                                 </Grid>
                                                                 </React.Fragment>
                         )) : <Typography style = {{textAlign : "center", fontSize : "20px", color : "#5a4c4c"}}>No projects to display</Typography>
@@ -484,13 +512,15 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                     <TextField  margin="dense" label="From" type="email" fullWidth
                         value={from} onChange={(e) => setFrom(e.target.value)} />
                     <TextField margin="dense" label="To" type="email" fullWidth
-                        value={to} onChange={(e) => setTo(e.target.value)} />
+                        value={Array.isArray(to) ? to.join(', ') : to}
+                        onChange={(e) => setTo(e.target.value)}
+                        placeholder="e.g., user1@example.com, user2@example.com" />
                     <TextField margin="dense" label="Subject" fullWidth
                         value={subject} onChange={(e) => setSubject(e.target.value)} />
                     <TextField margin="dense" label="Body" fullWidth multiline
                         rows={10} value={body} onChange={(e) => setBody(e.target.value)} />
                     <Button variant="outlined" component="label" sx={{ mt: 2 }}>Attach Files
-                        <input type="file" hidden multiple onChange={handleFileChange} />
+                        <input type="file" accept="application/pdf" hidden multiple onChange={handleFileChange} />
                     </Button>
 
                     {attachments.length > 0 && (

@@ -438,6 +438,46 @@ const getInvestigatorStatus = async (tableName, formId) => {
     }
 };
 
+//Get Investigator emails
+const getInvestigatorEmails = async (tableName, formId) => {
+    try {
+        let result;
+
+        if (tableName === "investigatorss") {
+            result = await pool.query(
+                `SELECT * FROM investigatorss WHERE form_id = $1 AND investigator_type != 'hod'`,
+                [formId]
+            );
+        } 
+        else if (tableName === "clinical_investigators") {
+            result = await pool.query(
+                `SELECT * FROM clinical_investigators WHERE form_id = $1 AND role != 'hod'`,
+                [formId]
+            );
+        }
+        else {
+            throw new Error("Invalid table name");
+        }
+        const investigators = result.rows;
+        const emails = [];
+        if(tableName === "clinical_investigators") {
+            for(const item of investigators) {
+                emails.push(item.gmail);
+            }
+        }
+        else if(tableName === "investigatorss") {
+            for(const item of investigators) {
+                emails.push(item.gmail);
+            }
+        }
+        return emails;
+    } 
+    catch (error) {
+        console.error("Error fetching investigator status:", error);
+        return [];
+    }
+};
+
 
 module.exports = {getProjectsService, getClinicalProjectData, approvalService, 
-    approveHODService, projectChanges, getInvestigatorStatus};
+    approveHODService, projectChanges, getInvestigatorStatus, getInvestigatorEmails};
