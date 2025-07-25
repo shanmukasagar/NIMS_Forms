@@ -22,9 +22,30 @@ const userRegistration = async(userData) => {
 
         const result = await employeeCollection.insertOne(data);
         if (result.acknowledged) {
-            return {success : true, message : "User registered successfully "};
+            const reviewerTypes = [
+                { type: "isrc", role: "ISRC Member Secretary" },
+                { type: "niec", role: "NIMS IEC CommitteeMember-secretary" },
+                { type: "pbac", role: "PBAC Member Secretary" }
+            ];
+
+            const reviewersCollection = getDB().collection("AssignReviewers");
+
+            for (const { type, role } of reviewerTypes) {
+                if (userData.allowed_logins.includes(role)) {
+                    const reviewer = {
+                        name: data.name,
+                        emp_code: data.emp_code,
+                        type: type
+                    };
+                    await reviewersCollection.insertOne(reviewer);
+                }
+            }
+
+            return { success: true, message: "User registered successfully" };
         }
-        return {success : false, message : "User registration failed "};
+
+return { success: false, message: "User registration failed" };
+
     }
     catch(error) {
         console.log("User registration failed");
@@ -62,10 +83,12 @@ const deleteUserService = async (empCode) => {
     try {
         await connectToMongo();
         const employeeCollection = getDB().collection("Employees");
+        const reviewerCollection = getDB().collection("AssignReviewers");
 
         const result = await employeeCollection.deleteOne({ emp_code: Number(empCode) });
 
         if (result.deletedCount === 1) {
+            const deleteResponse = await reviewerCollection.deleteMany({ emp_code: Number(empCode) });
             return { success: true, message: "User deleted successfully" };
         } else {
             return { success: false, message: "User not found" };

@@ -66,6 +66,10 @@ const AdminDashboard = ({user, setSelectedForm}) => {
 
     //Send mail
     const handleSend = async () => {
+        if (!from || !to || !subject || !body) {
+            alert("Please fill all required fields.");
+            return;
+        }
         const formData = new FormData();
         formData.append('from', from);
         formData.append('to', to);
@@ -510,14 +514,14 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                 <DialogTitle>Send Email</DialogTitle>
                 <DialogContent dividers>
                     <TextField  margin="dense" label="From" type="email" fullWidth
-                        value={from} onChange={(e) => setFrom(e.target.value)} />
+                        value={from} onChange={(e) => setFrom(e.target.value)} required/>
                     <TextField margin="dense" label="To" type="email" fullWidth
                         value={Array.isArray(to) ? to.join(', ') : to}
-                        onChange={(e) => setTo(e.target.value)}
+                        onChange={(e) => setTo(e.target.value)} required
                         placeholder="e.g., user1@example.com, user2@example.com" />
-                    <TextField margin="dense" label="Subject" fullWidth
+                    <TextField margin="dense" label="Subject" fullWidth required
                         value={subject} onChange={(e) => setSubject(e.target.value)} />
-                    <TextField margin="dense" label="Body" fullWidth multiline
+                    <TextField margin="dense" label="Body" fullWidth multiline required
                         rows={10} value={body} onChange={(e) => setBody(e.target.value)} />
                     <Button variant="outlined" component="label" sx={{ mt: 2 }}>Attach Files
                         <input type="file" accept="application/pdf" hidden multiple onChange={handleFileChange} />
