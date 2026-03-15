@@ -3,7 +3,8 @@ const {pool} = require("../models/db");
 const { v4: uuidv4 } = require('uuid');
 const {sendEmail, sendProjectSubmissionMail} = require("../config/SendEmail");
 const { convertToFrontendKeys} = require("../config/FundingTableConfig");
-
+const stream = require("stream");
+const { getCollection, getAdminUploadBucket } = require("../models/db.js");
 //Get projects data
 const getProjectsService = async (email, type, role) => {
     try {
@@ -478,6 +479,55 @@ const getInvestigatorEmails = async (tableName, formId) => {
     }
 };
 
+const uploadMeetingDataService = async (req) => {
+     await connectToMongo(); 
+
+  const projectsCollection = getCollection("Projects");
+  const uploadBucket = getAdminUploadBucket();
+
+  const { projectRef, absentees } = req.body;
+
+  // Save absentees in projects collection
+//   await projectsCollection.updateOne(
+//     { project_ref: projectRef },
+//     { $set: { niec_absentees: absentees } }
+//   );
+const absenteesArray = absentees
+  .split(",")
+  .map(name => name.trim())
+  .filter(name => name !== "");
+
+await projectsCollection.updateOne(
+  { project_ref: projectRef },
+  { $set: { niec_absentees: absenteesArray ,
+      niec_completed: true 
+  } },
+  
+);
+  // Save uploaded files to GridFS
+  for (const field in req.files) {
+
+    const file = req.files[field][0];
+
+    const uploadStream = uploadBucket.openUploadStream(file.originalname, {
+      metadata: {
+        project_ref: projectRef,
+        type: field
+      }
+    });
+
+    const bufferStream = new stream.PassThrough();
+    bufferStream.end(file.buffer);
+    bufferStream.pipe(uploadStream);
+
+    await new Promise((resolve, reject) => {
+      uploadStream.on("finish", resolve);
+      uploadStream.on("error", reject);
+    });
+  }
+
+  return { message: "Meeting data uploaded successfully" };
+}
 
 module.exports = {getProjectsService, getClinicalProjectData, approvalService, 
-    approveHODService, projectChanges, getInvestigatorStatus, getInvestigatorEmails};
+    approveHODService, projectChanges, getInvestigatorStatus, getInvestigatorEmails,uploadMeetingDataService};

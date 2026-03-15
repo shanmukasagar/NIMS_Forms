@@ -149,17 +149,25 @@ const chairMemberComments = async (data) => {
         let result;
         if(data.type === "isrc") {
             result = await projectsCollection.updateOne( { project_ref: data.project_ref },
-                { $set: { isrc_inv_comments: data.comments, status : data.status } }
+                { $set: { isrc_inv_comments: data.comments, status : data.status ,
+                    //new niec 
+                       isrcApproved: data.status?.toLowerCase() === "approved"
+                } }
+                
             );
         }
         else if(data.type === "niec") {
             result = await projectsCollection.updateOne( { project_ref: data.project_ref },
-                { $set: { niec_inv_comments: data.comments, niec_status : data.status } }
+                { $set: { niec_inv_comments: data.comments, niec_status : data.status,
+                   niecApproved: data.status?.toLowerCase() === "approved"
+                 } }
             );
         }
         else if(data.type === "pbac") {
             result = await projectsCollection.updateOne( { project_ref: data.project_ref },
-                { $set: { pbac_inv_comments: data.comments, pbac_status : data.status } }
+                { $set: { pbac_inv_comments: data.comments, pbac_status : data.status,
+                      pbacApproved: data.status?.toLowerCase() === "approved"
+                 } }
             );
         }
         if(result.modifiedCount >= 0) {

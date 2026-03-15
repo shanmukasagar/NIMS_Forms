@@ -1,16 +1,25 @@
 const { Pool } = require("pg");
 require('dotenv').config();
-const  {MongoClient} = require('mongodb');
+const  {MongoClient,GridFSBucket } = require('mongodb');
 
 
 
+// const pool = new Pool({
+//     user: "shanmukasagar",
+//     host: "ep-red-grass-a1ch12cb-pooler.ap-southeast-1.aws.neon.tech" ,
+//     database: "research_forms",
+//     password: "NIMSforms@123",
+//     port: 5432,
+//     ssl: { rejectUnauthorized: false }
+// });
+
+/* ===== PostgreSQL ===== */
 const pool = new Pool({
-    user: "shanmukasagar",
-    host: "ep-red-grass-a1ch12cb-pooler.ap-southeast-1.aws.neon.tech" ,
-    database: "research_forms",
-    password: "NIMSforms@123",
-    port: 5432,
-    ssl: { rejectUnauthorized: false }
+  user: "postgres",
+  host: "localhost",
+  database: "new_nimsresearch",
+  password: "naveen",
+  port: 5432,
 });
 
 
@@ -46,9 +55,23 @@ const getDB = () => {
     }
 };
 
+// 🔹 Get Collection
+const getCollection = (name) => {
+  return getDB().collection(name);
+};
+
+// 🔹 Bucket for raw uploads
+const getAdminUploadBucket = () => {
+  return new GridFSBucket(getDB(), {
+    bucketName: "adminUploads"
+  });
+};
+
 module.exports = { 
     connectToMongo, 
     getDB,
     pool,
+      getAdminUploadBucket,
+      getCollection
     
 };

@@ -23,9 +23,12 @@ const userRegistration = async(userData) => {
         const result = await employeeCollection.insertOne(data);
         if (result.acknowledged) {
             const reviewerTypes = [
-                { type: "isrc", role: "ISRC Member Secretary" },
-                { type: "niec", role: "NIMS IEC CommitteeMember-secretary" },
-                { type: "pbac", role: "PBAC Member Secretary" }
+                // { type: "isrc", role: "ISRC Member Secretary" },
+                  { type: "isrc", role: "ISRC Committee Member" },
+                // { type: "niec", role: "NIMS IEC CommitteeMember-secretary" },
+                    { type: "niec", role: "NIMS IEC committee- member" },
+                // { type: "pbac", role: "PBAC Member Secretary" }
+                 { type: "pbac", role: "PBAC Committee Member" }
             ];
 
             const reviewersCollection = getDB().collection("AssignReviewers");

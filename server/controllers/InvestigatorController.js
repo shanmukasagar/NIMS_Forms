@@ -1,5 +1,32 @@
 const {getProjectsService, getClinicalProjectData, approvalService, approveHODService, projectChanges,
-    getInvestigatorStatus, getInvestigatorEmails } = require("../services/InvestigatorService");
+    getInvestigatorStatus, getInvestigatorEmails,uploadMeetingDataService } = require("../services/InvestigatorService");
+const { downloadApproval } = require("../services/pdf/ISRCApprovalPdf.js");
+const { downloadPBACApproval } = require("../services/pdf/PBACApprovalPdf.js");
+const {downloadApprovalPdfService} = require("../services/pdf/NIECApprovalPdf");
+
+    
+//Niec Added 
+const uploadMeetingDataController = async (req, res) => {
+  try {
+    const result = await uploadMeetingDataService(req);  // 🔥 CALL SERVICE
+    res.json(result);
+  } catch (error) {
+    console.error("UPLOAD ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// 🔹 PDF Download Controller
+const downloadApprovalPdfController = async (req, res) => {
+  try {
+    await downloadApprovalPdfService(req, res);
+  } catch (error) {
+    console.error("PDF ERROR:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 //Get all projects
 const getProjectsController = async (req, res) => {
@@ -99,4 +126,4 @@ const investigatorEmailsController = async (req, res) => {
 };
 
 module.exports = {getProjectsController, getOverallProjectController, checkInvestigatorApproval, 
-    approveHOD, projectChangesController, investigatorStatusController, investigatorEmailsController};
+    approveHOD, projectChangesController, investigatorStatusController, investigatorEmailsController,downloadApproval, downloadPBACApproval, uploadMeetingDataController,downloadApprovalPdfController};

@@ -23,3 +23,8 @@ Thumbs.db
 *.tgz
 .cache/
 .eslintcache
+
+# Uploaded files (VERY IMPORTANT for your project)
+media/
+assets/
+uploads/

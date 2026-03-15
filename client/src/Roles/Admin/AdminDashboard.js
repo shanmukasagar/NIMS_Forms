@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {Box, Typography, Button, TextField, } from "@mui/material";
+import { Stack,Box, Typography, Button, TextField, } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
 import { Visibility, Edit, Comment } from '@mui/icons-material';
@@ -12,7 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { List, ListItem, Link } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import InfoIcon from '@mui/icons-material/Info';
-
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import axiosInstance from "../../components/AxiosInstance";
 import PreviewPopup from "../../Forms/Add_Clinical_Form/Clinical_Preview";
 import {useProject} from "../../components/ResearchContext";
@@ -36,6 +36,12 @@ const AdminDashboard = ({user, setSelectedForm}) => {
     const [statusSelection, setStatusSelection] = useState('');
     const [projectStatus, setProjectStatus] = useState('');
     const [investigatorsData, setInvestigatorsData] = useState([]);
+//added NIEC Dialog States
+    const [openNiecDialog, setOpenNiecDialog] = useState(false);
+    const [selectedNiecProject, setSelectedNiecProject] = useState(null);
+    const [absentees, setAbsentees] = useState("");
+    const [file1, setFile1] = useState(null);
+    const [file2, setFile2] = useState(null);
 
     const [openMail, setOpenMail] = useState(false);
     const [from, setFrom] = useState('');
@@ -117,6 +123,63 @@ const AdminDashboard = ({user, setSelectedForm}) => {
         handleGetProjects();
     },[])
 
+
+    //added niec 258 to 299
+const handleOpenNiecDialog = async (project) => {
+  setSelectedNiecProject(project);
+  setOpenNiecDialog(true);
+
+//added for niec 
+};
+
+const handleSubmitNiec = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("projectRef", selectedNiecProject?.project_ref);
+    formData.append("absentees", absentees);
+    formData.append("file1", file1);
+    formData.append("file2", file2);
+
+    await axiosInstance.post(
+      "/api/investigator/niec/complete-meeting",
+      formData,
+     
+    );
+
+    alert("NIEC Details Saved Successfully");
+
+    setOpenNiecDialog(false);
+
+    // Refresh projects
+    const response = await axiosInstance.get('/api/investigator/projects', 
+      { params: { type: "admin" }});
+    setProjectsData(response.data);
+
+  } catch (error) {
+     console.error("NIEC ERROR:", error.response?.data || error.message);
+    alert("Failed to save NIEC details");
+  }
+};
+
+const handleDownloadPdf = async (url, fileName) => {
+  try {
+    const response = await axiosInstance.get(url, {
+      responseType: "blob",
+    });
+
+    const blob = new Blob([response.data], { type: "application/pdf" });
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  } catch (error) {
+    console.error("Download failed:", error);
+    alert("Failed to download PDF");
+  }
+};
     const openPdfVersionDialog = (projectItem) => { //Open pdf dialog
         setSelectedProjectForVersions(projectItem);
         setIsVersionDialogOpen(true);
@@ -287,17 +350,18 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                 </Box>
                 <Box>
                     <Grid container spacing={3} style={{ backgroundColor: '#4b1d77', color: 'white', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
-                        <Grid item size={6}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
+                        <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>Study Title</Typography></Grid>
                         <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>Submission Date</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>View</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Comments</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Status</Typography></Grid>
                         <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>Mail</Typography></Grid>
+                        <Grid item size={1}><Typography sx={{ fontSize: "18px" }}>IS/PB/NI Rev/Apr</Typography></Grid>
                     </Grid>
                     <Grid container spacing={3} style={{ backgroundColor: 'white', color: '#4b1d77', padding: "15px", borderRadius: "5px 5px 0px 0px" }}>
                         {projectsData.length > 0 ? projectsData.map((item, index) => (
                             <React.Fragment key = {index}>
-                                <Grid item size={6}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
+                                <Grid item size={5}><Typography sx={{ fontSize: "18px" }}>{item.project_title}</Typography></Grid>
                                 <Grid item size={2}><Typography sx={{ fontSize: "18px" }}>{formatSubmitDate(item.sub_date)}</Typography></Grid>
                                 <Grid item size={1} sx = {{display : "flex", gap : "15px"}}>
                                     <Visibility sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => openPdfVersionDialog(item)} /> 
@@ -315,8 +379,55 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                                 <Grid item xs={1}> 
                                     <Mail sx={{ fontSize: 24, cursor: "pointer" }} onClick={() => handleOpenEmail(item)}/>
                                 </Grid>
-                                                                </React.Fragment>
-                        )) : <Typography style = {{textAlign : "center", fontSize : "20px", color : "#5a4c4c"}}>No projects to display</Typography>
+                                                     {/* //here added // */}
+                                <Grid item size={1} sx={{ display: "flex", justifyContent: "center" }}>
+                                     {item.status === "approved" && (
+                                       <Tooltip title="Download ISRC Approval">
+                               <PictureAsPdfIcon  sx={{ cursor: "pointer", color: "green" }}  onClick={() => {
+                                    const cleanRef = item.project_ref?.replace(/"/g, "").trim();
+                                      handleDownloadPdf(`/api/investigator/approval-letter/${cleanRef}`,
+                                           `ISRC_Approval_${cleanRef}.pdf`
+                                     );
+                                   }} />
+                                </Tooltip>
+                                    )}
+                              {item.pbac_status === "approved" && (
+                               <Tooltip title="Download pbac Approval">
+                               <PictureAsPdfIcon sx={{ cursor: "pointer", color: "blue" }}
+                                onClick={() => {  const cleanRef = item.project_ref?.replace(/"/g, "").trim();
+                                handleDownloadPdf(  `/api/investigator/pbac-approval-letter/${cleanRef}`,
+                                           `PBAC_Approval_${cleanRef}.pdf`
+                                    );
+                                   }}
+                                    />
+                                </Tooltip>
+                                  )}
+                         {/* //Added niec section from 404 to // */}
+                       {/* NIEC Section */}
+            {item.niec_status === "approved" && !item.niec_completed && (
+                 <Tooltip title="Incomplete">
+                    <HourglassEmptyIcon sx={{ color: "orange", fontSize: 20 }}
+                     onClick={() => handleOpenNiecDialog(item)} />
+                </Tooltip>
+                 )}
+
+            {item.niec_completed && (
+               <Tooltip title="Download NIEC Approval">
+                 <PictureAsPdfIcon
+                      sx={{ cursor: "pointer", color: "gold"   // ✅ Yellow when submitted
+                 }} 
+            onClick={() =>
+                handleDownloadPdf(
+                         `/api/investigator/niec/download/${item.project_ref}`,
+                         `NIEC_Approval_${item.project_ref}.pdf`
+                      )}
+                    />
+              </Tooltip>
+                      )}
+                  </Grid>
+                 </React.Fragment>
+                        )) :
+                    <Typography style = {{textAlign : "center", fontSize : "20px", color : "#5a4c4c"}}>No projects to display</Typography>
                         }
                     </Grid>
                 </Box>
@@ -539,6 +650,44 @@ const AdminDashboard = ({user, setSelectedForm}) => {
                         {isSubmitting ? "Sending..." : "Send"}</Button>
                 </DialogActions>
             </Dialog>
+            <Dialog open={openNiecDialog} onClose={() => setOpenNiecDialog(false)} fullWidth maxWidth="md">
+          <DialogTitle>Complete NIEC Approval</DialogTitle>
+
+     <DialogContent>
+       <TextField
+        fullWidth  label="Absentees Names" multiline  rows={3}  value={absentees}
+           onChange={(e) => setAbsentees(e.target.value)}  sx={{ mb: 2 }}
+        />
+
+      <Stack spacing={2}>
+     <Box>
+           <Button variant="outlined" component="label">
+           Upload File 1
+           <input type="file" hidden onChange={(e) => setFile1(e.target.files?.[0] || null)} />
+           </Button>
+        <Typography variant="body2" sx={{ mt: 1, minHeight: 24 }}>
+        {file1?.name || ""}
+        </Typography>
+    </Box>
+
+    <Box>
+      <Button variant="outlined" component="label">
+        Upload File 2
+        <input type="file" hidden onChange={(e) => setFile2(e.target.files?.[0] || null)} />
+      </Button>
+      <Typography variant="body2" sx={{ mt: 1, minHeight: 24 }}>
+        {file2?.name || ""}
+      </Typography>
+    </Box>
+  </Stack>
+</DialogContent>
+               <DialogActions>
+                    <Button onClick={() => setOpenNiecDialog(false)}>Cancel</Button>
+                    <Button variant="contained" onClick={handleSubmitNiec}>
+                     Submit
+                    </Button>
+                </DialogActions>
+        </Dialog>
         </React.Fragment>
     )
 }
